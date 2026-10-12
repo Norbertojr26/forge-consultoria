@@ -95,6 +95,11 @@
   html {
     color-scheme: dark;
   }
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
   body {
     @apply bg-background text-foreground font-sans antialiased;
   }
@@ -104,8 +109,9 @@
 }
 
 /* ─── Utilitários de marca ─────────────────────────────────── */
+/* Referencia as variáveis do next/font direto: @theme inline não emite --font-* no CSS. */
 @utility font-display-forge {
-  font-family: var(--font-display);
+  font-family: var(--font-archivo-black), "Arial Black", sans-serif;
   font-weight: 400; /* Archivo Black só tem um peso (já é o "900" visual) */
   text-transform: uppercase;
   letter-spacing: -0.03em;
@@ -113,9 +119,8 @@
 }
 
 @utility eyebrow {
-  font-family: var(--font-mono);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--forge-orange);
 }

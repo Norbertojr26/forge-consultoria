@@ -11,7 +11,7 @@ export function Eyebrow({
   className?: string;
 }) {
   return (
-    <p className={cn("eyebrow flex items-center gap-3", className)}>
+    <p className={cn("eyebrow flex items-center gap-3 text-orange", className)}>
       {index && <span className="text-chumbo-100">/{index}</span>}
       <span>{children}</span>
     </p>
