@@ -21,22 +21,30 @@ npm run dev
 | `npm run dev` | servidor de desenvolvimento (Turbopack) |
 | `npm run build` / `start` | build e servidor de produção |
 | `npm run lint` / `typecheck` | ESLint e `tsc --noEmit` |
+| `npm test` | testes (Vitest) da lógica de semana e métricas |
 | `npm run db:migrate` | cria migration nova a partir do `schema.prisma` |
 | `npm run db:deploy` | aplica migrations pendentes |
 | `npm run db:studio` | Prisma Studio |
 
 ## Deploy (Railway)
 
-Push na `main` gera deploy automático. O `railway.json` roda `prisma migrate deploy` como pre-deploy. Variáveis do serviço web: as do `.env.example`, com `DATABASE_URL=${{Postgres.DATABASE_URL}}`.
+Push na `main` gera deploy automático. O `railway.json` roda `prisma migrate deploy` como pre-deploy. Variáveis do serviço web: as do `.env.example`, com `DATABASE_URL=${{Postgres.DATABASE_URL}}` e as `S3_*` referenciando o bucket (aba **Credentials** do bucket). Se o bucket usar URLs path-style, defina `S3_FORCE_PATH_STYLE=true`.
+
+## Área do aluno
+
+- **Semana do check-in:** domingo a sábado no fuso `America/Sao_Paulo` (`lib/week.ts`). Um check-in por semana; refazer na mesma semana edita o existente.
+- **Fotos:** comprimidas no navegador (máx. 1600 px, JPEG) e enviadas pelo servidor ao bucket privado, sem necessidade de CORS. O banco guarda só a chave do objeto; a exibição usa URL assinada de 10 min. Foto substituída é apagada do bucket.
+- **Métricas** (`lib/metrics.ts`): peso atual, Δ em relação ao check-in anterior e aderência (semanas com check-in desde o primeiro; a semana em aberto não penaliza).
 
 ## Estrutura
 
 ```
 app/(marketing)    landing pública
 app/(auth)         /entrar e /cadastro (Clerk)
-app/aluno          área do aluno (protegida pelo middleware.ts)
+app/aluno          área do aluno: painel, check-in, evolução, perfil (protegida pelo middleware.ts)
 components/ui      shadcn
 components/brand   peças da identidade FORGE (eyebrow mono, etc.)
-lib/               db (Prisma), auth (sync Clerk → User), utils
+lib/               db, auth (Clerk → User), storage (S3), week, metrics, validations, actions/, content (textos da landing)
+tests/             Vitest
 prisma/            schema e migrations
 ```
