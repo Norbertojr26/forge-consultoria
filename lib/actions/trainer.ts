@@ -1,11 +1,15 @@
 "use server";
 
 import { randomUUID } from "node:crypto";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import type { Role } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { generateImage, ImageGenError } from "@/lib/ai-image";
 import { requireAdmin, requireManagedStudent, requireStaff } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { MUSCLE_GROUPS } from "@/lib/exercises";
+import { exerciseImagePrompt } from "@/lib/exercise-style";
 import { deleteObject, putObject } from "@/lib/storage";
 import type { ActionResult } from "@/lib/validations";
 import { type ExerciseInput, exerciseSchema, type PlanInput, planSchema } from "@/lib/validations-workout";
@@ -169,6 +173,67 @@ export async function uploadExerciseImage(formData: FormData): Promise<ActionRes
   await putObject(key, bytes, isJpeg ? "image/jpeg" : isPng ? "image/png" : "image/webp");
   await db.exercise.update({ where: { id }, data: { imageKey: key } });
   if (exercise.imageKey) await deleteObject(exercise.imageKey).catch(() => {});
+  revalidatePath("/treinador/exercicios");
+  return { ok: true };
+}
+
+// ─── Imagem FORGE por IA (OpenRouter) ─────────────────────
+
+/** Gera uma imagem candidata a partir das fotos de referência; não substitui a atual até aprovar. */
+export async function generateExerciseImage(exerciseId: string): Promise<ActionResult> {
+  await requireStaff();
+  const ex = await db.exercise.findUnique({ where: { id: exerciseId } });
+  if (!ex) return { ok: false, error: "Exercício não encontrado" };
+
+  // Fotos reais (posição inicial e final) como referência de pose
+  const references: { bytes: Uint8Array; mime: string }[] = [];
+  if (ex.sourceId && /^[\w-]+$/.test(ex.sourceId)) {
+    for (const frame of ["0", "1"]) {
+      try {
+        const file = path.join(process.cwd(), "public", "exercises", ex.sourceId, `${frame}.jpg`);
+        references.push({ bytes: new Uint8Array(await readFile(file)), mime: "image/jpeg" });
+      } catch {
+        /* foto ausente: segue com o que tiver */
+      }
+    }
+  }
+
+  let image: { bytes: Uint8Array; mime: string };
+  try {
+    image = await generateImage({ prompt: exerciseImagePrompt(ex), references });
+  } catch (err) {
+    if (err instanceof ImageGenError) return { ok: false, error: err.message };
+    console.error("Falha ao gerar imagem", err);
+    return { ok: false, error: "Falha ao gerar a imagem. Tente de novo." };
+  }
+
+  const ext = image.mime === "image/png" ? "png" : image.mime === "image/webp" ? "webp" : "jpg";
+  const key = `exercises/${ex.id}/ia-${randomUUID()}.${ext}`;
+  await putObject(key, image.bytes, image.mime);
+  await db.exercise.update({ where: { id: ex.id }, data: { imageCandidateKey: key } });
+  if (ex.imageCandidateKey) await deleteObject(ex.imageCandidateKey).catch(() => {});
+  revalidatePath("/treinador/exercicios");
+  return { ok: true };
+}
+
+/** Promove a candidata a imagem oficial do exercício. */
+export async function approveExerciseImage(exerciseId: string): Promise<ActionResult> {
+  await requireStaff();
+  const ex = await db.exercise.findUnique({ where: { id: exerciseId } });
+  if (!ex?.imageCandidateKey) return { ok: false, error: "Nenhuma imagem aguardando aprovação" };
+  await db.exercise.update({ where: { id: ex.id }, data: { imageKey: ex.imageCandidateKey, imageCandidateKey: null } });
+  if (ex.imageKey) await deleteObject(ex.imageKey).catch(() => {});
+  revalidatePath("/treinador/exercicios");
+  revalidatePath("/aluno", "layout");
+  return { ok: true };
+}
+
+export async function discardExerciseImage(exerciseId: string): Promise<ActionResult> {
+  await requireStaff();
+  const ex = await db.exercise.findUnique({ where: { id: exerciseId } });
+  if (!ex?.imageCandidateKey) return { ok: true };
+  await db.exercise.update({ where: { id: ex.id }, data: { imageCandidateKey: null } });
+  await deleteObject(ex.imageCandidateKey).catch(() => {});
   revalidatePath("/treinador/exercicios");
   return { ok: true };
 }

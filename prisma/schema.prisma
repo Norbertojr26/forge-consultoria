@@ -55,19 +55,20 @@ model CheckIn {
 // ─── Treino ────────────────────────────────────────────────
 
 model Exercise {
-  id           String        @id @default(cuid())
-  name         String        @unique
-  muscleGroup  String // "peito" | "costas" | ... (ver lib/exercises.ts)
-  equipment    String? // "barra" | "halter" | "máquina" | ...
-  instructions String?
-  imageKey     String? // chave no bucket da imagem no padrão FORGE (gerada por IA e aprovada)
+  id                String        @id @default(cuid())
+  name              String        @unique
+  muscleGroup       String // "peito" | "costas" | ... (ver lib/exercises.ts)
+  equipment         String? // "barra" | "halter" | "máquina" | ...
+  instructions      String?
+  imageKey          String? // chave no bucket da imagem no padrão FORGE (gerada por IA e aprovada)
+  imageCandidateKey String? // imagem gerada aguardando aprovação do treinador (não aparece para alunos)
   // id na Free Exercise DB (domínio público): fotos reais em /public/exercises/<sourceId>/0.jpg e 1.jpg,
   // usadas enquanto não há imagem própria e como referência de pose para gerar a nova
-  sourceId     String?  @unique
-  createdById  String?
-  createdBy    User?         @relation(fields: [createdById], references: [id], onDelete: SetNull)
-  createdAt    DateTime      @default(now())
-  items        WorkoutItem[]
+  sourceId          String?       @unique
+  createdById       String?
+  createdBy         User?         @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt         DateTime      @default(now())
+  items             WorkoutItem[]
 
   @@index([muscleGroup])
 }
