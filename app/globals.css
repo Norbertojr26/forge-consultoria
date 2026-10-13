@@ -1,0 +1,126 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* O site é só dark: a variante dark: fica sempre ativa. */
+@custom-variant dark (&:is(*));
+
+/* ─── Tokens FORGE ─────────────────────────────────────────── */
+:root {
+  --forge-black: #0a0a0a;
+  --forge-chumbo-900: #111113;
+  --forge-chumbo-800: #16161a;
+  --forge-chumbo-700: #1d1d22;
+  --forge-chumbo-100: #d4d4dc;
+  --forge-orange: #ff5b14;
+  --forge-orange-bright: #ff7a3d;
+  --forge-white: #ffffff;
+
+  /* Variáveis semânticas do shadcn mapeadas pra paleta FORGE */
+  --radius: 0.25rem;
+  --background: var(--forge-black);
+  --foreground: var(--forge-white);
+  --card: var(--forge-chumbo-900);
+  --card-foreground: var(--forge-white);
+  --popover: var(--forge-chumbo-800);
+  --popover-foreground: var(--forge-white);
+  --primary: var(--forge-orange);
+  --primary-foreground: var(--forge-black);
+  --secondary: var(--forge-chumbo-700);
+  --secondary-foreground: var(--forge-white);
+  --muted: var(--forge-chumbo-800);
+  --muted-foreground: #8a8a94;
+  --accent: var(--forge-chumbo-700);
+  --accent-foreground: var(--forge-white);
+  --destructive: #e5484d;
+  --border: var(--forge-chumbo-700);
+  --input: var(--forge-chumbo-700);
+  --ring: var(--forge-orange);
+  --chart-1: var(--forge-orange);
+  --chart-2: var(--forge-chumbo-100);
+  --chart-3: var(--forge-orange-bright);
+  --chart-4: #8a8a94;
+  --chart-5: var(--forge-chumbo-700);
+}
+
+@theme inline {
+  /* Marca */
+  --color-black: var(--forge-black);
+  --color-chumbo-900: var(--forge-chumbo-900);
+  --color-chumbo-800: var(--forge-chumbo-800);
+  --color-chumbo-700: var(--forge-chumbo-700);
+  --color-chumbo-100: var(--forge-chumbo-100);
+  --color-orange: var(--forge-orange);
+  --color-orange-bright: var(--forge-orange-bright);
+  --color-white: var(--forge-white);
+
+  /* Fontes (variáveis definidas via next/font em app/layout.tsx) */
+  --font-display: var(--font-archivo-black), "Arial Black", sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+
+  /* shadcn */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    color-scheme: dark;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  ::selection {
+    @apply bg-orange text-black;
+  }
+}
+
+/* ─── Utilitários de marca ─────────────────────────────────── */
+/* Referencia as variáveis do next/font direto: @theme inline não emite --font-* no CSS. */
+@utility font-display-forge {
+  font-family: var(--font-archivo-black), "Arial Black", sans-serif;
+  font-weight: 400; /* Archivo Black só tem um peso (já é o "900" visual) */
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+}
+
+@utility eyebrow {
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
