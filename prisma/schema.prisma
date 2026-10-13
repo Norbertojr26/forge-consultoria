@@ -7,6 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  STUDENT
+  TRAINER
+  ADMIN
+}
+
 model User {
   id        String    @id // Clerk userId
   email     String    @unique
@@ -14,8 +20,21 @@ model User {
   birthDate DateTime? @db.Date
   heightCm  Int?
   goal      String? // "hipertrofia" | "cutting" | "recomp" | ...
+  role      Role      @default(STUDENT)
   createdAt DateTime  @default(now())
   checkIns  CheckIn[]
+
+  // Aluno -> treinador responsável (equipe com vários treinadores)
+  trainerId String?
+  trainer   User?   @relation("TrainerStudents", fields: [trainerId], references: [id], onDelete: SetNull)
+  students  User[]  @relation("TrainerStudents")
+
+  workoutPlans     WorkoutPlan[]    @relation("PlanStudent")
+  authoredPlans    WorkoutPlan[]    @relation("PlanTrainer")
+  workoutSessions  WorkoutSession[]
+  createdExercises Exercise[]
+
+  @@index([trainerId])
 }
 
 model CheckIn {
@@ -31,4 +50,97 @@ model CheckIn {
   createdAt  DateTime @default(now())
 
   @@unique([userId, weekOf])
+}
+
+// ─── Treino ────────────────────────────────────────────────
+
+model Exercise {
+  id           String        @id @default(cuid())
+  name         String        @unique
+  muscleGroup  String // "peito" | "costas" | ... (ver lib/exercises.ts)
+  equipment    String? // "barra" | "halter" | "máquina" | ...
+  instructions String?
+  imageKey     String? // chave no bucket da imagem no padrão FORGE (gerada por IA e aprovada)
+  // id na Free Exercise DB (domínio público): fotos reais em /public/exercises/<sourceId>/0.jpg e 1.jpg,
+  // usadas enquanto não há imagem própria e como referência de pose para gerar a nova
+  sourceId     String?  @unique
+  createdById  String?
+  createdBy    User?         @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt    DateTime      @default(now())
+  items        WorkoutItem[]
+
+  @@index([muscleGroup])
+}
+
+model WorkoutPlan {
+  id        String       @id @default(cuid())
+  name      String
+  notes     String?
+  active    Boolean      @default(true) // só um plano ativo por aluno; os outros ficam no histórico
+  studentId String
+  student   User         @relation("PlanStudent", fields: [studentId], references: [id], onDelete: Cascade)
+  trainerId String?
+  trainer   User?        @relation("PlanTrainer", fields: [trainerId], references: [id], onDelete: SetNull)
+  sentAt    DateTime? // null = rascunho, aluno ainda não vê
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  days      WorkoutDay[]
+
+  @@index([studentId, active])
+}
+
+model WorkoutDay {
+  id       String           @id @default(cuid())
+  planId   String
+  plan     WorkoutPlan      @relation(fields: [planId], references: [id], onDelete: Cascade)
+  name     String // "Treino A — Peito e tríceps"
+  order    Int
+  items    WorkoutItem[]
+  sessions WorkoutSession[]
+
+  @@index([planId, order])
+}
+
+model WorkoutItem {
+  id          String     @id @default(cuid())
+  dayId       String
+  day         WorkoutDay @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  exerciseId  String
+  exercise    Exercise   @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
+  order       Int
+  sets        Int
+  reps        String // "10" | "8-12" | "até a falha"
+  loadKg      Float?
+  restSeconds Int        @default(60)
+  notes       String?
+  setLogs     SetLog[]
+
+  @@index([dayId, order])
+}
+
+model WorkoutSession {
+  id         String     @id @default(cuid())
+  userId     String
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dayId      String
+  day        WorkoutDay @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  startedAt  DateTime   @default(now())
+  finishedAt DateTime?
+  setLogs    SetLog[]
+
+  @@index([userId, startedAt])
+}
+
+model SetLog {
+  id          String         @id @default(cuid())
+  sessionId   String
+  session     WorkoutSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  itemId      String
+  item        WorkoutItem    @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  setNumber   Int
+  reps        Int?
+  loadKg      Float?
+  completedAt DateTime       @default(now())
+
+  @@unique([sessionId, itemId, setNumber])
 }

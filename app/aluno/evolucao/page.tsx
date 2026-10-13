@@ -49,7 +49,7 @@ export default async function EvolucaoPage() {
         </p>
       </PageTitle>
 
-      <section aria-label="Gráfico de peso" className="border bg-chumbo-900 p-4 md:p-6">
+      <section aria-label="Gráfico de peso" className="glass rounded-3xl p-4 md:p-6">
         <WeightChart data={checkIns.map((c) => ({ label: formatDay(c.weekOf), weightKg: c.weightKg }))} />
       </section>
 
@@ -59,11 +59,11 @@ export default async function EvolucaoPage() {
         </h2>
         <ul className="flex flex-col gap-4">
           {history.map((c) => (
-            <li key={c.id} className="grid gap-4 border p-4 sm:grid-cols-[1fr_auto]">
+            <li key={c.id} className="glass grid gap-4 rounded-3xl p-4 sm:grid-cols-[1fr_auto]">
               <div className="flex flex-col gap-2">
                 <p className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
                   <span className="font-mono text-xs text-chumbo-100">Semana {formatDay(c.weekOf, { year: true })}</span>
-                  <span className="font-display-forge text-2xl">{kg(c.weightKg)} kg</span>
+                  <span className="num-thin text-3xl">{kg(c.weightKg)} kg</span>
                   <span className="text-sm text-chumbo-100">
                     Humor {c.mood}/5 · {MOODS.find((x) => x.value === c.mood)?.label}
                   </span>
@@ -74,7 +74,7 @@ export default async function EvolucaoPage() {
                 <div className="flex gap-2">
                   {[c.front, c.back].map((url, i) =>
                     url ? (
-                      <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="block w-20 border hover:border-orange">
+                      <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="block w-20 overflow-hidden rounded-xl border border-white/10 hover:border-orange">
                         {/* eslint-disable-next-line @next/next/no-img-element -- URL assinada temporária */}
                         <img src={url} alt={`${i === 0 ? "Frente" : "Costas"}, semana ${formatDay(c.weekOf)}`} className="aspect-[3/4] w-full object-cover" loading="lazy" />
                       </a>
