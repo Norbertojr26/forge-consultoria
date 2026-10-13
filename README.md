@@ -36,12 +36,21 @@ Push na `main` gera deploy automático. O serviço roda `npx prisma migrate depl
 - **Fotos:** comprimidas no navegador (máx. 1600 px, JPEG) e enviadas pelo servidor ao bucket privado, sem necessidade de CORS. O banco guarda só a chave do objeto; a exibição usa URL assinada de 10 min. Foto substituída é apagada do bucket.
 - **Métricas** (`lib/metrics.ts`): peso atual, Δ em relação ao check-in anterior e aderência (semanas com check-in desde o primeiro; a semana em aberto não penaliza).
 
+## Equipe e treinos
+
+- **Papéis:** `STUDENT` (padrão), `TRAINER` e `ADMIN`. E-mails em `ADMIN_EMAILS` viram admin no primeiro acesso. O admin promove treinadores e define o treinador de cada aluno em `/treinador/equipe`; treinador só vê os próprios alunos.
+- **Planos:** o treinador monta dias e exercícios (séries, repetições, carga, descanso) e envia; o aluno tem um plano ativo por vez. Plano com treinos registrados fica travado — edita-se uma cópia ("Duplicar") para não perder histórico.
+- **Execução:** `/aluno/treino/[dia]` — a sessão só é criada ao concluir a primeira série (abrir a página não registra nada). Descanso em tela cheia com bipe e vibração; a tela fica acesa (Wake Lock).
+- **Catálogo:** exercícios com `sourceId` mostram as fotos reais da [Free Exercise DB](https://github.com/yuhonas/free-exercise-db) (Unlicense / domínio público) em `public/exercises/`. Imagem própria (`imageKey`, no bucket) tem prioridade.
+
 ## Estrutura
 
 ```
 public/*.html      site original: landing (/), /aplicar e /demo-aluno, servidos por rewrite no next.config.ts
 app/(auth)         /entrar e /cadastro (Clerk)
-app/aluno          área do aluno: painel, check-in, evolução, perfil (protegida pelo middleware.ts)
+app/aluno          área do aluno: hoje, treino (player), check-in, evolução, perfil
+app/treinador      painel do treinador: alunos, planos, catálogo de exercícios, equipe (admin)
+components/app     componentes visuais do app (vidro, anel, barras em pílula, número em pontos)
 components/ui      shadcn
 components/brand   peças da identidade FORGE usadas na área do aluno
 lib/               db, auth (Clerk → User), storage (S3), week, metrics, validations, actions/

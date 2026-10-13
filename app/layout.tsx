@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Archivo_Black, Inter, JetBrains_Mono } from "next/font/google";
+import { Archivo_Black, Doto, Inter, JetBrains_Mono } from "next/font/google";
 import { ptBR } from "@clerk/localizations";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
@@ -13,6 +13,13 @@ const archivoBlack = Archivo_Black({
 
 const inter = Inter({
   variable: "--font-inter",
+  subsets: ["latin"],
+});
+
+// Fonte matricial (pontos) para os números de destaque do painel
+const doto = Doto({
+  variable: "--font-doto",
+  weight: ["700", "900"],
   subsets: ["latin"],
 });
 
@@ -34,7 +41,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body
-        className={`${archivoBlack.variable} ${inter.variable} ${jetbrainsMono.variable}`}
+        className={`${archivoBlack.variable} ${inter.variable} ${jetbrainsMono.variable} ${doto.variable}`}
       >
         <ClerkProvider
           localization={ptBR}

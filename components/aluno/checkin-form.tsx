@@ -72,7 +72,7 @@ export function CheckInForm({
                     inputMode="decimal"
                     placeholder="80,5"
                     autoComplete="off"
-                    className="h-14 font-display-forge text-3xl md:text-3xl"
+                    className="h-14 rounded-2xl num-thin text-3xl md:text-3xl"
                     {...field}
                   />
                 </FormControl>
@@ -100,7 +100,7 @@ export function CheckInForm({
                         value={String(mood.value)}
                         aria-label={`${mood.value} — ${mood.label}`}
                         title={mood.label}
-                        className="h-14 font-display-forge text-xl data-[state=on]:bg-orange data-[state=on]:text-black"
+                        className="h-14 text-xl font-light data-[state=on]:glow data-[state=on]:bg-orange data-[state=on]:text-black"
                       >
                         {mood.value}
                       </ToggleGroupItem>

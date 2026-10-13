@@ -1,29 +1,31 @@
 import { UserButton } from "@clerk/nextjs";
+import { LayoutDashboard } from "lucide-react";
+import Link from "next/link";
 import { AlunoNav } from "@/components/aluno/aluno-nav";
-import { Container } from "@/components/brand/container";
 import { Logo } from "@/components/brand/logo";
-import { requireUser } from "@/lib/auth";
+import { isStaff, requireUser } from "@/lib/auth";
 
 // Dados pessoais e dependentes da data atual: nunca pré-renderizar.
 export const dynamic = "force-dynamic";
 
 export default async function AlunoLayout({ children }: { children: React.ReactNode }) {
-  await requireUser();
+  const user = await requireUser();
 
   return (
-    <div className="flex min-h-svh flex-col">
-      <header className="border-b bg-black">
-        <Container className="flex h-16 items-center justify-between">
-          <Logo href="/aluno" />
+    <div className="app-backdrop min-h-svh">
+      <header className="mx-auto flex h-16 max-w-3xl items-center justify-between px-5">
+        <Logo href="/aluno" className="text-xl" />
+        <div className="flex items-center gap-3">
+          {isStaff(user.role) && (
+            <Link href="/treinador" className="glass flex items-center gap-2 rounded-full px-3 py-1.5 text-xs text-chumbo-100 hover:text-white">
+              <LayoutDashboard className="size-3.5" /> Painel do treinador
+            </Link>
+          )}
           <UserButton />
-        </Container>
-        <Container>
-          <AlunoNav />
-        </Container>
+        </div>
       </header>
-      <main className="flex-1 py-10 md:py-14">
-        <Container className="flex flex-col gap-10">{children}</Container>
-      </main>
+      <main className="mx-auto flex max-w-3xl flex-col gap-6 px-5 pt-4 pb-32">{children}</main>
+      <AlunoNav />
     </div>
   );
 }
