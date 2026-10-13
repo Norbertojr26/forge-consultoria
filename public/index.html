@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FORGE — Consultoria Esportiva de Alta Performance</title>
+<link rel="stylesheet" href="styles.css" />
+<link rel="icon" href="assets/forge-logo.svg" type="image/svg+xml" />
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<header class="nav">
+  <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="nav-drawer">
+    <span></span><span></span><span></span>
+  </button>
+  <nav class="nav-links nav-links-left">
+    <a href="#metodologia">Metodologia</a>
+    <a href="#cases">Cases</a>
+    <a href="#protocolos">Protocolos</a>
+    <a href="#planos">Planos</a>
+    <a href="#area-aluno">Área do Aluno</a>
+    <a href="#faq">FAQ</a>
+  </nav>
+  <a class="nav-logo" href="#top" aria-label="FORGE">
+    <span data-forge-wordmark="36" class="nav-wordmark"></span>
+  </a>
+  <div class="nav-actions">
+    <a href="/entrar" class="nav-student">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0"/>
+      </svg>
+      <span>Já sou Aluno</span>
+    </a>
+    <a href="/aplicar" class="btn btn-primary nav-cta"><span>Aplicar</span>
+      <svg width="14" height="10" viewBox="0 0 14 10" fill="none"><path d="M1 5h12m0 0L9 1m4 4L9 9" stroke="currentColor" stroke-width="1.6"/></svg>
+    </a>
+  </div>
+</header>
+
+<!-- ============ MOBILE DRAWER ============ -->
+<div class="nav-drawer" id="nav-drawer" aria-hidden="true">
+  <div class="nav-drawer-bg" data-nav-close></div>
+  <aside class="nav-drawer-panel" role="dialog" aria-label="Menu de navegação">
+    <div class="nav-drawer-head">
+      <span data-forge-wordmark="32" class="nav-drawer-mark"></span>
+      <button class="nav-drawer-close" type="button" aria-label="Fechar menu" data-nav-close>
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+          <path d="M2 2l14 14M16 2L2 16" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/>
+        </svg>
+      </button>
+    </div>
+    <nav class="nav-drawer-links">
+      <a href="#metodologia" data-nav-close><span class="num">/01</span><span>Metodologia</span></a>
+      <a href="#cases" data-nav-close><span class="num">/02</span><span>Cases</span></a>
+      <a href="#protocolos" data-nav-close><span class="num">/03</span><span>Protocolos</span></a>
+      <a href="#planos" data-nav-close><span class="num">/04</span><span>Planos</span></a>
+      <a href="#area-aluno" data-nav-close><span class="num">/05</span><span>Área do Aluno</span></a>
+      <a href="#faq" data-nav-close><span class="num">/06</span><span>FAQ</span></a>
+    </nav>
+    <div class="nav-drawer-foot">
+      <a href="/aplicar" class="btn btn-primary nav-drawer-cta"><span>APLICAR</span>
+        <svg width="14" height="10" viewBox="0 0 14 10" fill="none"><path d="M1 5h12m0 0L9 1m4 4L9 9" stroke="currentColor" stroke-width="1.6"/></svg>
+      </a>
+      <a href="/entrar" class="nav-drawer-student">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0"/></svg>
+        <span>Já sou Aluno</span>
+      </a>
+      <span class="nav-drawer-meta">EST. 2022 — BRASÍLIA / BR</span>
+    </div>
+  </aside>
+</div>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="top">
+  <div class="hero-video">
+    <video class="hero-video-el" src="assets/hero.mp4" autoplay muted loop playsinline preload="auto"></video>
+    <div class="hero-mesh" aria-hidden="true"></div>
+    <div class="hero-figure" aria-hidden="true">
+      <span class="hero-wordmark">F</span>
+      <span class="hero-wordmark">O</span>
+      <span class="hero-wordmark">R</span>
+      <span class="hero-wordmark">G</span>
+      <span class="hero-wordmark">E</span>
+    </div>
+  </div>
+
+  <button class="hero-play" aria-label="Assistir">
+    <span>WATCH<br/>FILM</span>
+  </button>
+
+  <div class="container hero-content">
+    <div class="hero-meta">
+      <div class="hero-meta-left">
+        <span class="hero-meta-tag"><span>●</span> EST. 2022 — BRASÍLIA / BRASIL</span>
+        <span class="hero-meta-tag">CONSULTORIA ESPORTIVA DE ALTA PERFORMANCE</span>
+      </div>
+      <div class="hero-meta-tag">N° 001 / METODOLOGIA FORGE™</div>
+    </div>
+
+    <h1 class="hero-title">
+      <div class="word"><span style="animation-delay:.05s">PERFORMANCE</span></div>
+      <div class="word"><span style="animation-delay:.20s" class="stroke">QUE NÃO ACEITA</span></div>
+      <div class="word"><span style="animation-delay:.35s" class="orange">MEDIOCRIDADE.</span></div>
+    </h1>
+
+    <div class="hero-bottom">
+      <p class="hero-desc">
+        Consultoria esportiva personalizada para quem trata o corpo como projeto sério. Treino, dieta e protocolos desenhados sob medida — auditados semanalmente pela nossa equipe técnica.
+      </p>
+      <div class="hero-stats reveal">
+        <div>
+          <div class="hero-stat-num"><span class="count" data-to="21">0</span></div>
+          <div class="hero-stat-label">Atletas Ativos</div>
+        </div>
+        <div>
+          <div class="hero-stat-num"><span class="count" data-to="98">0</span><sup>%</sup></div>
+          <div class="hero-stat-label">Adesão</div>
+        </div>
+        <div>
+          <div class="hero-stat-num"><span class="count" data-to="4">0</span><sup>ANOS</sup></div>
+          <div class="hero-stat-label">No Mercado</div>
+        </div>
+      </div>
+      <a href="/aplicar" class="btn btn-primary"><span>QUERO APLICAR</span>
+        <svg width="16" height="12" viewBox="0 0 14 10" fill="none"><path d="M1 5h12m0 0L9 1m4 4L9 9" stroke="currentColor" stroke-width="1.6"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <span>SCROLL</span>
+    <div class="hero-scroll-line"></div>
+  </div>
+</section>
+
+<!-- ============ MARQUEE ============ -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>HIPERTROFIA <span class="dot"></span> EMAGRECIMENTO <span class="dot"></span> <span class="stroke">FORÇA</span> <span class="dot"></span> COMPETIDORES <span class="dot"></span> ATLETAS <span class="dot"></span> <span class="stroke">PERFORMANCE</span> <span class="dot"></span></span>
+    <span>HIPERTROFIA <span class="dot"></span> EMAGRECIMENTO <span class="dot"></span> <span class="stroke">FORÇA</span> <span class="dot"></span> COMPETIDORES <span class="dot"></span> ATLETAS <span class="dot"></span> <span class="stroke">PERFORMANCE</span> <span class="dot"></span></span>
+  </div>
+</div>
+
+<!-- ============ METODOLOGIA ============ -->
+<section class="metodologia" id="metodologia">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-head-left">
+        <span class="eyebrow reveal">02 — METODOLOGIA FORGE™</span>
+        <h2 class="display h2 section-head-title title-line"><span>SEM ATALHO.<br/>SÓ <span style="color:var(--orange)">PROCESSO.</span></span></h2>
+      </div>
+      <p class="lead reveal">
+        Nossa metodologia é construída sobre quatro pilares inegociáveis. Cada aluno passa pelo mesmo rigor técnico — só o protocolo muda. Nada é genérico. Nada é palpite.
+      </p>
+    </div>
+
+    <div class="pillars reveal-stagger">
+      <div class="pillar">
+        <div>
+          <div class="pillar-num">PILAR 01</div>
+          <div class="pillar-icon">
+            <!-- Diagnóstico: alvo com mira de scope -->
+            <svg viewBox="0 0 56 56" fill="none" stroke-width="1.8" stroke-linecap="square">
+              <circle cx="28" cy="28" r="22"/>
+              <circle cx="28" cy="28" r="14"/>
+              <circle cx="28" cy="28" r="5"/>
+              <circle cx="28" cy="28" r="1.5" fill="currentColor" stroke="none"/>
+              <path d="M28 2v8M28 46v8M2 28h8M46 28h8"/>
+            </svg>
+          </div>
+        </div>
+        <div>
+          <h3 class="pillar-title">Diagnóstico<br/>360°</h3>
+          <p class="pillar-desc">Anamnese profunda, exames laboratoriais, histórico de treino, composição corporal e biomarcadores. A linha de partida tem que estar nítida.</p>
+        </div>
+      </div>
+
+      <div class="pillar">
+        <div>
+          <div class="pillar-num">PILAR 02</div>
+          <div class="pillar-icon">
+            <!-- Protocolo: barra de halter (peso individualizado) -->
+            <svg viewBox="0 0 56 56" fill="none" stroke-width="1.8" stroke-linecap="square">
+              <rect x="5" y="18" width="5" height="20"/>
+              <rect x="10" y="22" width="4" height="12"/>
+              <line x1="14" y1="28" x2="42" y2="28"/>
+              <rect x="42" y="22" width="4" height="12"/>
+              <rect x="46" y="18" width="5" height="20"/>
+              <line x1="24" y1="24" x2="24" y2="32" stroke-width="1" opacity="0.5"/>
+              <line x1="32" y1="24" x2="32" y2="32" stroke-width="1" opacity="0.5"/>
+            </svg>
+          </div>
+        </div>
+        <div>
+          <h3 class="pillar-title">Protocolo<br/>Individual</h3>
+          <p class="pillar-desc">Treino, dieta, suplementação e periodização desenhados linha a linha para o seu corpo, sua rotina e seu objetivo. Zero template.</p>
+        </div>
+      </div>
+
+      <div class="pillar">
+        <div>
+          <div class="pillar-num">PILAR 03</div>
+          <div class="pillar-icon">
+            <!-- Execução: gráfico de progresso/heartbeat com check -->
+            <svg viewBox="0 0 56 56" fill="none" stroke-width="1.8" stroke-linecap="square" stroke-linejoin="miter">
+              <path d="M4 36h8l4-12 6 22 6-30 4 16 4-6h4"/>
+              <path d="M38 36l4 4 8-10" stroke-width="2.4"/>
+              <line x1="4" y1="48" x2="52" y2="48" opacity="0.4"/>
+            </svg>
+          </div>
+        </div>
+        <div>
+          <h3 class="pillar-title">Execução<br/>Auditada</h3>
+          <p class="pillar-desc">Check-in semanal com fotos, dados e métricas. Ajustes em tempo real. Time técnico responde dúvidas em até 12h. Você não anda sozinho.</p>
+        </div>
+      </div>
+
+      <div class="pillar">
+        <div>
+          <div class="pillar-num">PILAR 04</div>
+          <div class="pillar-icon">
+            <!-- Resultado: troféu/medalha com cinta -->
+            <svg viewBox="0 0 56 56" fill="none" stroke-width="1.8" stroke-linecap="square" stroke-linejoin="miter">
+              <path d="M14 4h28v14a14 14 0 01-28 0V4z"/>
+              <path d="M14 8H6v6c0 5 4 9 9 9M42 8h8v6c0 5-4 9-9 9"/>
+              <line x1="22" y1="32" x2="22" y2="44"/>
+              <line x1="34" y1="32" x2="34" y2="44"/>
+              <rect x="18" y="44" width="20" height="6"/>
+              <path d="M28 10l1.8 4 4.2.4-3.2 3 1 4.2-3.8-2.4L24.2 21.6l1-4.2L22 14.4l4.2-.4L28 10z" fill="currentColor" stroke="none" opacity="0.6"/>
+            </svg>
+          </div>
+        </div>
+        <div>
+          <h3 class="pillar-title">Resultado<br/>Provado</h3>
+          <p class="pillar-desc">Marcos mensuráveis a cada 4 semanas. Recompostagem, performance ou competição — o resultado é cobrado e entregue, com dado.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CASES ============ -->
+<section class="cases" id="cases">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-head-left">
+        <span class="eyebrow reveal">03 — CASES DE SUCESSO</span>
+        <h2 class="display h2 section-head-title title-line"><span>O FERRO NÃO MENTE.</span></h2>
+      </div>
+      <p class="lead reveal">
+        Mais de mil atletas transformados — de praticantes sérios a competidores nacionais. Cada caso documentado. Cada número auditado.
+      </p>
+    </div>
+
+    <div class="cases-grid reveal-stagger">
+      <article class="case">
+        <div class="case-img">
+          <img src="assets/cases/joao-pedro.jpg" alt="João Pedro — antes e depois" loading="lazy" />
+          <div class="case-badge"><span>ANTES</span><span>DEPOIS</span></div>
+        </div>
+        <div class="case-info">
+          <div class="case-cat">HIPERTROFIA — TRANSFORMAÇÃO COMPLETA</div>
+          <h3 class="case-name">João Pedro</h3>
+          <div class="case-meta">
+            <div class="case-meta-item"><div class="num"><span class="pos">+</span>15<span class="pos">KG</span></div><div class="lbl">Massa Magra</div></div>
+            <div class="case-meta-item"><div class="num"><span class="neg">−</span>8<span class="pos">%</span></div><div class="lbl">Gordura</div></div>
+            <div class="case-meta-item"><div class="num">100<span class="pos">%</span></div><div class="lbl">Aderência</div></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="case">
+        <div class="case-img">
+          <img src="assets/cases/gabriel-frente.jpg" alt="Gabriel — antes e depois" loading="lazy" />
+          <div class="case-badge"><span>ANTES</span><span>DEPOIS</span></div>
+        </div>
+        <div class="case-info">
+          <div class="case-cat">RECOMPOSIÇÃO — 32 SEMANAS</div>
+          <h3 class="case-name">Gabriel</h3>
+          <div class="case-meta">
+            <div class="case-meta-item"><div class="num"><span class="neg">−</span>12<span class="pos">KG</span></div><div class="lbl">Gordura</div></div>
+            <div class="case-meta-item"><div class="num"><span class="pos">+</span>6<span class="pos">KG</span></div><div class="lbl">Massa Magra</div></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="case">
+        <div class="case-img">
+          <img src="assets/cases/paulo-vitor.jpg" alt="Paulo Vitor — antes e depois" loading="lazy" />
+          <div class="case-badge"><span>ANTES</span><span>DEPOIS</span></div>
+        </div>
+        <div class="case-info">
+          <div class="case-cat">DEFINIÇÃO</div>
+          <h3 class="case-name">Paulo Vitor</h3>
+          <div class="case-meta">
+            <div class="case-meta-item"><div class="num"><span class="neg">−</span>9<span class="pos">%</span></div><div class="lbl">Gordura Corporal</div></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="case">
+        <div class="case-img">
+          <img src="assets/cases/joao-paulo.jpg" alt="João Paulo — antes e depois" loading="lazy" />
+          <div class="case-badge"><span>ANTES</span><span>DEPOIS</span></div>
+        </div>
+        <div class="case-info">
+          <div class="case-cat">RECOMP — 28 SEMANAS</div>
+          <h3 class="case-name">João Paulo</h3>
+          <div class="case-meta">
+            <div class="case-meta-item"><div class="num"><span class="neg">−</span>11<span class="pos">KG</span></div><div class="lbl">Peso Total</div></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="case">
+        <div class="case-img">
+          <img src="assets/cases/otavio-frente.jpg" alt="Otávio — antes e depois" loading="lazy" />
+          <div class="case-badge"><span>ANTES</span><span>DEPOIS</span></div>
+        </div>
+        <div class="case-info">
+          <div class="case-cat">CUTTING — 20 SEMANAS</div>
+          <h3 class="case-name">Otávio</h3>
+          <div class="case-meta">
+            <div class="case-meta-item"><div class="num"><span class="neg">−</span>14<span class="pos">KG</span></div><div class="lbl">Gordura</div></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="case">
+        <div class="case-img">
+          <img src="assets/cases/greice-frente.jpg" alt="Greice frente — antes e depois" loading="lazy" />
+          <div class="case-badge"><span>ANTES</span><span>DEPOIS</span></div>
+        </div>
+        <div class="case-info">
+          <div class="case-cat">RECOMPOSIÇÃO FEMININA — 36 SEMANAS</div>
+          <h3 class="case-name">Greice</h3>
+          <div class="case-meta">
+            <div class="case-meta-item"><div class="num"><span class="neg">−</span>10<span class="pos">KG</span></div><div class="lbl">Gordura</div></div>
+            <div class="case-meta-item"><div class="num"><span class="pos">+</span>4<span class="pos">KG</span></div><div class="lbl">Massa Magra</div></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="case case-hidden" data-extra>
+        <div class="case-img case-img-portrait">
+          <img src="assets/cases/amanda-frente.png" alt="Amanda frente — antes e depois" loading="lazy" />
+          <div class="case-badge"><span>ANTES</span><span>DEPOIS</span></div>
+        </div>
+        <div class="case-info">
+          <div class="case-cat">EMAGRECIMENTO — 24 SEMANAS</div>
+          <h3 class="case-name">Amanda</h3>
+          <div class="case-meta">
+            <div class="case-meta-item"><div class="num"><span class="neg">−</span>13<span class="pos">KG</span></div><div class="lbl">Peso Total</div></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="case case-hidden" data-extra>
+        <div class="case-img case-img-portrait">
+          <img src="assets/cases/amanda-lado.png" alt="Amanda lado — antes e depois" loading="lazy" />
+          <div class="case-badge"><span>ANTES</span><span>DEPOIS</span></div>
+        </div>
+        <div class="case-info">
+          <div class="case-cat">RECOMP — PERFIL LATERAL</div>
+          <h3 class="case-name">Amanda</h3>
+          <div class="case-meta">
+            <div class="case-meta-item"><div class="num"><span class="neg">−</span>9<span class="pos">%</span></div><div class="lbl">Gordura</div></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="case case-hidden" data-extra>
+        <div class="case-img case-img-portrait">
+          <img src="assets/cases/elzo-costas.png" alt="Elzo costas — antes e depois" loading="lazy" />
+          <div class="case-badge"><span>ANTES</span><span>DEPOIS</span></div>
+        </div>
+        <div class="case-info">
+          <div class="case-cat">CUTTING — 32 SEMANAS</div>
+          <h3 class="case-name">Elzo</h3>
+          <div class="case-meta">
+            <div class="case-meta-item"><div class="num"><span class="neg">−</span>16<span class="pos">KG</span></div><div class="lbl">Peso Total</div></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="case case-hidden" data-extra>
+        <div class="case-img case-img-portrait">
+          <img src="assets/cases/elzo-lado.png" alt="Elzo lado — antes e depois" loading="lazy" />
+          <div class="case-badge"><span>ANTES</span><span>DEPOIS</span></div>
+        </div>
+        <div class="case-info">
+          <div class="case-cat">DEFINIÇÃO — PERFIL LATERAL</div>
+          <h3 class="case-name">Elzo</h3>
+          <div class="case-meta">
+            <div class="case-meta-item"><div class="num"><span class="neg">−</span>11<span class="pos">%</span></div><div class="lbl">Gordura</div></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="case case-hidden" data-extra>
+        <div class="case-img">
+          <img src="assets/cases/greice-costas.jpg" alt="Greice costas — antes e depois" loading="lazy" />
+          <div class="case-badge"><span>ANTES</span><span>DEPOIS</span></div>
+        </div>
+        <div class="case-info">
+          <div class="case-cat">RECOMP — VISTA POSTERIOR</div>
+          <h3 class="case-name">Greice</h3>
+          <div class="case-meta">
+            <div class="case-meta-item"><div class="num"><span class="pos">+</span>4<span class="pos">KG</span></div><div class="lbl">Glúteo / Posterior</div></div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="cases-more-wrap">
+      <button class="btn btn-ghost cases-more-btn" type="button" data-cases-toggle>
+        <span class="cases-more-label">VER MAIS CASES</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 5L7 9L11 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>
+      </button>
+    </div>
+
+    <div class="testimonial-band">
+      <div class="testimonial reveal-text">
+        <span><span class="quote-mark">“</span>NUNCA TIVE TANTO CONTROLE DO MEU CORPO. CADA NÚMERO FAZ SENTIDO.<span class="quote-mark">”</span></span>
+      </div>
+      <div class="testimonial-author reveal">— ATLETA FORGE, <span>RECOMP 2025</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROTOCOLOS ============ -->
+<section class="protocolos" id="protocolos">
+  <div class="protocolos-bg">FORGE</div>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-head-left">
+        <span class="eyebrow reveal">04 — PROTOCOLOS PERSONALIZADOS</span>
+        <h2 class="display h2 section-head-title title-line"><span>O QUE VOCÊ <span style="color:var(--orange)">RECEBE.</span></span></h2>
+      </div>
+      <p class="lead reveal">
+        Cada protocolo é construído por uma equipe multidisciplinar — treinador-chefe, nutricionista esportivo e médico parceiro. Nada de planilha pronta.
+      </p>
+    </div>
+
+    <div class="protocols-grid reveal-stagger">
+      <div class="protocol">
+        <span class="protocol-tag">.01</span>
+        <div class="protocol-num">A</div>
+        <h3 class="protocol-title">Protocolo de<br/>Treino</h3>
+        <p class="protocol-desc">Periodização linear ou ondulatória, divisão sob medida, vídeo-execução de cada exercício e progressão monitorada por RPE/RIR.</p>
+        <ul class="protocol-list">
+          <li>Periodização Mensal</li>
+          <li>Vídeo de Cada Exercício</li>
+          <li>Cargas e RPE Registrados</li>
+        </ul>
+      </div>
+      <div class="protocol">
+        <span class="protocol-tag">.02</span>
+        <div class="protocol-num">B</div>
+        <h3 class="protocol-title">Protocolo<br/>Nutricional</h3>
+        <p class="protocol-desc">Plano alimentar com lista de substituições inteligentes, ajuste de macros por fase, refeed e estratégias para vida real.</p>
+        <ul class="protocol-list">
+          <li>Macros Calculados</li>
+          <li>Lista de Substituições</li>
+          <li>Estratégia Refeed/Diet Break</li>
+        </ul>
+      </div>
+      <div class="protocol">
+        <span class="protocol-tag">.03</span>
+        <div class="protocol-num">C</div>
+        <h3 class="protocol-title">Protocolo<br/>Ergogênico</h3>
+        <p class="protocol-desc">Todo e qualquer recurso para aumentar performance: manipulados fitoterápicos, suplementação avançada, dosagens precisas e — quando aplicável — orientação ergogênica com médico parceiro.</p>
+        <ul class="protocol-list">
+          <li>Manipulados Fitoterápicos</li>
+          <li>Suplementação Estratégica</li>
+          <li>Dosagem e Timing</li>
+          <li>Acompanhamento Médico</li>
+        </ul>
+      </div>
+      <div class="protocol">
+        <span class="protocol-tag">.04</span>
+        <div class="protocol-num">D</div>
+        <h3 class="protocol-title">Cardio &<br/>Recuperação</h3>
+        <p class="protocol-desc">LISS, HIIT, Z2, mobilidade e protocolo de sono. Cardio que serve ao objetivo, não que zera energia para treinar.</p>
+        <ul class="protocol-list">
+          <li>Cardio Periodizado</li>
+          <li>Protocolo de Sono</li>
+          <li>Mobilidade Diária</li>
+        </ul>
+      </div>
+      <div class="protocol">
+        <span class="protocol-tag">.05</span>
+        <div class="protocol-num">E</div>
+        <h3 class="protocol-title">Check-in<br/>Personalizado</h3>
+        <p class="protocol-desc">Periodicidade ajustada à sua realidade — semanal, quinzenal ou a cada 10 dias. Você manda foto, peso e dados; recebe ajuste técnico assinado pelo treinador.</p>
+        <ul class="protocol-list">
+          <li>Frequência Sob Medida</li>
+          <li>Análise Fotográfica</li>
+          <li>Ajuste de Macros</li>
+          <li>Resposta em até 12h</li>
+        </ul>
+      </div>
+      <div class="protocol">
+        <span class="protocol-tag">.06</span>
+        <div class="protocol-num">F</div>
+        <h3 class="protocol-title">Mindset &<br/>Aderência</h3>
+        <p class="protocol-desc">Estratégias comportamentais para manter consistência. Porque dieta perfeita que você não segue não serve para nada.</p>
+        <ul class="protocol-list">
+          <li>Sessões de Aderência</li>
+          <li>Gestão de Estímulos</li>
+          <li>Comunidade Privada</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PLANOS ============ -->
+<section class="planos" id="planos">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-head-left">
+        <span class="eyebrow reveal">05 — PLANOS</span>
+        <h2 class="display h2 section-head-title title-line"><span>ESCOLHA SEU<br/><span style="color:var(--orange)">NÍVEL.</span></span></h2>
+      </div>
+      <p class="lead reveal">Três níveis de acompanhamento. Mesma metodologia, mesmo rigor técnico — o que muda é a profundidade do contato e a personalização.</p>
+    </div>
+
+    <div class="plans-grid reveal-stagger">
+      <div class="plan">
+        <div class="plan-tag">PLANO 01 / STANDARD</div>
+        <h3 class="plan-name">Standard</h3>
+        <p class="plan-desc">Protocolo completo com acompanhamento técnico via app. Pra quem quer estrutura séria sem precisar de contato direto frequente.</p>
+        <ul class="plan-features">
+          <li>Treino, dieta e ergogênicos personalizados</li>
+          <li>Check-in via app (frequência ajustada)</li>
+          <li>Resposta a dúvidas em até 24h</li>
+          <li>Acesso à Área do Aluno</li>
+          <li>Vídeo-execução de exercícios</li>
+        </ul>
+        <a href="/aplicar" class="btn btn-ghost plan-cta">APLICAR</a>
+      </div>
+
+      <div class="plan">
+        <div class="plan-tag">PLANO 02 / PRO</div>
+        <h3 class="plan-name">Pro</h3>
+        <p class="plan-desc">Acompanhamento mais próximo, ajustes mais finos e resposta priorizada. Indicado para competidores e atletas em fase específica.</p>
+        <ul class="plan-features">
+          <li>Tudo do plano Standard</li>
+          <li>Check-in com prioridade</li>
+          <li>Resposta a dúvidas em até 12h</li>
+          <li>Manipulados fitoterápicos sob demanda</li>
+          <li>Ajustes de protocolo a cada 7 dias</li>
+        </ul>
+        <a href="/aplicar" class="btn btn-ghost plan-cta">APLICAR</a>
+      </div>
+
+      <div class="plan featured">
+        <div class="plan-tag">PLANO 03 / ELITE</div>
+        <h3 class="plan-name">Elite</h3>
+        <p class="plan-desc">Máximo nível de individualização. Calls 1-a-1 mensais para alinhamento profundo, feedback completo e estratégia ao seu lado.</p>
+        <ul class="plan-features">
+          <li class="highlight">Calls 1-a-1 · 45min · até 2x/mês</li>
+          <li>Tudo dos planos Standard e Pro</li>
+          <li>Resposta a dúvidas em até 6h</li>
+          <li>Protocolo ergogênico avançado</li>
+          <li>Manipulados fitoterápicos inclusos</li>
+          <li>Acesso direto via WhatsApp</li>
+        </ul>
+        <a href="/aplicar" class="btn btn-primary plan-cta"><span>APLICAR ELITE</span>
+          <svg width="14" height="10" viewBox="0 0 14 10" fill="none"><path d="M1 5h12m0 0L9 1m4 4L9 9" stroke="currentColor" stroke-width="1.6"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AREA DO ALUNO ============ -->
+<section class="area-preview" id="area-aluno">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-head-left">
+        <span class="eyebrow reveal">06 — ÁREA DO ALUNO</span>
+        <h2 class="display h2 section-head-title title-line"><span>SEU PROTOCOLO,<br/>NA PALMA DA <span style="color:var(--orange)">MÃO.</span></span></h2>
+      </div>
+      <p class="lead reveal">
+        Plataforma exclusiva onde mora seu treino do dia, dieta personalizada, protocolo, vídeos e check-in. Tudo sincronizado. Tudo seu.
+      </p>
+    </div>
+
+    <div class="area-preview-grid">
+      <div class="area-content reveal">
+        <ul class="area-features">
+          <li>
+            <div class="num">/01</div>
+            <div>
+              <h4>Treino do Dia</h4>
+              <p>Acesse seu treino com vídeo de execução, cargas anteriores, cronômetro de descanso e registro de RPE.</p>
+            </div>
+          </li>
+          <li>
+            <div class="num">/02</div>
+            <div>
+              <h4>Dieta Personalizada</h4>
+              <p>Cardápio do dia, lista de substituições, macros em tempo real e checklist de refeições.</p>
+            </div>
+          </li>
+          <li>
+            <div class="num">/03</div>
+            <div>
+              <h4>Protocolo Completo</h4>
+              <p>Suplementação, cardio, sono e mobilidade — tudo em um lugar, organizado por fase.</p>
+            </div>
+          </li>
+          <li>
+            <div class="num">/04</div>
+            <div>
+              <h4>Check-in & Histórico</h4>
+              <p>Suba fotos, peso e medidas. Visualize sua evolução em gráfico. Receba ajustes assinados.</p>
+            </div>
+          </li>
+        </ul>
+
+        <div class="area-cta">
+          <a href="/demo-aluno" class="btn btn-primary"><span>EXPLORAR DEMO</span>
+            <svg width="14" height="10" viewBox="0 0 14 10" fill="none"><path d="M1 5h12m0 0L9 1m4 4L9 9" stroke="currentColor" stroke-width="1.6"/></svg>
+          </a>
+          <a href="/entrar" class="btn btn-ghost">LOGIN ALUNO</a>
+        </div>
+      </div>
+
+      <div class="area-mock reveal">
+        <div class="area-mock-bar">
+          <i></i><i></i><i></i>
+          <span style="margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--chumbo-300);letter-spacing:.15em">FORGE / DASHBOARD</span>
+        </div>
+        <div class="area-mock-content">
+          <div class="area-mock-side">
+            <i class="active"></i><i></i><i></i><i></i><i></i>
+          </div>
+          <div class="area-mock-main">
+            <div class="area-mock-row">
+              <div class="area-mock-card"><div class="lbl">Peso</div><div class="val">82.4<span>kg</span></div></div>
+              <div class="area-mock-card"><div class="lbl">% Gordura</div><div class="val">14.2<span>%</span></div></div>
+              <div class="area-mock-card"><div class="lbl">Treino</div><div class="val">PUSH<span>·A</span></div></div>
+            </div>
+            <div class="area-mock-chart">
+              <div class="bar" data-h="35"></div>
+              <div class="bar" data-h="48"></div>
+              <div class="bar hi" data-h="62"></div>
+              <div class="bar" data-h="55"></div>
+              <div class="bar hi" data-h="78"></div>
+              <div class="bar" data-h="68"></div>
+              <div class="bar hi" data-h="92"></div>
+              <div class="bar" data-h="85"></div>
+              <div class="bar hi" data-h="74"></div>
+              <div class="bar" data-h="88"></div>
+              <div class="bar hi" data-h="96"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="faq" id="faq">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-head-left">
+        <span class="eyebrow reveal">07 — DÚVIDAS FREQUENTES</span>
+        <h2 class="display h2 section-head-title title-line"><span>PERGUNTOU.<br/>RESPONDIDO.</span></h2>
+      </div>
+      <p class="lead reveal">As respostas honestas para as perguntas que todo aluno faz antes de começar.</p>
+    </div>
+
+    <div class="faq-list">
+      <div class="faq-item open">
+        <div class="faq-q"><div class="faq-q-text">Para quem é a Forge?</div><div class="faq-toggle"></div></div>
+        <div class="faq-a">Pessoas que querem resultado mensurável e topam o processo: praticantes sérios, atletas amadores, competidores e profissionais de alta exigência. Se você quer dieta milagrosa de 7 dias, não somos pra você.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q"><div class="faq-q-text">Funciona pra iniciante?</div><div class="faq-toggle"></div></div>
+        <div class="faq-a">Funciona — desde que você esteja disposto a executar. Iniciantes têm um protocolo de calibração nas primeiras 4 semanas, focado em técnica e adesão.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q"><div class="faq-q-text">Em quanto tempo vejo resultado?</div><div class="faq-toggle"></div></div>
+        <div class="faq-a">Mudanças mensuráveis em 4 semanas. Mudanças visíveis em 8–12 semanas. Transformação completa: 6 meses ou mais. Sem promessa de milagre.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q"><div class="faq-q-text">Como funciona o acompanhamento?</div><div class="faq-toggle"></div></div>
+        <div class="faq-a">Check-in semanal obrigatório com fotos, peso e dados. Ajuste de protocolo toda semana. Resposta a dúvidas em até 12h via app. Reunião mensal por vídeo com o treinador.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q"><div class="faq-q-text">Quanto custa?</div><div class="faq-toggle"></div></div>
+        <div class="faq-a">Investimento varia por nível de acompanhamento (Standard, Pro, Elite). Aplique e nossa equipe envia a proposta personalizada após o diagnóstico inicial.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q"><div class="faq-q-text">Posso treinar em casa?</div><div class="faq-toggle"></div></div>
+        <div class="faq-a">Sim, mas hipertrofia avançada exige carga progressiva real. Adaptamos para o equipamento que você tem — com transparência sobre o teto de resultado de cada cenário.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA FINAL ============ -->
+<section class="cta-final" id="cta">
+  <div class="container">
+    <div class="cta-final-content">
+      <div>
+        <span class="eyebrow reveal" style="color:var(--black);margin-bottom:24px;display:block">08 — APLICAÇÃO</span>
+        <h2 class="cta-final-title reveal-text">
+          <span>PRONTO PRA<br/>SER <span class="stroke">FORJADO?</span></span>
+        </h2>
+      </div>
+      <a href="#" class="btn btn-primary"><span>APLICAR AGORA</span>
+        <svg width="16" height="12" viewBox="0 0 14 10" fill="none"><path d="M1 5h12m0 0L9 1m4 4L9 9" stroke="currentColor" stroke-width="1.6"/></svg>
+      </a>
+    </div>
+    <div class="cta-final-meta">
+      <div class="cta-final-meta-item">
+        <div class="lbl">VAGAS / MÊS</div>
+        <div class="val">12 ATLETAS</div>
+      </div>
+      <div class="cta-final-meta-item">
+        <div class="lbl">PROCESSO</div>
+        <div class="val">7 DIAS / DIAGNÓSTICO</div>
+      </div>
+      <div class="cta-final-meta-item">
+        <div class="lbl">RESPOSTA</div>
+        <div class="val">EM ATÉ 48H</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand reveal" style="display:flex;align-items:center;gap:20px;flex-wrap:nowrap">
+        <span data-forge-logo="56" aria-hidden="true"></span>
+        <span style="display:flex;flex-direction:column;line-height:0.9;align-items:flex-start">
+          <span>FORGE</span>
+          <span class="orange">CONSULTORIA.</span>
+        </span>
+      </div>
+      <div class="footer-col">
+        <h5>Navegar</h5>
+        <ul>
+          <li><a href="#metodologia">Metodologia</a></li>
+          <li><a href="#cases">Cases</a></li>
+          <li><a href="#protocolos">Protocolos</a></li>
+          <li><a href="#area-aluno">Área do Aluno</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Contato</h5>
+        <ul>
+          <li><a href="mailto:contato@forge.com.br">contato@forge.com.br</a></li>
+          <li><a href="#">+55 11 90000-0000</a></li>
+          <li><a href="#">@forge.consultoria</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Legal</h5>
+        <ul>
+          <li><a href="#">Termos</a></li>
+          <li><a href="#">Privacidade</a></li>
+          <li><a href="#">Cookies</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 FORGE CONSULTORIA — TODOS OS DIREITOS RESERVADOS</span>
+      <span>FORJADO EM BRASÍLIA / BRASIL</span>
+    </div>
+  </div>
+</footer>
+
+<script src="forge-logo.js?v=2"></script>
+<script src="app.js"></script>
+</body>
+</html>

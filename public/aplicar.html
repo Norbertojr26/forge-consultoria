@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FORGE — Aplicação / Anamnese</title>
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="aplicar.css" />
+<link rel="icon" href="assets/forge-logo.svg" type="image/svg+xml" />
+</head>
+<body class="aplicar-page">
+
+<!-- Top bar minimal -->
+<header class="apl-top">
+  <a href="/" class="apl-back">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M13 7H1m0 0l5-5M1 7l5 5" stroke="currentColor" stroke-width="1.6"/></svg>
+    <span>Voltar</span>
+  </a>
+  <div class="apl-brand">
+    <span data-forge-wordmark="28" aria-hidden="true"></span>
+  </div>
+  <div class="apl-status">
+    <span class="apl-status-dot"></span>
+    <span class="apl-status-text">VAGAS / OUT '26</span>
+  </div>
+</header>
+
+<!-- Progress -->
+<div class="apl-progress" aria-hidden="true">
+  <div class="apl-progress-bar" id="progressBar"></div>
+</div>
+<div class="apl-progress-meta">
+  <span class="apl-step-num">ETAPA <span id="stepCurrent">01</span> / 06</span>
+  <span class="apl-step-name" id="stepName">Identificação</span>
+</div>
+
+<!-- Main form -->
+<main class="apl-main">
+  <form id="anamneseForm" class="apl-form" novalidate>
+
+    <!-- ============ STEP 1: IDENTIFICAÇÃO ============ -->
+    <section class="apl-step active" data-step="1" data-name="Identificação">
+      <div class="apl-step-head">
+        <div class="apl-eyebrow">01 — IDENTIFICAÇÃO</div>
+        <h1 class="apl-title">QUEM<br/><span class="orange">É VOCÊ?</span></h1>
+        <p class="apl-lead">Antes de qualquer protocolo, precisamos te conhecer. Responda com honestidade — protocolo é tão bom quanto a anamnese que o gerou.</p>
+      </div>
+
+      <div class="apl-grid">
+        <label class="apl-field">
+          <span class="apl-label">Nome completo *</span>
+          <input type="text" name="nome" required autocomplete="name" />
+        </label>
+        <label class="apl-field">
+          <span class="apl-label">Data de nascimento *</span>
+          <input type="date" name="nascimento" required />
+        </label>
+        <label class="apl-field">
+          <span class="apl-label">E-mail *</span>
+          <input type="email" name="email" required autocomplete="email" />
+        </label>
+        <label class="apl-field">
+          <span class="apl-label">WhatsApp *</span>
+          <input type="tel" name="whatsapp" required placeholder="(00) 00000-0000" autocomplete="tel" />
+        </label>
+        <label class="apl-field">
+          <span class="apl-label">Cidade / Estado *</span>
+          <input type="text" name="cidade" required placeholder="Brasília / DF" />
+        </label>
+        <label class="apl-field">
+          <span class="apl-label">Profissão</span>
+          <input type="text" name="profissao" />
+        </label>
+        <label class="apl-field">
+          <span class="apl-label">Sexo biológico *</span>
+          <select name="sexo" required>
+            <option value="">Selecionar...</option>
+            <option value="Masculino">Masculino</option>
+            <option value="Feminino">Feminino</option>
+            <option value="Outro">Outro</option>
+          </select>
+        </label>
+        <label class="apl-field">
+          <span class="apl-label">Estado civil</span>
+          <select name="estado_civil">
+            <option value="">Selecionar...</option>
+            <option value="Solteiro(a)">Solteiro(a)</option>
+            <option value="Casado(a)">Casado(a)</option>
+            <option value="União estável">União estável</option>
+            <option value="Divorciado(a)">Divorciado(a)</option>
+            <option value="Viúvo(a)">Viúvo(a)</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <!-- ============ STEP 2: ANTROPOMETRIA ============ -->
+    <section class="apl-step" data-step="2" data-name="Antropometria">
+      <div class="apl-step-head">
+        <div class="apl-eyebrow">02 — ANTROPOMETRIA</div>
+        <h1 class="apl-title">SEUS<br/><span class="orange">NÚMEROS.</span></h1>
+        <p class="apl-lead">Estado atual do corpo. Não tem medida exata? Estime — não é prova, é diagnóstico.</p>
+      </div>
+
+      <div class="apl-grid">
+        <label class="apl-field">
+          <span class="apl-label">Altura (cm) *</span>
+          <input type="number" name="altura" required min="100" max="230" step="1" placeholder="178" />
+        </label>
+        <label class="apl-field">
+          <span class="apl-label">Peso atual (kg) *</span>
+          <input type="number" name="peso" required min="30" max="250" step="0.1" placeholder="82.5" />
+        </label>
+        <label class="apl-field">
+          <span class="apl-label">% Gordura estimada</span>
+          <input type="number" name="bf" min="3" max="60" step="0.1" placeholder="18" />
+        </label>
+        <label class="apl-field">
+          <span class="apl-label">Cintura (cm)</span>
+          <input type="number" name="cintura" min="40" max="200" step="0.5" />
+        </label>
+        <label class="apl-field">
+          <span class="apl-label">Peso desejado (kg)</span>
+          <input type="number" name="peso_alvo" min="30" max="250" step="0.1" />
+        </label>
+        <label class="apl-field">
+          <span class="apl-label">Já fez DEXA / Bioimpedância?</span>
+          <select name="exame_corporal">
+            <option value="Não">Não</option>
+            <option value="Bioimpedância">Bioimpedância</option>
+            <option value="DEXA">DEXA</option>
+            <option value="Adipômetro">Adipômetro</option>
+            <option value="Outro">Outro</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <!-- ============ STEP 3: HISTÓRICO DE TREINO ============ -->
+    <section class="apl-step" data-step="3" data-name="Treino">
+      <div class="apl-step-head">
+        <div class="apl-eyebrow">03 — HISTÓRICO DE TREINO</div>
+        <h1 class="apl-title">SEU<br/><span class="orange">CHÃO DE FERRO.</span></h1>
+        <p class="apl-lead">Quanto tempo embaixo da barra. O que já funcionou e o que travou.</p>
+      </div>
+
+      <div class="apl-grid">
+        <label class="apl-field">
+          <span class="apl-label">Tempo de treino (musculação) *</span>
+          <select name="tempo_treino" required>
+            <option value="">Selecionar...</option>
+            <option>Nunca treinei</option>
+            <option>Menos de 6 meses</option>
+            <option>6 a 12 meses</option>
+            <option>1 a 3 anos</option>
+            <option>3 a 5 anos</option>
+            <option>Mais de 5 anos</option>
+          </select>
+        </label>
+        <label class="apl-field">
+          <span class="apl-label">Frequência semanal disponível *</span>
+          <select name="freq_semanal" required>
+            <option value="">Selecionar...</option>
+            <option>2x</option>
+            <option>3x</option>
+            <option>4x</option>
+            <option>5x</option>
+            <option>6x</option>
+            <option>7x</option>
+          </select>
+        </label>
+        <label class="apl-field">
+          <span class="apl-label">Tempo por sessão</span>
+          <select name="tempo_sessao">
+            <option value="">Selecionar...</option>
+            <option>Até 45 min</option>
+            <option>45-60 min</option>
+            <option>60-90 min</option>
+            <option>Mais de 90 min</option>
+          </select>
+        </label>
+        <label class="apl-field">
+          <span class="apl-label">Onde treina?</span>
+          <select name="local_treino">
+            <option value="">Selecionar...</option>
+            <option>Academia comercial</option>
+            <option>Box / CrossFit</option>
+            <option>Studio personal</option>
+            <option>Casa (equipamento próprio)</option>
+            <option>Casa (peso corporal)</option>
+            <option>Outro</option>
+          </select>
+        </label>
+        <label class="apl-field apl-full">
+          <span class="apl-label">Treina com personal hoje?</span>
+          <input type="text" name="personal" placeholder="Sim / Não — e há quanto tempo" />
+        </label>
+        <label class="apl-field apl-full">
+          <span class="apl-label">Cargas atuais (PRs principais)</span>
+          <textarea name="prs" rows="3" placeholder="Ex: Supino 100kg / Agachamento 140kg / Levantamento Terra 180kg"></textarea>
+        </label>
+        <label class="apl-field apl-full">
+          <span class="apl-label">Pratica outros esportes? Quais?</span>
+          <textarea name="esportes" rows="2"></textarea>
+        </label>
+      </div>
+    </section>
+
+    <!-- ============ STEP 4: DIETA & SUPLEMENTAÇÃO ============ -->
+    <section class="apl-step" data-step="4" data-name="Dieta">
+      <div class="apl-step-head">
+        <div class="apl-eyebrow">04 — DIETA & SUPLEMENTAÇÃO</div>
+        <h1 class="apl-title">O QUE<br/><span class="orange">ENTRA NO CORPO.</span></h1>
+        <p class="apl-lead">Hábitos alimentares atuais. Sem julgamento — diagnóstico real só nasce de resposta real.</p>
+      </div>
+
+      <div class="apl-grid">
+        <label class="apl-field">
+          <span class="apl-label">Já fez dieta com nutricionista? *</span>
+          <select name="ja_dieta" required>
+            <option value="">Selecionar...</option>
+            <option>Nunca</option>
+            <option>Há mais de 1 ano</option>
+            <option>Nos últimos 6 meses</option>
+            <option>Faço atualmente</option>
+          </select>
+        </label>
+        <label class="apl-field">
+          <span class="apl-label">Refeições por dia</span>
+          <select name="refeicoes">
+            <option value="">Selecionar...</option>
+            <option>1-2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5</option>
+            <option>6+</option>
+          </select>
+        </label>
+        <label class="apl-field apl-full">
+          <span class="apl-label">Restrições alimentares / alergias</span>
+          <input type="text" name="restricoes" placeholder="Ex: lactose, glúten, frutos do mar..." />
+        </label>
+        <label class="apl-field apl-full">
+          <span class="apl-label">Suplementação atual</span>
+          <textarea name="suplementacao" rows="3" placeholder="Whey, creatina, multivitamínico, ômega 3, etc — com doses se possível"></textarea>
+        </label>
+        <label class="apl-field">
+          <span class="apl-label">Consumo de álcool</span>
+          <select name="alcool">
+            <option value="">Selecionar...</option>
+            <option>Nunca</option>
+            <option>Raramente (1x/mês)</option>
+            <option>Ocasional (1x/semana)</option>
+            <option>Frequente (3x/semana ou mais)</option>
+          </select>
+        </label>
+        <label class="apl-field">
+          <span class="apl-label">Consumo de água por dia</span>
+          <select name="agua">
+            <option value="">Selecionar...</option>
+            <option>Menos de 1L</option>
+            <option>1-2L</option>
+            <option>2-3L</option>
+            <option>3L+</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <!-- ============ STEP 5: SAÚDE & ESTILO DE VIDA ============ -->
+    <section class="apl-step" data-step="5" data-name="Saúde">
+      <div class="apl-step-head">
+        <div class="apl-eyebrow">05 — SAÚDE & ESTILO DE VIDA</div>
+        <h1 class="apl-title">O QUE PODE<br/><span class="orange">FRENAR O PROCESSO.</span></h1>
+        <p class="apl-lead">Patologias, lesões, sono, estresse. Tudo isso entra no protocolo.</p>
+      </div>
+
+      <div class="apl-grid">
+        <label class="apl-field apl-full">
+          <span class="apl-label">Patologias diagnosticadas</span>
+          <textarea name="patologias" rows="2" placeholder="Hipertensão, diabetes, hipotireoidismo, ansiedade, etc — ou 'nenhuma'"></textarea>
+        </label>
+        <label class="apl-field apl-full">
+          <span class="apl-label">Medicamentos em uso</span>
+          <textarea name="medicamentos" rows="2" placeholder="Nome + dose + tempo de uso"></textarea>
+        </label>
+        <label class="apl-field apl-full">
+          <span class="apl-label">Lesões ou cirurgias prévias</span>
+          <textarea name="lesoes" rows="2" placeholder="Ex: ruptura LCA 2022, hérnia de disco L4-L5..."></textarea>
+        </label>
+        <label class="apl-field">
+          <span class="apl-label">Horas de sono/noite *</span>
+          <select name="sono" required>
+            <option value="">Selecionar...</option>
+            <option>Menos de 5h</option>
+            <option>5-6h</option>
+            <option>6-7h</option>
+            <option>7-8h</option>
+            <option>Mais de 8h</option>
+          </select>
+        </label>
+        <label class="apl-field">
+          <span class="apl-label">Nível de estresse (1-10) *</span>
+          <input type="range" name="estresse" min="1" max="10" value="5" required oninput="this.nextElementSibling.textContent=this.value" />
+          <span class="apl-range-val">5</span>
+        </label>
+        <label class="apl-field">
+          <span class="apl-label">Fuma?</span>
+          <select name="fuma">
+            <option value="">Selecionar...</option>
+            <option>Nunca fumei</option>
+            <option>Ex-fumante</option>
+            <option>Eventualmente</option>
+            <option>Diariamente</option>
+          </select>
+        </label>
+        <label class="apl-field">
+          <span class="apl-label">Usa anabolizantes / TRT?</span>
+          <select name="ergogenicos">
+            <option value="">Selecionar...</option>
+            <option>Nunca</option>
+            <option>Já usei no passado</option>
+            <option>Uso atualmente</option>
+            <option>Tenho interesse / quero discutir</option>
+          </select>
+        </label>
+        <label class="apl-field apl-full">
+          <span class="apl-label">Exames recentes (até 6 meses)?</span>
+          <input type="text" name="exames_recentes" placeholder="Hemograma, perfil lipídico, hormonal, etc" />
+        </label>
+      </div>
+    </section>
+
+    <!-- ============ STEP 6: OBJETIVO & COMPROMISSO ============ -->
+    <section class="apl-step" data-step="6" data-name="Objetivo">
+      <div class="apl-step-head">
+        <div class="apl-eyebrow">06 — OBJETIVO & COMPROMISSO</div>
+        <h1 class="apl-title">ONDE<br/><span class="orange">VOCÊ QUER CHEGAR?</span></h1>
+        <p class="apl-lead">A meta é dado. Sem dado, não há plano de batalha.</p>
+      </div>
+
+      <div class="apl-grid">
+        <label class="apl-field apl-full">
+          <span class="apl-label">Objetivo principal *</span>
+          <div class="apl-radio-grid">
+            <label><input type="radio" name="objetivo" value="Hipertrofia" required /> <span>Hipertrofia</span></label>
+            <label><input type="radio" name="objetivo" value="Emagrecimento" /> <span>Emagrecimento</span></label>
+            <label><input type="radio" name="objetivo" value="Recomposição" /> <span>Recomposição</span></label>
+            <label><input type="radio" name="objetivo" value="Performance" /> <span>Performance</span></label>
+            <label><input type="radio" name="objetivo" value="Competição" /> <span>Competição</span></label>
+            <label><input type="radio" name="objetivo" value="Saúde" /> <span>Saúde / Longevidade</span></label>
+          </div>
+        </label>
+        <label class="apl-field apl-full">
+          <span class="apl-label">Em quanto tempo? *</span>
+          <select name="prazo" required>
+            <option value="">Selecionar...</option>
+            <option>3 meses</option>
+            <option>6 meses</option>
+            <option>1 ano</option>
+            <option>Sem prazo definido (longo prazo)</option>
+          </select>
+        </label>
+        <label class="apl-field">
+          <span class="apl-label">Plano de interesse</span>
+          <select name="plano">
+            <option value="">Sugestão da equipe</option>
+            <option>Standard (R$ 990/mês)</option>
+            <option>Pro (R$ 1.890/mês)</option>
+            <option>Elite (R$ 3.490/mês)</option>
+          </select>
+        </label>
+        <label class="apl-field">
+          <span class="apl-label">Como nos conheceu?</span>
+          <select name="origem">
+            <option value="">Selecionar...</option>
+            <option>Instagram</option>
+            <option>Indicação</option>
+            <option>Google</option>
+            <option>YouTube</option>
+            <option>Outro</option>
+          </select>
+        </label>
+        <label class="apl-field apl-full">
+          <span class="apl-label">Por que agora? Por que a Forge?</span>
+          <textarea name="motivacao" rows="4" placeholder="Conta sua história. Quanto mais real, melhor o protocolo."></textarea>
+        </label>
+        <label class="apl-field apl-full apl-checkbox">
+          <input type="checkbox" name="compromisso" required />
+          <span>Entendo que a Forge não atende quem busca milagre. Topo o processo de 7 dias de diagnóstico, calls técnicas e check-in semanal. *</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- ============ NAVIGATION ============ -->
+    <div class="apl-nav">
+      <button type="button" class="btn btn-ghost apl-prev" id="prevBtn" disabled>
+        <svg width="14" height="10" viewBox="0 0 14 10" fill="none"><path d="M13 5H1m0 0l4-4M1 5l4 4" stroke="currentColor" stroke-width="1.6"/></svg>
+        VOLTAR
+      </button>
+      <button type="button" class="btn btn-primary apl-next" id="nextBtn">
+        <span>PRÓXIMA ETAPA</span>
+        <svg width="14" height="10" viewBox="0 0 14 10" fill="none"><path d="M1 5h12m0 0L9 1m4 4L9 9" stroke="currentColor" stroke-width="1.6"/></svg>
+      </button>
+      <button type="submit" class="btn btn-primary apl-submit" id="submitBtn" style="display:none">
+        <span>ENVIAR APLICAÇÃO</span>
+        <svg width="14" height="10" viewBox="0 0 14 10" fill="none"><path d="M1 5h12m0 0L9 1m4 4L9 9" stroke="currentColor" stroke-width="1.6"/></svg>
+      </button>
+    </div>
+
+  </form>
+</main>
+
+<!-- Success modal -->
+<div class="apl-success" id="successModal" style="display:none">
+  <div class="apl-success-card">
+    <div class="apl-success-icon">
+      <svg viewBox="0 0 56 56" fill="none" stroke-width="2" stroke="currentColor">
+        <circle cx="28" cy="28" r="26"/>
+        <path d="M16 28l8 8 16-18"/>
+      </svg>
+    </div>
+    <div class="apl-eyebrow" style="color:var(--orange);margin-bottom:16px">APLICAÇÃO ENVIADA</div>
+    <h2 class="apl-title">FORJADO,<br/><span class="orange">RECEBEMOS.</span></h2>
+    <p class="apl-lead">Sua anamnese caiu na nossa mesa. Vamos analisar nas próximas <strong>24-48h</strong> e te chamar no WhatsApp pra agendar a call de diagnóstico de 7 dias.</p>
+    <div class="apl-success-actions">
+      <a href="#" class="btn btn-primary" id="whatsappBtn" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.4-.1-.6.1-.2.3-.7.9-.8 1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.1-.6-1.5-.9-2.1-.2-.5-.5-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2 0 1.3.9 2.6 1.1 2.8.1.2 1.9 2.9 4.6 4 .6.3 1.1.4 1.5.6.6.2 1.2.2 1.7.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3zM12 2C6.5 2 2 6.5 2 12c0 1.7.5 3.4 1.3 4.8L2 22l5.3-1.4c1.4.7 2.9 1.1 4.7 1.1 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.1l-.3-.2-3.1.8.8-3-.2-.3C4.3 15.1 4 13.6 4 12c0-4.4 3.6-8 8-8s8 3.6 8 8-3.6 8.2-8 8.2z"/></svg>
+        <span>FALAR NO WHATSAPP</span>
+      </a>
+      <a href="/" class="btn btn-ghost"><span>VOLTAR PARA HOME</span></a>
+    </div>
+  </div>
+</div>
+
+<script src="forge-logo.js?v=2"></script>
+<script src="aplicar.js"></script>
+</body>
+</html>

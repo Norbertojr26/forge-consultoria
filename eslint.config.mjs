@@ -18,6 +18,8 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      // site estático original (landing e /aplicar), mantido como está
+      "public/**",
     ],
   },
 ];

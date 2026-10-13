@@ -1,0 +1,801 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FORGE — Área do Aluno · Guilherme Silva Marques</title>
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="area-styles.css" />
+<link rel="icon" href="assets/forge-logo.svg" type="image/svg+xml" />
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-bg"></div>
+  <div class="login-card">
+    <div class="login-logo">
+      <span data-forge-logo="36" aria-hidden="true"></span>
+      FORGE
+    </div>
+    <div class="login-eyebrow">ÁREA DO ALUNO / V2.6</div>
+    <h1 class="login-title">BEM-VINDO,<br/><span>ATLETA.</span></h1>
+    <form id="loginForm">
+      <div class="field">
+        <label>E-mail</label>
+        <input type="email" placeholder="atleta@forge.com.br" value="guilherme.marques@forge.com.br" />
+      </div>
+      <div class="field">
+        <label>Senha</label>
+        <input type="password" placeholder="••••••••" value="••••••••" />
+      </div>
+      <button type="submit" class="btn btn-primary"><span>ENTRAR NO PROTOCOLO</span>
+        <svg width="14" height="10" viewBox="0 0 14 10" fill="none"><path d="M1 5h12m0 0L9 1m4 4L9 9" stroke="currentColor" stroke-width="1.6"/></svg>
+      </button>
+    </form>
+    <div class="login-foot">ESQUECEU A SENHA? <a href="#">RECUPERAR ACESSO</a></div>
+  </div>
+</div>
+
+<!-- SHELL -->
+<div class="app-shell">
+  <aside class="app-side">
+    <div class="app-brand">
+      <span data-forge-logo="28" aria-hidden="true"></span>
+      <span>FORGE</span>
+    </div>
+    <nav class="app-nav">
+      <div class="app-nav-section">PROTOCOLO</div>
+      <button class="app-nav-item active" data-pane="dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </button>
+      <button class="app-nav-item" data-pane="dieta">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2v9a3 3 0 003 3v8M9 14a3 3 0 003-3V2M18 2v20M21 8c0-3-1-6-3-6"/></svg>
+        Plano Alimentar
+      </button>
+      <button class="app-nav-item" data-pane="suplementos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="3" width="14" height="18" rx="7"/><path d="M5 12h14"/></svg>
+        Suplementação
+      </button>
+      <button class="app-nav-item" data-pane="agua">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2c-3 5-7 8-7 12a7 7 0 0014 0c0-4-4-7-7-12z"/></svg>
+        Hidratação
+      </button>
+      <div class="app-nav-section">REGISTRO</div>
+      <button class="app-nav-item" data-pane="checkin">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8M14 7h7v7"/></svg>
+        Check-in
+      </button>
+      <button class="app-nav-item" data-pane="diario">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2h6l4 4v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6l4-4z"/><path d="M9 12h6M9 16h6"/></svg>
+        Diário
+      </button>
+    </nav>
+    <div class="app-user">
+      <div class="app-user-avatar">GM</div>
+      <div>
+        <div class="app-user-name">Guilherme Silva</div>
+        <div class="app-user-meta">PLANO ELITE</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="app-main">
+
+    <!-- DASHBOARD -->
+    <section class="section-pane active" data-pane="dashboard">
+      <div class="app-topbar">
+        <div>
+          <div class="card-eyebrow" style="margin-bottom:6px">PLANO ALIMENTAR · REVISADO 24 ABR 2026</div>
+          <h1 class="app-topbar-title">SALVE, GUILHERME.</h1>
+        </div>
+        <div class="app-topbar-meta">
+          <span class="app-pill live" id="pillLive">PROTOCOLO ATIVO</span>
+          <span class="app-pill" id="pillTime">SEG · 14:32</span>
+        </div>
+      </div>
+
+      <div class="app-grid">
+
+        <!-- KPIs do plano -->
+        <div class="app-row row-4">
+          <div class="card kpi-card" data-target-tab="dieta">
+            <div class="card-head"><span class="card-eyebrow">CALORIAS / DIA</span><span class="kpi-tag orange">META</span></div>
+            <div class="metric-big" data-count="2488">0<sup>kcal</sup></div>
+            <div class="metric-trend up">▲ 6 REFEIÇÕES</div>
+          </div>
+          <div class="card kpi-card" data-target-tab="dieta">
+            <div class="card-head"><span class="card-eyebrow">PROTEÍNA</span><span class="kpi-tag">ALVO</span></div>
+            <div class="metric-big" data-count="204">0<sup>g</sup></div>
+            <div class="metric-trend up">▲ 33% DAS KCAL</div>
+          </div>
+          <div class="card kpi-card" data-target-tab="dieta">
+            <div class="card-head"><span class="card-eyebrow">CARBOIDRATOS</span><span class="kpi-tag">ALVO</span></div>
+            <div class="metric-big" data-count="293">0<sup>g</sup></div>
+            <div class="metric-trend up">▲ 47% DAS KCAL</div>
+          </div>
+          <div class="card kpi-card" data-target-tab="dieta">
+            <div class="card-head"><span class="card-eyebrow">GORDURAS</span><span class="kpi-tag">ALVO</span></div>
+            <div class="metric-big" data-count="54">0<sup>g</sup></div>
+            <div class="metric-trend up">▲ 20% DAS KCAL</div>
+          </div>
+        </div>
+
+        <!-- Macros + Refeições do dia -->
+        <div class="app-row row-2">
+          <div class="card">
+            <div class="card-head">
+              <h3 class="card-title">Distribuição Macro</h3>
+              <span class="card-eyebrow">2.488 KCAL</span>
+            </div>
+            <div class="macro-summary">
+              <div class="macro-ring">
+                <svg width="160" height="160" viewBox="0 0 160 160">
+                  <circle cx="80" cy="80" r="68" fill="none" stroke="#26262c" stroke-width="14"/>
+                  <!-- carb 47% -->
+                  <circle cx="80" cy="80" r="68" fill="none" stroke="#ff5b14" stroke-width="14"
+                          stroke-dasharray="200 427" stroke-dashoffset="0"
+                          transform="rotate(-90 80 80)" stroke-linecap="butt"/>
+                  <!-- prot 33% -->
+                  <circle cx="80" cy="80" r="68" fill="none" stroke="#f7f3ec" stroke-width="14"
+                          stroke-dasharray="141 427" stroke-dashoffset="-200"
+                          transform="rotate(-90 80 80)" stroke-linecap="butt"/>
+                  <!-- gord 20% -->
+                  <circle cx="80" cy="80" r="68" fill="none" stroke="#6e6e75" stroke-width="14"
+                          stroke-dasharray="86 427" stroke-dashoffset="-341"
+                          transform="rotate(-90 80 80)" stroke-linecap="butt"/>
+                </svg>
+                <div class="macro-ring-center"><div><div class="num">2488</div><div class="lbl">KCAL/DIA</div></div></div>
+              </div>
+              <div class="macro-list">
+                <div class="macro-line">
+                  <div class="lbl"><span class="dot dot-orange"></span>Carboidratos</div>
+                  <div class="macro-bar"><i data-w="47" style="background:#ff5b14"></i></div>
+                  <div class="val">293g</div>
+                </div>
+                <div class="macro-line">
+                  <div class="lbl"><span class="dot dot-white"></span>Proteínas</div>
+                  <div class="macro-bar"><i data-w="33" style="background:#f7f3ec"></i></div>
+                  <div class="val">204g</div>
+                </div>
+                <div class="macro-line">
+                  <div class="lbl"><span class="dot dot-grey"></span>Gorduras</div>
+                  <div class="macro-bar"><i data-w="20" style="background:#6e6e75"></i></div>
+                  <div class="val">54g</div>
+                </div>
+                <div class="macro-line">
+                  <div class="lbl"><span class="dot dot-blue"></span>Água</div>
+                  <div class="macro-bar"><i data-w="62" style="background:#3aa9ff"></i></div>
+                  <div class="val">3,5L</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h3 class="card-title">Refeições de Hoje</h3>
+              <span class="card-eyebrow" id="mealsDoneCount">0/6 CONCLUÍDAS</span>
+            </div>
+            <div class="meals-quick" id="mealsQuick">
+              <!-- preenchido por JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Ingestão hídrica + Refeição livre + Prescrição rápida -->
+        <div class="app-row row-3">
+          <div class="card hydro-card">
+            <div class="card-head"><h3 class="card-title">Ingestão Hídrica</h3><span class="card-eyebrow">META 3,5L</span></div>
+            <div class="hydro">
+              <div class="hydro-bottles" id="hydroBottles"></div>
+              <div class="hydro-meta">
+                <div class="hydro-current"><span id="hydroVal">0</span><sup>L</sup></div>
+                <div class="hydro-label">de 3,5L hoje</div>
+                <div class="hydro-actions">
+                  <button class="hydro-btn" data-add="0.25">+250ml</button>
+                  <button class="hydro-btn" data-add="0.5">+500ml</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3 class="card-title">Refeição Livre</h3><span class="card-eyebrow">REGRA</span></div>
+            <div class="free-meal">
+              <div class="free-meal-num">1<sup>x</sup></div>
+              <div class="free-meal-lbl">por semana</div>
+              <p class="free-meal-tip">Use com inteligência. Mantenha proteína e treino. Nunca em véspera de check-in.</p>
+              <div class="free-meal-tracker">
+                <span class="dot-large used">USADA</span>
+                <span class="dot-large">DISPONÍVEL</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3 class="card-title">Prescrição Hoje</h3><span class="card-eyebrow">8 ITENS</span></div>
+            <div class="rx-mini" id="rxMini"></div>
+            <button class="rx-mini-cta" data-go-tab="suplementos">VER PRESCRIÇÃO COMPLETA →</button>
+          </div>
+        </div>
+
+        <!-- Cardápio Semanal -->
+        <div class="card">
+          <div class="card-head">
+            <h3 class="card-title">Cardápio · 7 Dias</h3>
+            <span class="card-eyebrow">SEMANA ATIVA</span>
+          </div>
+          <div class="weekstrip">
+            <button class="day active" data-day="SEG"><span class="day-lbl">SEG</span><span class="day-num">22</span></button>
+            <button class="day" data-day="TER"><span class="day-lbl">TER</span><span class="day-num">23</span></button>
+            <button class="day" data-day="QUA"><span class="day-lbl">QUA</span><span class="day-num">24</span></button>
+            <button class="day" data-day="QUI"><span class="day-lbl">QUI</span><span class="day-num">25</span></button>
+            <button class="day" data-day="SEX"><span class="day-lbl">SEX</span><span class="day-num">26</span></button>
+            <button class="day" data-day="SAB"><span class="day-lbl">SÁB</span><span class="day-num">27</span></button>
+            <button class="day free" data-day="DOM"><span class="day-lbl">DOM</span><span class="day-num">28</span><span class="day-tag">LIVRE</span></button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- DIETA / PLANO ALIMENTAR -->
+    <section class="section-pane" data-pane="dieta">
+      <div class="app-topbar">
+        <div>
+          <div class="card-eyebrow" style="margin-bottom:6px">PROTOCOLO NUTRICIONAL · 6 REFEIÇÕES</div>
+          <h1 class="app-topbar-title">PLANO ALIMENTAR</h1>
+        </div>
+        <span class="app-pill live">2.488 KCAL · C 293g · P 204g · G 54g</span>
+      </div>
+
+      <div class="meals-detail" id="mealsDetail">
+        <!-- gerado por JS -->
+      </div>
+    </section>
+
+    <!-- SUPLEMENTOS -->
+    <section class="section-pane" data-pane="suplementos">
+      <div class="app-topbar">
+        <div>
+          <div class="card-eyebrow" style="margin-bottom:6px">PRESCRIÇÃO REVISADA · 24 ABR</div>
+          <h1 class="app-topbar-title">SUPLEMENTAÇÃO</h1>
+        </div>
+        <span class="app-pill">8 PRESCRIÇÕES ATIVAS</span>
+      </div>
+
+      <div class="rx-grid">
+        <article class="rx-card">
+          <div class="rx-head">
+            <div class="rx-icon">CR</div>
+            <div><div class="rx-name">Creatina</div><div class="rx-when">HORÁRIO INDEPENDENTE</div></div>
+          </div>
+          <div class="rx-dose">9<span>g</span></div>
+          <div class="rx-bar"><i></i></div>
+          <div class="rx-foot">DOSE ÚNICA · DIÁRIO</div>
+        </article>
+        <article class="rx-card">
+          <div class="rx-head">
+            <div class="rx-icon">GL</div>
+            <div><div class="rx-name">Glicina</div><div class="rx-when">ANTES DE DORMIR</div></div>
+          </div>
+          <div class="rx-dose">4<span>g</span></div>
+          <div class="rx-bar"><i></i></div>
+          <div class="rx-foot">1X · NOITE</div>
+        </article>
+        <article class="rx-card">
+          <div class="rx-head">
+            <div class="rx-icon">NA</div>
+            <div><div class="rx-name">NAC</div><div class="rx-when">HORÁRIO INDEPENDENTE</div></div>
+          </div>
+          <div class="rx-dose">1200<span>mg</span></div>
+          <div class="rx-bar"><i></i></div>
+          <div class="rx-foot">DOSE ÚNICA · DIÁRIO</div>
+        </article>
+        <article class="rx-card highlight">
+          <div class="rx-head">
+            <div class="rx-icon">GT</div>
+            <div><div class="rx-name">Glutamina</div><div class="rx-when">CAFÉ · ALMOÇO · JANTAR</div></div>
+          </div>
+          <div class="rx-dose">3+3+3<span>g</span></div>
+          <div class="rx-bar"><i></i></div>
+          <div class="rx-foot">3X · 9G TOTAL/DIA</div>
+        </article>
+        <article class="rx-card">
+          <div class="rx-head">
+            <div class="rx-icon">Ω3</div>
+            <div><div class="rx-name">Ômega 3</div><div class="rx-when">ALMOÇO E JANTAR</div></div>
+          </div>
+          <div class="rx-dose">1+1<span>g</span></div>
+          <div class="rx-bar"><i></i></div>
+          <div class="rx-foot">2X · 2G TOTAL/DIA</div>
+        </article>
+        <article class="rx-card">
+          <div class="rx-head">
+            <div class="rx-icon">VC</div>
+            <div><div class="rx-name">Vitamina C</div><div class="rx-when">3X AO DIA</div></div>
+          </div>
+          <div class="rx-dose">500<span>mg</span></div>
+          <div class="rx-bar"><i></i></div>
+          <div class="rx-foot">3X · 1500MG TOTAL/DIA</div>
+        </article>
+        <article class="rx-card">
+          <div class="rx-head">
+            <div class="rx-icon">ZN</div>
+            <div><div class="rx-name">Zinco</div><div class="rx-when">ANTES DE DORMIR</div></div>
+          </div>
+          <div class="rx-dose">30<span>mg</span></div>
+          <div class="rx-bar"><i></i></div>
+          <div class="rx-foot">1X · NOITE</div>
+        </article>
+        <article class="rx-card">
+          <div class="rx-head">
+            <div class="rx-icon">CU</div>
+            <div><div class="rx-name">Cobre Quelato</div><div class="rx-when">AO ACORDAR</div></div>
+          </div>
+          <div class="rx-dose">1<span>mg</span></div>
+          <div class="rx-bar"><i></i></div>
+          <div class="rx-foot">1X · MANHÃ</div>
+        </article>
+      </div>
+
+      <div class="card" style="margin-top:24px">
+        <div class="card-head"><h3 class="card-title">Cronograma do Dia</h3><span class="card-eyebrow">8 TOMADAS</span></div>
+        <div class="rx-timeline">
+          <div class="rx-tl-item"><span class="rx-tl-time">06:30</span><span class="rx-tl-tag morning">AO ACORDAR</span><span class="rx-tl-name">Cobre Quelato 1mg</span></div>
+          <div class="rx-tl-item"><span class="rx-tl-time">08:00</span><span class="rx-tl-tag">CAFÉ</span><span class="rx-tl-name">Glutamina 3g · Vitamina C 500mg</span></div>
+          <div class="rx-tl-item"><span class="rx-tl-time">12:00</span><span class="rx-tl-tag">ALMOÇO</span><span class="rx-tl-name">Glutamina 3g · Ômega 3 1g · Vitamina C 500mg</span></div>
+          <div class="rx-tl-item"><span class="rx-tl-time">15:00</span><span class="rx-tl-tag">LIVRE</span><span class="rx-tl-name">Creatina 9g · NAC 1200mg</span></div>
+          <div class="rx-tl-item"><span class="rx-tl-time">20:00</span><span class="rx-tl-tag">JANTAR</span><span class="rx-tl-name">Glutamina 3g · Ômega 3 1g · Vitamina C 500mg</span></div>
+          <div class="rx-tl-item"><span class="rx-tl-time">23:00</span><span class="rx-tl-tag night">DORMIR</span><span class="rx-tl-name">Glicina 4g · Zinco 30mg</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HIDRATAÇÃO -->
+    <section class="section-pane" data-pane="agua">
+      <div class="app-topbar">
+        <div>
+          <div class="card-eyebrow" style="margin-bottom:6px">META DIÁRIA</div>
+          <h1 class="app-topbar-title">HIDRATAÇÃO</h1>
+        </div>
+        <span class="app-pill live">3,5 LITROS / DIA</span>
+      </div>
+      <div class="app-row row-2">
+        <div class="card hydro-big">
+          <div class="card-head"><h3 class="card-title">Hoje</h3><span class="card-eyebrow" id="hydroPctLbl">0%</span></div>
+          <div class="hydro-glass">
+            <div class="hydro-glass-fill" id="hydroFill"></div>
+            <div class="hydro-glass-num"><span id="hydroValBig">0</span><sup>L</sup></div>
+          </div>
+          <div class="hydro-actions" style="justify-content:center;margin-top:20px">
+            <button class="hydro-btn" data-add="0.25">+250ml</button>
+            <button class="hydro-btn" data-add="0.5">+500ml</button>
+            <button class="hydro-btn" data-add="-0.25">−250ml</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3 class="card-title">Lembretes</h3><span class="card-eyebrow">10 GARRAFAS · 350ML</span></div>
+          <div class="reminder-list">
+            <div class="reminder"><span class="r-time">07:00</span><span class="r-lbl">Acordar</span><span class="r-amt">500ml</span></div>
+            <div class="reminder"><span class="r-time">09:00</span><span class="r-lbl">Pré-treino</span><span class="r-amt">350ml</span></div>
+            <div class="reminder"><span class="r-time">11:00</span><span class="r-lbl">Manhã</span><span class="r-amt">350ml</span></div>
+            <div class="reminder"><span class="r-time">13:00</span><span class="r-lbl">Almoço</span><span class="r-amt">500ml</span></div>
+            <div class="reminder"><span class="r-time">15:00</span><span class="r-lbl">Tarde</span><span class="r-amt">350ml</span></div>
+            <div class="reminder"><span class="r-time">17:00</span><span class="r-lbl">Pré-treino</span><span class="r-amt">350ml</span></div>
+            <div class="reminder"><span class="r-time">19:00</span><span class="r-lbl">Pós-treino</span><span class="r-amt">500ml</span></div>
+            <div class="reminder"><span class="r-time">21:00</span><span class="r-lbl">Jantar</span><span class="r-amt">500ml</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CHECK-IN -->
+    <section class="section-pane" data-pane="checkin">
+      <div class="app-topbar">
+        <div>
+          <div class="card-eyebrow" style="margin-bottom:6px">ENVIO SEMANAL · TODA SEGUNDA</div>
+          <h1 class="app-topbar-title">CHECK-IN</h1>
+        </div>
+        <span class="app-pill live">ABERTO ATÉ 22H</span>
+      </div>
+      <div class="app-row row-2">
+        <div class="card">
+          <div class="card-head"><h3 class="card-title">Dados da Semana</h3></div>
+          <div class="field"><label>Peso (kg)</label><input value="84.2" /></div>
+          <div class="field"><label>% Gordura</label><input value="15.8" /></div>
+          <div class="field"><label>Cintura (cm)</label><input value="84" /></div>
+          <div class="field"><label>Adesão à dieta (%)</label><input value="92" /></div>
+          <div class="field"><label>Como foi a semana?</label><input value="Energia ótima. Refeição livre no domingo (pizza). Sono 7h." /></div>
+          <button class="btn btn-primary" style="width:100%;justify-content:center"><span>ENVIAR CHECK-IN</span></button>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3 class="card-title">Fotos · 4 Ângulos</h3></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="photo-slot">FRENTE</div>
+            <div class="photo-slot">COSTAS</div>
+            <div class="photo-slot">LADO ESQ</div>
+            <div class="photo-slot">LADO DIR</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DIÁRIO -->
+    <section class="section-pane" data-pane="diario">
+      <div class="app-topbar">
+        <div>
+          <div class="card-eyebrow" style="margin-bottom:6px">REGISTROS RECENTES</div>
+          <h1 class="app-topbar-title">DIÁRIO</h1>
+        </div>
+      </div>
+      <div class="card">
+        <div class="diary-list">
+          <div class="diary-item"><span class="d-tag orange">REVISÃO</span><span class="d-date">24 ABR</span><span class="d-text">Plano alimentar revisado por <b>Dr. Forge</b>. Glutamina aumentada para 3+3+3g.</span></div>
+          <div class="diary-item"><span class="d-tag">CHECK-IN</span><span class="d-date">22 ABR</span><span class="d-text">Peso 84.2kg · −0.4% gordura · adesão 92%.</span></div>
+          <div class="diary-item"><span class="d-tag">LIVRE</span><span class="d-date">21 ABR</span><span class="d-text">Refeição livre usada — pizza familiar.</span></div>
+          <div class="diary-item"><span class="d-tag">EXAME</span><span class="d-date">15 ABR</span><span class="d-text">Hemograma + perfil hormonal: tudo dentro da meta.</span></div>
+          <div class="diary-item"><span class="d-tag">INÍCIO</span><span class="d-date">10 JAN</span><span class="d-text">Início do protocolo. Peso inicial 79.4kg · 18.2% gordura.</span></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="forge-logo.js?v=2"></script>
+<script>
+// ===== DADOS DO PDF DO ALUNO =====
+const MEALS = [
+  {
+    id: 'cafe', time: '08:00', name: 'Café da Manhã',
+    macros: { c: 82, p: 32, g: 26, kcal: 702 },
+    options: [
+      { label: 'Opção 1 · Cuscuz + Ovos', items: [
+        { qty: '180g', name: 'Cuscuz de milho cozido com sal', c:46,p:4,g:1,kcal:204 },
+        { qty: '3 un', name: 'Ovos (omelete/mexido)', c:3,p:20,g:21,kcal:294 },
+        { qty: '200g', name: 'Mamão papaia', c:21,p:1,g:0,kcal:80 },
+        { qty: '20g',  name: 'Aveia', c:11,p:3,g:0,kcal:69 },
+        { qty: '1 csopa', name: 'Requeijão light', c:1,p:4,g:4,kcal:55 }
+      ]},
+      { label: 'Opção 2 · Pão integral + Queijo', items: [
+        { qty: '4 fatias', name: 'Pão de forma integral', c:59,p:15,g:4,kcal:339 },
+        { qty: '1 fatia', name: 'Queijo mussarela', c:0,p:4,g:5,kcal:64 },
+        { qty: '2 un', name: 'Ovos (omelete/mexido)', c:2,p:14,g:14,kcal:196 },
+        { qty: '200g', name: 'Melão', c:15,p:1,g:0,kcal:58 },
+        { qty: '20g', name: 'Farelo de aveia', c:13,p:3,g:1,kcal:49 }
+      ]},
+      { label: 'Opção 3 · Pão francês + Patinho', items: [
+        { qty: '80g', name: 'Patinho moído', c:0,p:29,g:6,kcal:175 },
+        { qty: '2 un', name: 'Pão francês', c:59,p:8,g:3,kcal:300 },
+        { qty: '1 fatia', name: 'Bacon em tiras', c:0,p:2,g:5,kcal:53 },
+        { qty: '150g', name: 'Abacaxi', c:18,p:1,g:0,kcal:72 },
+        { qty: '20g', name: 'Farelo de aveia', c:13,p:3,g:1,kcal:49 }
+      ]}
+    ]
+  },
+  {
+    id: 'brunch', time: '10:00', name: 'Brunch',
+    macros: { c: 33, p: 8, g: 0, kcal: 155 },
+    options: [
+      { label: 'Opção única', items: [
+        { qty: '1 un', name: 'Iogurte grego zero açúcar (90g)', c:5,p:7,g:0,kcal:49 },
+        { qty: '200g', name: 'Mix de frutas vermelhas (uva, morango, mirtilo, ameixa, manga pálmer)', c:28,p:1,g:0,kcal:106 }
+      ]}
+    ]
+  },
+  {
+    id: 'almoco', time: '12:00', name: 'Almoço',
+    macros: { c: 51, p: 77, g: 15, kcal: 669 },
+    options: [
+      { label: 'Opção 1 · Patinho + Arroz', items: [
+        { qty: '180g', name: 'Arroz branco cozido', c:51,p:5,g:0,kcal:231 },
+        { qty: '200g', name: 'Patinho moído', c:0,p:72,g:15,kcal:438 },
+        { qty: 'à vontade', name: 'Salada e legumes', c:0,p:0,g:0,kcal:0 }
+      ]},
+      { label: 'Opção 2 · Frango + Batata', items: [
+        { qty: '260g', name: 'Batata inglesa cozida', c:52,p:4,g:0,kcal:224 },
+        { qty: '240g', name: 'Peito de frango', c:0,p:76,g:8,kcal:391 },
+        { qty: 'à vontade', name: 'Salada e legumes', c:0,p:0,g:0,kcal:0 }
+      ]},
+      { label: 'Opção 3 · Tilápia + Macarrão', items: [
+        { qty: '160g', name: 'Macarrão cozido', c:49,p:9,g:1,kcal:253 },
+        { qty: '260g', name: 'Filé de tilápia grelhado', c:0,p:62,g:5,kcal:317 },
+        { qty: 'à vontade', name: 'Salada e legumes', c:0,p:0,g:0,kcal:0 }
+      ]}
+    ]
+  },
+  {
+    id: 'pre', time: '16:00', name: 'Lanche da Tarde · Pré-Treino',
+    macros: { c: 68, p: 31, g: 3, kcal: 399 },
+    options: [
+      { label: 'Opção 1 · Banana + Whey', items: [
+        { qty: '150g', name: 'Banana prata crua', c:39,p:2,g:0,kcal:147 },
+        { qty: '20g', name: 'Mel', c:16,p:0,g:0,kcal:62 },
+        { qty: '30g', name: 'Whey protein', c:4,p:23,g:2,kcal:122 },
+        { qty: '200ml', name: 'Leite desnatado', c:9,p:6,g:1,kcal:68 }
+      ]},
+      { label: 'Opção 2 · Pão + Whey', items: [
+        { qty: '200ml', name: 'Leite desnatado', c:9,p:6,g:1,kcal:68 },
+        { qty: '30g', name: 'Whey protein', c:4,p:23,g:2,kcal:122 },
+        { qty: '2 fatias', name: 'Pão de forma integral', c:29,p:8,g:2,kcal:169 },
+        { qty: '20g', name: 'Geleia frutas vermelhas Queenberry', c:13,p:0,g:0,kcal:50 }
+      ]}
+    ]
+  },
+  {
+    id: 'jantar', time: '20:00', name: 'Jantar',
+    macros: { c: 30, p: 46, g: 9, kcal: 392 },
+    options: [
+      { label: 'Opção 1 · Patinho + Batata', items: [
+        { qty: '150g', name: 'Batata inglesa cozida', c:30,p:3,g:0,kcal:129 },
+        { qty: '120g', name: 'Patinho', c:0,p:43,g:9,kcal:263 },
+        { qty: 'à vontade', name: 'Salada e legumes', c:0,p:0,g:0,kcal:0 }
+      ]},
+      { label: 'Opção 2 · Suíno + Abóbora', items: [
+        { qty: '220g', name: 'Abóbora cabotian cozida', c:24,p:3,g:2,kcal:106 },
+        { qty: '170g', name: 'Filé mignon suíno', c:0,p:44,g:6,kcal:243 },
+        { qty: 'à vontade', name: 'Salada e legumes', c:0,p:0,g:0,kcal:0 }
+      ]},
+      { label: 'Opção 3 · Tilápia + Arroz', items: [
+        { qty: '200g', name: 'Filé de tilápia grelhado', c:0,p:48,g:4,kcal:244 },
+        { qty: '100g', name: 'Arroz branco cozido', c:28,p:3,g:0,kcal:128 },
+        { qty: 'à vontade', name: 'Salada e legumes', c:0,p:0,g:0,kcal:0 }
+      ]}
+    ]
+  },
+  {
+    id: 'ceia', time: '22:00', name: 'Ceia',
+    macros: { c: 29, p: 10, g: 1, kcal: 171 },
+    options: [
+      { label: 'Opção 1 · Batavo + Frutas', items: [
+        { qty: '200g', name: 'Iogurte Batavo Pense Zero', c:7,p:6,g:0,kcal:52 },
+        { qty: '150g', name: 'Mix de frutas (morango, uva, kiwi, mirtilo)', c:10,p:1,g:0,kcal:45 },
+        { qty: '20g', name: 'Leite condensado', c:11,p:2,g:1,kcal:63 },
+        { qty: '15g', name: 'Psyllium', c:1,p:1,g:0,kcal:11 }
+      ]},
+      { label: 'Opção 2 · Iogurte grego', items: [
+        { qty: '150g', name: 'Mix de frutas (morango, uva, kiwi, mirtilo)', c:10,p:1,g:0,kcal:45 },
+        { qty: '20g', name: 'Leite condensado', c:11,p:2,g:1,kcal:63 },
+        { qty: '1 un', name: 'Iogurte grego zero açúcar (90g)', c:5,p:7,g:0,kcal:49 },
+        { qty: '15g', name: 'Farelo de aveia', c:10,p:3,g:1,kcal:37 }
+      ]}
+    ]
+  }
+];
+
+const RX = [
+  { code:'CR', name:'Creatina', dose:'9g', when:'Horário independente' },
+  { code:'GL', name:'Glicina', dose:'4g', when:'Antes de dormir' },
+  { code:'NA', name:'NAC', dose:'1200mg', when:'Horário independente' },
+  { code:'GT', name:'Glutamina', dose:'3+3+3g', when:'Café · almoço · jantar' },
+  { code:'Ω3', name:'Ômega 3', dose:'1+1g', when:'Almoço e jantar' },
+  { code:'VC', name:'Vitamina C', dose:'500mg', when:'3x ao dia' },
+  { code:'ZN', name:'Zinco', dose:'30mg', when:'Antes de dormir' },
+  { code:'CU', name:'Cobre Quelato', dose:'1mg', when:'Ao acordar' }
+];
+
+// ===== STATE =====
+const state = {
+  mealsDone: {},
+  hydro: 0
+};
+
+// ===== LOGIN =====
+const overlay = document.getElementById('loginOverlay');
+document.getElementById('loginForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  overlay.style.transition = 'opacity .5s';
+  overlay.style.opacity = '0';
+  setTimeout(() => overlay.classList.add('hidden'), 500);
+  setTimeout(() => animateAll(), 600);
+});
+
+// ===== NAV =====
+function goTab(pane) {
+  document.querySelectorAll('.app-nav-item').forEach((b) => b.classList.toggle('active', b.dataset.pane === pane));
+  document.querySelectorAll('.section-pane').forEach((p) => p.classList.toggle('active', p.dataset.pane === pane));
+  animateAll();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+document.querySelectorAll('.app-nav-item').forEach((btn) => {
+  btn.addEventListener('click', () => goTab(btn.dataset.pane));
+});
+document.querySelectorAll('[data-go-tab]').forEach((b) => b.addEventListener('click', () => goTab(b.dataset.goTab)));
+document.querySelectorAll('[data-target-tab]').forEach((b) => b.addEventListener('click', () => goTab(b.dataset.targetTab)));
+
+// ===== RENDER MEALS QUICK (Dashboard) =====
+function renderMealsQuick() {
+  const wrap = document.getElementById('mealsQuick');
+  wrap.innerHTML = '';
+  MEALS.forEach((m) => {
+    const done = state.mealsDone[m.id];
+    const el = document.createElement('button');
+    el.className = 'meal-quick' + (done ? ' done' : '');
+    el.innerHTML = `
+      <div class="mq-time">${m.time}</div>
+      <div class="mq-body">
+        <div class="mq-name">${m.name}</div>
+        <div class="mq-macros">C ${m.macros.c}g · P ${m.macros.p}g · G ${m.macros.g}g</div>
+      </div>
+      <div class="mq-kcal">${m.macros.kcal}<span>kcal</span></div>
+      <div class="mq-check"></div>
+    `;
+    el.addEventListener('click', () => {
+      state.mealsDone[m.id] = !state.mealsDone[m.id];
+      renderMealsQuick();
+      updateMealsDoneCount();
+    });
+    wrap.appendChild(el);
+  });
+  updateMealsDoneCount();
+}
+function updateMealsDoneCount() {
+  const n = Object.values(state.mealsDone).filter(Boolean).length;
+  const lbl = document.getElementById('mealsDoneCount');
+  if (lbl) lbl.textContent = `${n}/6 CONCLUÍDAS`;
+}
+
+// ===== RENDER MEALS DETAIL =====
+function renderMealsDetail() {
+  const wrap = document.getElementById('mealsDetail');
+  wrap.innerHTML = '';
+  MEALS.forEach((m, idx) => {
+    const card = document.createElement('div');
+    card.className = 'card meal-card';
+    const optionsHTML = m.options.map((opt, i) => `
+      <div class="meal-option" data-opt="${i}">
+        <div class="meal-option-head">
+          <span class="meal-option-tag">${i === 0 ? 'PADRÃO' : 'OPÇÃO ' + (i+1)}</span>
+          <span class="meal-option-label">${opt.label}</span>
+        </div>
+        <table class="meal-table">
+          <thead><tr><th>QTD</th><th>ALIMENTO</th><th>C</th><th>P</th><th>G</th><th>KCAL</th></tr></thead>
+          <tbody>
+            ${opt.items.map(it => `
+              <tr>
+                <td class="qty">${it.qty}</td>
+                <td>${it.name}</td>
+                <td>${it.c}g</td>
+                <td>${it.p}g</td>
+                <td>${it.g}g</td>
+                <td><b>${it.kcal}</b></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `).join('<div class="meal-or">OU</div>');
+    card.innerHTML = `
+      <div class="meal-card-head">
+        <div class="meal-card-time">
+          <div class="meal-card-clock">${m.time}</div>
+          <div class="meal-card-num">REF ${String(idx+1).padStart(2,'0')}</div>
+        </div>
+        <div class="meal-card-title-wrap">
+          <h3 class="meal-card-title">${m.name}</h3>
+          <div class="meal-card-macros">
+            <span><i style="background:#ff5b14"></i>C <b>${m.macros.c}g</b></span>
+            <span><i style="background:#f7f3ec"></i>P <b>${m.macros.p}g</b></span>
+            <span><i style="background:#6e6e75"></i>G <b>${m.macros.g}g</b></span>
+            <span class="meal-card-kcal">${m.macros.kcal}<small>kcal</small></span>
+          </div>
+        </div>
+        <button class="meal-card-toggle" aria-expanded="true">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="2"/></svg>
+        </button>
+      </div>
+      <div class="meal-card-body">
+        ${optionsHTML}
+      </div>
+    `;
+    wrap.appendChild(card);
+    // toggle
+    const toggle = card.querySelector('.meal-card-toggle');
+    const body = card.querySelector('.meal-card-body');
+    toggle.addEventListener('click', () => {
+      const open = body.style.display !== 'none';
+      body.style.display = open ? 'none' : '';
+      toggle.style.transform = open ? 'rotate(-90deg)' : '';
+    });
+  });
+}
+
+// ===== RX MINI =====
+function renderRxMini() {
+  const wrap = document.getElementById('rxMini');
+  wrap.innerHTML = '';
+  RX.slice(0, 5).forEach((r) => {
+    const el = document.createElement('div');
+    el.className = 'rx-mini-item';
+    el.innerHTML = `<span class="rx-mini-code">${r.code}</span><span class="rx-mini-name">${r.name}</span><span class="rx-mini-dose">${r.dose}</span>`;
+    wrap.appendChild(el);
+  });
+}
+
+// ===== HIDRATAÇÃO =====
+function renderHydroBottles() {
+  const wrap = document.getElementById('hydroBottles');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  // 14 garrafas de 250ml = 3.5L
+  const total = 14;
+  const filled = Math.round((state.hydro / 3.5) * total);
+  for (let i = 0; i < total; i++) {
+    const b = document.createElement('span');
+    b.className = 'bottle' + (i < filled ? ' filled' : '');
+    wrap.appendChild(b);
+  }
+}
+function updateHydroUI() {
+  const v = state.hydro.toFixed(2).replace('.00', '').replace(/\.0$/, '');
+  const valEl = document.getElementById('hydroVal');
+  if (valEl) valEl.textContent = state.hydro.toFixed(2).replace(/\.?0+$/, '') || '0';
+  const big = document.getElementById('hydroValBig');
+  if (big) big.textContent = state.hydro.toFixed(2).replace(/\.?0+$/, '') || '0';
+  const fill = document.getElementById('hydroFill');
+  const pct = Math.min(100, (state.hydro / 3.5) * 100);
+  if (fill) fill.style.height = pct + '%';
+  const pctLbl = document.getElementById('hydroPctLbl');
+  if (pctLbl) pctLbl.textContent = Math.round(pct) + '%';
+  renderHydroBottles();
+}
+document.querySelectorAll('[data-add]').forEach((b) => {
+  b.addEventListener('click', () => {
+    state.hydro = Math.max(0, Math.min(4, state.hydro + parseFloat(b.dataset.add)));
+    updateHydroUI();
+  });
+});
+
+// ===== ANIMATE BARS + COUNTERS =====
+function animateAll() {
+  document.querySelectorAll('.macro-bar i').forEach((b) => {
+    const w = b.dataset.w; b.style.width = '0%';
+    setTimeout(() => b.style.width = w + '%', 60);
+  });
+  document.querySelectorAll('[data-count]').forEach((el) => {
+    const target = parseInt(el.dataset.count, 10);
+    const sup = el.querySelector('sup')?.outerHTML || '';
+    let cur = 0;
+    const dur = 900;
+    const step = Math.max(1, Math.round(target / (dur / 16)));
+    const tick = () => {
+      cur += step;
+      if (cur >= target) { el.innerHTML = target.toLocaleString('pt-BR') + sup; return; }
+      el.innerHTML = cur.toLocaleString('pt-BR') + sup;
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+}
+
+// ===== WEEKSTRIP =====
+document.querySelectorAll('.weekstrip .day').forEach((d) => {
+  d.addEventListener('click', () => {
+    document.querySelectorAll('.weekstrip .day').forEach((x) => x.classList.remove('active'));
+    d.classList.add('active');
+  });
+});
+
+// ===== CLOCK =====
+function tickClock() {
+  const d = new Date();
+  const days = ['DOM','SEG','TER','QUA','QUI','SEX','SÁB'];
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mm = String(d.getMinutes()).padStart(2, '0');
+  const el = document.getElementById('pillTime');
+  if (el) el.textContent = `${days[d.getDay()]} · ${hh}:${mm}`;
+}
+tickClock(); setInterval(tickClock, 1000 * 30);
+
+// ===== INIT =====
+renderMealsQuick();
+renderMealsDetail();
+renderRxMini();
+updateHydroUI();
+</script>
+
+</body>
+</html>
