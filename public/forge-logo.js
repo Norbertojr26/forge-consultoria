@@ -1,0 +1,159 @@
+/* Logo Forge — SVG vetorial da caveira com olhos seguindo o cursor + tremulação */
+(function(){
+  const NS = 'http://www.w3.org/2000/svg';
+
+  // SVG path data extraído de assets/forge-logo.svg
+  const SKULL_PATH = "M80.7707 127.1C80.7707 127.1 78.864 82.5604 78.864 60.9697C66.3343 54.0444 73.4163 30.1453 73.4163 30.1453C49.4465 45.3538 61.84 59.476 61.84 59.476C61.84 59.476 30.7882 53.9086 58.8438 29.7379L37.5978 -0.135986C46.3141 21.9979 38.4149 59.2045 22.7528 60.0192C12.947 60.5624 8.86122 49.4275 23.4338 40.3296C35.5549 32.7253 34.6016 16.5662 34.6016 16.5662C34.6016 16.5662 28.4729 29.8737 13.2194 37.3422C-0.39984 43.7243 -0.263619 63.2782 -0.263619 63.2782L1.64306 129.001L15.3985 132.124V141.222L41.4112 148.011L65.6534 140.679L65.1086 132.667L80.4983 127.1H80.7707ZM55.3027 133.346L42.5007 137.691L26.2939 134.297V128.458L14.0365 124.52L12.8108 85.9552L39.3683 75.6351L65.381 83.9183L67.2877 122.211L55.0304 126.285V133.21L55.3027 133.346Z";
+  const TOOTH_L = "M53.3961 122.482L53.9409 117.594L45.2246 123.568L53.3961 122.482Z";
+  const TOOTH_R = "M27.1243 122.482L35.2959 123.568L26.4434 117.594L27.1243 122.482Z";
+
+  // Centros aproximados dos olhos no viewBox 0 0 81 148
+  // Os olhos da caveira ficam logo acima dos dentes (y~117). Olhos em y~108.
+  const EYE_L = { cx: 27, cy: 113, r: 1.8 };
+  const EYE_R = { cx: 53, cy: 113, r: 1.8 };
+  const PUPIL_RADIUS = 2.4; // movimento máx em unidades do viewBox
+
+  window.buildForgeLogo = function(size = 56) {
+    const wrap = document.createElement('span');
+    wrap.className = 'forge-logo-wrap';
+    const h = Math.round(size * 1.827); // aspect 81:148
+    wrap.style.cssText = `display:inline-block;position:relative;width:${size}px;height:${h}px;line-height:0;vertical-align:middle;`;
+
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 81 148');
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    svg.classList.add('forge-logo-svg');
+    svg.style.cssText = 'width:100%;height:100%;display:block;';
+    svg.innerHTML = `
+      <g class="forge-logo-flicker">
+        <path d="${SKULL_PATH}" fill="#F58454"/>
+        <path d="${TOOTH_L}" fill="#F58454"/>
+        <path d="${TOOTH_R}" fill="#F58454"/>
+        <circle class="forge-pupil forge-pupil-l" cx="${EYE_L.cx}" cy="${EYE_L.cy}" r="${EYE_L.r}" fill="#ffffff"/>
+        <circle class="forge-pupil forge-pupil-r" cx="${EYE_R.cx}" cy="${EYE_R.cy}" r="${EYE_R.r}" fill="#ffffff"/>
+      </g>
+    `;
+    wrap.appendChild(svg);
+    return wrap;
+  };
+
+  // Wordmark = "FORGE" + caveira lockup, viewBox 574x149 — caveira em x≈492-573
+  // Olhos no wordmark: deslocamos os EYE coords pelo offset da caveira
+  const SKULL_OFFSET_X = 493; // start da caveira no wordmark
+  const WORDMARK_PATHS = [
+    {d: "M0 58.9339H57.4731V73.4635H18.3859V91.3879H52.1616V105.917H18.3859V134.026H0V59.0697V58.9339Z", fill: "#F1F1F1"},
+    {d: "M105.419 131.852C100.107 129.408 96.2938 125.334 93.9785 119.631C91.6632 113.928 90.4375 106.188 90.4375 96.1393C90.4375 86.0909 91.6632 78.6224 93.9785 72.9192C96.2938 67.216 100.107 63.2781 105.419 60.8338C110.73 58.3896 118.085 57.1675 127.346 57.1675C136.607 57.1675 143.961 58.3896 149.272 60.8338C154.584 63.2781 158.397 67.3518 160.713 72.9192C163.028 78.4866 164.117 86.2266 164.117 96.1393C164.117 106.052 163.028 113.928 160.713 119.631C158.397 125.334 154.584 129.408 149.272 131.852C143.961 134.296 136.607 135.654 127.346 135.654C118.085 135.654 110.73 134.432 105.419 131.852ZM110.73 108.768C111.82 111.755 113.726 113.928 116.45 115.286C119.038 116.644 122.715 117.323 127.346 117.323C131.976 117.323 135.653 116.644 138.241 115.286C140.829 113.928 142.735 111.755 143.961 108.768C145.187 105.78 145.731 101.571 145.731 96.2751C145.731 90.9793 145.187 86.9056 143.961 83.9182C142.735 80.9308 140.965 78.7582 138.241 77.5361C135.653 76.1781 131.976 75.4992 127.346 75.4992C122.715 75.4992 119.038 76.1781 116.45 77.5361C113.863 78.894 111.956 80.9308 110.73 83.9182C109.504 86.9056 108.96 90.9793 108.96 96.2751C108.96 101.571 109.504 105.78 110.73 108.768Z", fill: "#F1F1F1"},
+    {d: "M192.289 58.9338H226.882C234.372 58.9338 240.093 59.7486 244.314 61.5139C248.536 63.1433 251.533 65.9949 253.439 69.9329C255.346 73.8708 256.299 79.1666 256.299 85.9561C256.299 92.3383 255.482 97.4983 253.712 101.165C251.941 104.831 249.217 107.683 245.404 109.312L259.432 133.89H238.867L226.473 112.3H210.675V133.89H192.289V58.9338ZM226.882 97.091C231.24 97.091 234.236 96.2762 236.007 94.5109C237.641 92.7457 238.594 89.7583 238.594 85.5488C238.594 81.3393 237.777 78.3519 236.007 76.5866C234.372 74.9571 231.24 74.1424 226.882 74.1424H210.675V97.2268H226.882V97.091Z", fill: "#F1F1F1"},
+    {d: "M342.39 124.52C340.619 128.457 337.895 131.309 334.082 133.074C330.269 134.84 324.957 135.654 318.284 135.654C310.385 135.654 304.12 134.432 299.625 131.852C295.131 129.408 291.999 125.334 289.956 119.631C287.913 113.928 287.096 106.188 287.096 96.1393C287.096 86.0909 288.321 78.6224 290.637 72.9192C292.952 67.216 296.765 63.2781 302.077 60.8338C307.388 58.3896 314.743 57.1675 324.14 57.1675C333.537 57.1675 340.619 58.118 346.067 60.0191C351.378 61.9201 355.328 64.9075 357.779 68.9813C360.231 73.055 361.457 78.894 361.593 86.0909H342.526C342.526 82.5603 341.981 79.7087 340.755 77.6718C339.53 75.635 337.623 74.1413 335.035 73.3265C332.448 72.376 328.77 71.9686 324.276 71.9686C319.782 71.9686 315.832 72.7834 313.245 74.2771C310.657 75.7708 308.75 78.3508 307.525 81.7456C306.435 85.2761 305.754 90.0288 305.754 96.2751C305.754 102.522 306.299 107.138 307.525 110.533C308.614 113.928 310.521 116.372 313.245 117.866C315.968 119.36 319.646 120.174 324.276 120.174C330.269 120.174 334.627 119.224 337.351 117.323C340.074 115.422 341.709 112.027 342.117 107.138H322.914V92.6088H361.593V133.889H342.39V124.52Z", fill: "#F1F1F1"},
+    {d: "M394.133 58.9338H451.606V73.4634H412.519V89.0793H446.294V103.473H412.519V119.496H451.606V134.026H394.133V59.0696V58.9338Z", fill: "#F1F1F1"},
+    {d: "M573.771 127.1C573.771 127.1 571.864 82.5604 571.864 60.9697C559.334 54.0444 566.416 30.1452 566.416 30.1452C542.446 45.3538 554.84 59.476 554.84 59.476C554.84 59.476 523.788 53.9086 551.844 29.7379L530.598 -0.136047C539.314 21.9978 531.415 59.2044 515.753 60.0191C505.947 60.5623 501.861 49.4275 516.434 40.3295C528.555 32.7253 527.602 16.5662 527.602 16.5662C527.602 16.5662 521.473 29.8737 506.219 37.3421C492.6 43.7243 492.736 63.2781 492.736 63.2781L494.643 129.001L508.398 132.124V141.222L534.411 148.011L558.653 140.679L558.109 132.667L573.498 127.1H573.771ZM548.303 133.346L535.501 137.691L519.294 134.297V128.458L507.037 124.52L505.811 85.9551L532.368 75.6351L558.381 83.9183L560.288 122.211L548.03 126.285V133.21L548.303 133.346Z", fill: "#F58454"},
+    {d: "M546.396 122.482L546.941 117.593L538.225 123.568L546.396 122.482Z", fill: "#F58454"},
+    {d: "M520.124 122.482L528.296 123.568L519.443 117.593L520.124 122.482Z", fill: "#F58454"}
+  ];
+  // Olhos no wordmark = EYE + offset 492 (posição da caveira no wordmark)
+  const WM_EYE_OFFSET = 492.736 - (-0.263619); // ~493
+  const WM_EYE_L = { cx: EYE_L.cx + WM_EYE_OFFSET, cy: EYE_L.cy, r: EYE_L.r };
+  const WM_EYE_R = { cx: EYE_R.cx + WM_EYE_OFFSET, cy: EYE_R.cy, r: EYE_R.r };
+
+  window.buildForgeWordmark = function(height = 36) {
+    const wrap = document.createElement('span');
+    wrap.className = 'forge-logo-wrap';
+    const w = Math.round(height * (574 / 149));
+    wrap.style.cssText = `display:inline-block;position:relative;width:${w}px;height:${height}px;line-height:0;vertical-align:middle;`;
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 574 149');
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    svg.classList.add('forge-logo-svg');
+    svg.style.cssText = 'width:100%;height:100%;display:block;';
+    const paths = WORDMARK_PATHS.map(p => `<path d="${p.d}" fill="${p.fill}"/>`).join('');
+    svg.innerHTML = `
+      <g class="forge-logo-flicker">
+        ${paths}
+        <circle class="forge-pupil forge-pupil-l" cx="${WM_EYE_L.cx}" cy="${WM_EYE_L.cy}" r="${WM_EYE_L.r}" fill="#ffffff"/>
+        <circle class="forge-pupil forge-pupil-r" cx="${WM_EYE_R.cx}" cy="${WM_EYE_R.cy}" r="${WM_EYE_R.r}" fill="#ffffff"/>
+      </g>
+    `;
+    // Marca dataset com offsets pra animação saber onde voltar
+    svg.dataset.eyeLx = WM_EYE_L.cx;
+    svg.dataset.eyeLy = WM_EYE_L.cy;
+    svg.dataset.eyeRx = WM_EYE_R.cx;
+    svg.dataset.eyeRy = WM_EYE_R.cy;
+    wrap.appendChild(svg);
+    return wrap;
+  };
+
+  function mountAll() {
+    document.querySelectorAll('[data-forge-logo]').forEach((el) => {
+      if (el.dataset.mounted === '1') return;
+      const size = parseInt(el.dataset.forgeLogo) || 32;
+      el.appendChild(window.buildForgeLogo(size));
+      el.dataset.mounted = '1';
+    });
+    document.querySelectorAll('[data-forge-wordmark]').forEach((el) => {
+      if (el.dataset.mounted === '1') return;
+      const h = parseInt(el.dataset.forgeWordmark) || 36;
+      el.appendChild(window.buildForgeWordmark(h));
+      el.dataset.mounted = '1';
+    });
+
+    let mx = window.innerWidth / 2;
+    let my = window.innerHeight / 2;
+    document.addEventListener('mousemove', (e) => {
+      mx = e.clientX; my = e.clientY;
+    }, { passive: true });
+
+    function tick() {
+      document.querySelectorAll('.forge-logo-svg').forEach((svg) => {
+        const rect = svg.getBoundingClientRect();
+        if (rect.width === 0) return;
+        // Usa os centros dos olhos como pivot (do dataset, ou EYE default)
+        const elx = parseFloat(svg.dataset.eyeLx) || EYE_L.cx;
+        const ely = parseFloat(svg.dataset.eyeLy) || EYE_L.cy;
+        const erx = parseFloat(svg.dataset.eyeRx) || EYE_R.cx;
+        const ery = parseFloat(svg.dataset.eyeRy) || EYE_R.cy;
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const dx = mx - cx;
+        const dy = my - cy;
+        const ang = Math.atan2(dy, dx);
+        const ox = Math.cos(ang) * PUPIL_RADIUS;
+        const oy = Math.sin(ang) * PUPIL_RADIUS;
+        const pl = svg.querySelector('.forge-pupil-l');
+        const pr = svg.querySelector('.forge-pupil-r');
+        if (pl) { pl.setAttribute('cx', elx + ox); pl.setAttribute('cy', ely + oy); }
+        if (pr) { pr.setAttribute('cx', erx + ox); pr.setAttribute('cy', ery + oy); }
+      });
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // CSS injetado para tremulação
+  if (!document.getElementById('forge-logo-style')) {
+    const style = document.createElement('style');
+    style.id = 'forge-logo-style';
+    style.textContent = `
+      .forge-logo-svg { filter: drop-shadow(0 0 6px rgba(245,132,84,0.35)); }
+      .forge-logo-flicker {
+        transform-origin: 50% 50%;
+        animation: forgeFlicker 3.6s ease-in-out infinite;
+      }
+      @keyframes forgeFlicker {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        45% { opacity: 1; transform: scale(1.015); }
+        47% { opacity: 0.7; }
+        49% { opacity: 1; }
+        72% { opacity: 0.85; transform: scale(0.99); }
+        74% { opacity: 1; transform: scale(1); }
+      }
+      .forge-pupil { transition: cx 0.08s linear, cy 0.08s linear; }
+    `;
+    document.head.appendChild(style);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', mountAll);
+  } else {
+    mountAll();
+  }
+})();

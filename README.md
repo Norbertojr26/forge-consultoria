@@ -28,7 +28,7 @@ npm run dev
 
 ## Deploy (Railway)
 
-Push na `main` gera deploy automático. O `railway.json` roda `prisma migrate deploy` como pre-deploy. Variáveis do serviço web: as do `.env.example`, com `DATABASE_URL=${{Postgres.DATABASE_URL}}` e as `S3_*` referenciando o bucket (aba **Credentials** do bucket). Se o bucket usar URLs path-style, defina `S3_FORCE_PATH_STYLE=true`.
+Push na `main` gera deploy automático. O serviço roda `npx prisma migrate deploy` como pre-deploy (configurado no Railway; o `railway.json` documenta o mesmo comando). Variáveis do serviço web: as do `.env.example`, com `DATABASE_URL=${{Postgres.DATABASE_URL}}` e as `S3_*` referenciando o bucket (aba **Credentials** do bucket). Se o bucket usar URLs path-style, defina `S3_FORCE_PATH_STYLE=true`.
 
 ## Área do aluno
 
@@ -39,12 +39,12 @@ Push na `main` gera deploy automático. O `railway.json` roda `prisma migrate de
 ## Estrutura
 
 ```
-app/(marketing)    landing pública
+public/*.html      site original: landing (/), /aplicar e /demo-aluno, servidos por rewrite no next.config.ts
 app/(auth)         /entrar e /cadastro (Clerk)
 app/aluno          área do aluno: painel, check-in, evolução, perfil (protegida pelo middleware.ts)
 components/ui      shadcn
-components/brand   peças da identidade FORGE (eyebrow mono, etc.)
-lib/               db, auth (Clerk → User), storage (S3), week, metrics, validations, actions/, content (textos da landing)
+components/brand   peças da identidade FORGE usadas na área do aluno
+lib/               db, auth (Clerk → User), storage (S3), week, metrics, validations, actions/
 tests/             Vitest
 prisma/            schema e migrations
 ```
