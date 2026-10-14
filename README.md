@@ -42,6 +42,7 @@ Push na `main` gera deploy automático. O serviço roda `npx prisma migrate depl
 - **Planos:** o treinador monta dias e exercícios (séries, repetições, carga, descanso) e envia; o aluno tem um plano ativo por vez. Plano com treinos registrados fica travado — edita-se uma cópia ("Duplicar") para não perder histórico.
 - **Execução:** `/aluno/treino/[dia]` — a sessão só é criada ao concluir a primeira série (abrir a página não registra nada). Descanso em tela cheia com bipe e vibração; a tela fica acesa (Wake Lock).
 - **Catálogo:** exercícios com `sourceId` mostram as fotos reais da [Free Exercise DB](https://github.com/yuhonas/free-exercise-db) (Unlicense / domínio público) em `public/exercises/`. Imagem própria (`imageKey`, no bucket) tem prioridade.
+- **Imagens padrão FORGE (IA):** no catálogo, "Gerar imagem FORGE" envia as duas fotos de referência do exercício ao OpenRouter (`OPENROUTER_API_KEY`; modelo em `OPENROUTER_IMAGE_MODEL`, padrão `google/gemini-2.5-flash-image`) com o prompt fixo de `lib/exercise-style.ts` — a pose vem da foto real, o estilo é sempre o mesmo. O resultado fica como proposta (`imageCandidateKey`) e só aparece para os alunos depois de aprovado.
 
 ## Estrutura
 
