@@ -35,6 +35,8 @@ model User {
   workoutPlans     WorkoutPlan[]    @relation("PlanStudent")
   feedbackGiven    CheckIn[]        @relation("CheckInFeedback")
   dietPlans        DietPlan[]       @relation("DietStudent")
+  createdFoods     Food[]
+  dietTemplates    DietTemplate[]
   authoredDiets    DietPlan[]       @relation("DietTrainer")
   waterLogs        WaterLog[]
   dailyChecks      DailyCheck[]
@@ -248,6 +250,10 @@ model MealItem {
   carbsG        Float?
   fatG          Float?
   substitutions String? // "ou batata-doce 200 g"
+  // Alimento do banco (opcional): com gramas, kcal e macros são calculados por 100 g
+  foodId        String?
+  catalogFood   Food?   @relation(fields: [foodId], references: [id], onDelete: SetNull)
+  grams         Float?
 }
 
 enum SupplementKind {
@@ -292,4 +298,45 @@ model DailyCheck {
   createdAt DateTime @default(now())
 
   @@unique([userId, date, kind, refId, slot])
+}
+
+/// Banco de alimentos: TACO (NEPA/UNICAMP) + cadastrados pela equipe. Valores por 100 g.
+model Food {
+  id                String     @id @default(cuid())
+  name              String     @unique
+  category          String
+  kcal              Float
+  proteinG          Float
+  carbsG            Float
+  fatG              Float
+  fiberG            Float?
+  sodiumMg          Float?
+  // Porção caseira opcional: "1 unidade" = unitGrams g
+  unitName          String?
+  unitGrams         Float?
+  tags              String[] // sem_lactose, sem_gluten, vegetariano, vegano
+  imageKey          String? // foto no padrão FORGE (aprovada ou enviada)
+  imageCandidateKey String? // foto gerada por IA aguardando aprovação
+  source            String     @default("CUSTOM") // "TACO" | "CUSTOM"
+  tacoId            Int?       @unique
+  createdById       String?
+  createdBy         User?      @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  mealItems         MealItem[]
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  @@index([category])
+}
+
+/// Kit de dieta (modelo) para montar dietas de alunos. content = metas, refeições e suplementos.
+model DietTemplate {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  tags        String[]
+  content     Json
+  createdById String?
+  createdBy   User?    @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

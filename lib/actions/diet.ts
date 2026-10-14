@@ -26,6 +26,10 @@ export async function saveDiet(input: DietInput): Promise<ActionResult & { planI
     if (!existing || existing.studentId !== studentId) return { ok: false, error: "Dieta não encontrada" };
   }
 
+  // Alimentos do banco removidos no meio do caminho viram texto livre
+  const foodIds = [...new Set(meals.flatMap((m) => m.items.map((i) => i.foodId).filter((x): x is string => !!x)))];
+  const existingFoods = new Set((await db.food.findMany({ where: { id: { in: foodIds } }, select: { id: true } })).map((f) => f.id));
+
   const id = await db.$transaction(async (tx) => {
     const plan = planId
       ? await tx.dietPlan.update({ where: { id: planId }, data: fields })
@@ -44,7 +48,15 @@ export async function saveDiet(input: DietInput): Promise<ActionResult & { planI
           time: meal.time,
           notes: meal.notes || null,
           imageKey: kept,
-          items: { create: meal.items.map((it, i) => ({ ...it, order: i, substitutions: it.substitutions || null })) },
+          items: {
+            create: meal.items.map((it, i) => ({
+              ...it,
+              order: i,
+              substitutions: it.substitutions || null,
+              foodId: it.foodId && existingFoods.has(it.foodId) ? it.foodId : null,
+              grams: it.grams ?? null,
+            })),
+          },
         },
       });
     }
@@ -101,7 +113,11 @@ export async function duplicateDiet(planId: string): Promise<ActionResult & { pl
           order: m.order,
           notes: m.notes,
           // a imagem fica com a original (apagar uma não pode quebrar a outra)
-          items: { create: m.items.map(({ order, food, quantity, kcal, proteinG, carbsG, fatG, substitutions }) => ({ order, food, quantity, kcal, proteinG, carbsG, fatG, substitutions })) },
+          items: {
+            create: m.items.map(({ order, food, quantity, kcal, proteinG, carbsG, fatG, substitutions, foodId, grams }) => ({
+              order, food, quantity, kcal, proteinG, carbsG, fatG, substitutions, foodId, grams,
+            })),
+          },
         })),
       },
       supplements: { create: plan.supplements.map(({ kind, name, dose, times, notes, order }) => ({ kind, name, dose, times, notes, order })) },

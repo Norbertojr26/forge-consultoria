@@ -61,6 +61,16 @@ Push na `main` gera deploy automático. O serviço roda `npx prisma migrate depl
 - **Meta de água:** a do plano; sem ela, 35 ml × último peso; sem peso, 2,5 L (`lib/diet.ts`). O "dia" segue o fuso de São Paulo.
 - **Medicação** aparece só como lembrete do que o médico prescreveu.
 
+## Banco de alimentos e kits de dieta
+
+- **Alimentos (`/treinador/alimentos`):** 593 alimentos da Tabela TACO (NEPA/UNICAMP, 4ª ed.), com kcal, proteína, carboidrato, gordura e fibra por 100 g. Os dados vêm de [raulfdm/taco-api](https://github.com/raulfdm/taco-api) (licença MIT), e a TACO permite reprodução desde que a fonte seja citada. Quatro itens que a TACO não traz (os dois leites, o iogurte sabor abacaxi e o coco verde) ficaram de fora e podem ser cadastrados pela equipe.
+  - A equipe também cadastra alimentos próprios, com porção caseira (por exemplo, "1 scoop = 30 g").
+  - As etiquetas de restrição (zero lactose, zero glúten, vegetariano e vegano) foram sugeridas automaticamente de forma conservadora e devem ser revisadas.
+  - Foto no padrão FORGE: gerada por IA, com prato preto, ângulo de 45°, fundo escuro e luz laranja (`lib/food-style.ts`). Passa por aprovação e pode usar uma foto-mestre (`AppSetting style_ref_FOOD`) para manter o padrão. Também é possível enviar a foto.
+- **Kits (`/treinador/kits`):** modelos de dieta montados com o mesmo editor e guardados em `DietTemplate.content`. O kit aceita uma etiqueta só se todos os alimentos do banco usados nele a tiverem. A migração já traz 4 kits de exemplo: zero lactose, zero glúten, vegano e vegetariano.
+- **Editor de dieta:** o campo de alimento busca no banco. Ao escolher um alimento, o item fica ligado a ele (`MealItem.foodId`), e kcal e macros são calculados pelos gramas, partindo da porção caseira quando houver. "Usar kit" aplica um modelo, com filtro por restrição. "Salvar como kit" transforma a dieta atual em modelo.
+- **Aluno:** cada alimento do banco que tem foto aparece com a imagem na lista da refeição.
+
 ## Estrutura
 
 ```
