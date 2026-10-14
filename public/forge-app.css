@@ -1,0 +1,231 @@
+/* ============ FORGE · camada visual do app do aluno ============
+   Carregada depois de styles.css. Não muda a diagramação da landing:
+   só aplica a linguagem do ambiente do aluno — vidro escuro, brilho laranja,
+   cantos arredondados, números em pontos (Doto) e finos, barras em pílula. */
+@import url('https://fonts.googleapis.com/css2?family=Doto:wght@700;900&display=swap');
+
+:root {
+  --dot: 'Doto', var(--mono);
+  --radius-card: 28px;
+  --radius-inner: 20px;
+  --glass-bg:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015)),
+    rgba(18, 18, 21, 0.82);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.07);
+  --glass-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 20px 40px -24px rgba(0, 0, 0, 0.8);
+  --glow:
+    0 0 0 1px rgba(255, 122, 61, 0.35),
+    0 0 24px 2px rgba(255, 91, 20, 0.45),
+    0 0 60px 6px rgba(255, 91, 20, 0.18);
+}
+
+/* Fundo único com luz difusa, como o shell do app */
+body {
+  background:
+    radial-gradient(60rem 30rem at 15% -10%, rgba(255, 91, 20, 0.12), transparent 60%),
+    radial-gradient(40rem 24rem at 100% 0%, rgba(255, 255, 255, 0.04), transparent 60%),
+    var(--black);
+}
+.metodologia, .cases, .protocolos, .planos, .area-preview, .faq { background: transparent; }
+.cases, .planos, .faq { background: radial-gradient(50rem 26rem at 85% 0%, rgba(255, 91, 20, 0.07), transparent 65%); }
+.area-preview { background: radial-gradient(46rem 30rem at 80% 55%, rgba(255, 91, 20, 0.1), transparent 65%); }
+
+/* Rótulos em pílula, como o "HOJE" do painel */
+.eyebrow {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 100px;
+  padding: 7px 14px;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+}
+.eyebrow[style*="display:block"] { display: inline-flex !important; }
+.cta-final .eyebrow { background: rgba(0, 0, 0, 0.08); border-color: rgba(0, 0, 0, 0.12); }
+.cta-final .eyebrow::before { background: var(--black); box-shadow: none; }
+.eyebrow::before { width: 6px; height: 6px; border-radius: 50%; box-shadow: 0 0 10px 2px rgba(255, 91, 20, 0.6); }
+
+/* ---------- Nav em vidro ---------- */
+.nav { background: rgba(10, 10, 10, 0.45); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+.nav.scrolled { background: rgba(14, 14, 17, 0.78); border-bottom-color: rgba(255, 255, 255, 0.06); }
+.nav-student { background: var(--glass-bg); border-color: rgba(255, 255, 255, 0.1); }
+
+/* ---------- Botões ---------- */
+.btn-primary { box-shadow: var(--glow); }
+.btn-ghost { background: var(--glass-bg); border: var(--glass-border); backdrop-filter: blur(18px); }
+.btn-ghost:hover { border-color: rgba(255, 91, 20, 0.6); }
+
+/* ---------- Hero: números em pontos ---------- */
+.hero-stat-num {
+  font-family: var(--dot);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(38px, 4vw, 58px);
+}
+.hero-stat-num sup { font-family: var(--mono); font-weight: 500; font-size: 0.32em; letter-spacing: 0.1em; text-shadow: 0 0 12px rgba(255, 91, 20, 0.6); }
+.hero-play { background: var(--glass-bg); backdrop-filter: blur(18px); }
+
+/* ---------- Faixa rolante em vidro ---------- */
+.marquee {
+  background: var(--glass-bg);
+  border-color: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(18px);
+}
+.marquee-track .dot { box-shadow: 0 0 14px 3px rgba(255, 91, 20, 0.55); }
+
+/* ---------- Pilares: cards de vidro ---------- */
+.pillars { border-top: none; gap: 16px; }
+.pillar {
+  background: var(--glass-bg);
+  border: var(--glass-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--glass-shadow);
+  min-height: 440px;
+}
+.pillar:last-child { border-right: var(--glass-border); }
+.pillar::before { border-radius: inherit; }
+.pillar:hover { box-shadow: var(--glow); }
+.pillar-icon {
+  width: 64px; height: 64px;
+  padding: 14px;
+  border-radius: 20px;
+  background: rgba(255, 91, 20, 0.1);
+  border: 1px solid rgba(255, 91, 20, 0.25);
+  transition: background 0.3s;
+}
+.pillar:hover .pillar-icon { background: rgba(0, 0, 0, 0.12); border-color: rgba(0, 0, 0, 0.2); }
+@media (max-width: 1000px) { .pillar, .pillar:nth-child(2) { border: var(--glass-border); min-height: 340px; } }
+@media (max-width: 600px) { .pillar { border: var(--glass-border); min-height: 0; gap: 8px; } .cta-final { border-radius: 32px; } }
+
+/* ---------- Cases ---------- */
+.case {
+  background: var(--glass-bg);
+  border: var(--glass-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--glass-shadow);
+  padding: 8px;
+}
+.case:hover { border-color: rgba(255, 91, 20, 0.5); box-shadow: var(--glow); }
+.case-img { border-radius: var(--radius-inner); }
+.case-badge > span { border-radius: 100px; padding: 6px 12px; }
+.case-badge > span:last-child { box-shadow: 0 0 16px 2px rgba(255, 91, 20, 0.5); }
+.case-info { padding: 20px 16px 16px; }
+.case-meta { border-top-color: rgba(255, 255, 255, 0.06); }
+.case-meta-item .num {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 200;
+  font-size: 34px;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+.cases-more-btn { background: var(--glass-bg); border: var(--glass-border); border-radius: 100px; backdrop-filter: blur(18px); }
+
+.testimonial-band {
+  margin-top: 64px;
+  padding: 48px clamp(24px, 4vw, 56px);
+  border: var(--glass-border);
+  border-radius: var(--radius-card);
+  background: var(--glass-bg);
+  box-shadow: var(--glass-shadow);
+}
+
+/* ---------- Protocolos ---------- */
+.protocolos-bg { color: transparent; -webkit-text-stroke: 1px rgba(255, 255, 255, 0.05); }
+.protocols-grid { background: none; border: none; gap: 16px; }
+.protocol {
+  background: var(--glass-bg);
+  border: var(--glass-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(18px);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.protocol:hover { background: var(--glass-bg); border-color: rgba(255, 91, 20, 0.45); box-shadow: var(--glow); }
+.protocol-num {
+  font-family: var(--dot);
+  font-size: 72px;
+  letter-spacing: 0;
+  text-shadow: 0 0 18px rgba(255, 91, 20, 0.55);
+}
+.protocol-tag {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 100px;
+  padding: 5px 10px;
+}
+.protocol-list li::before { border-radius: 50%; }
+
+/* ---------- Planos ---------- */
+.plan {
+  background: var(--glass-bg);
+  border: var(--glass-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--glass-shadow);
+}
+.plan:hover { border-color: rgba(255, 91, 20, 0.5); }
+.plan.featured {
+  background:
+    radial-gradient(30rem 16rem at 50% -20%, rgba(255, 91, 20, 0.22), transparent 70%),
+    var(--glass-bg);
+  border-color: rgba(255, 122, 61, 0.5);
+  box-shadow: var(--glow);
+}
+.plan.featured::before { border-radius: 100px; box-shadow: 0 0 16px 2px rgba(255, 91, 20, 0.55); }
+.plan-features li::before { border-radius: 50%; }
+
+/* ---------- Área do aluno (mock no estilo do painel real) ---------- */
+.area-mock {
+  border: var(--glass-border);
+  border-radius: var(--radius-card);
+  background: var(--glass-bg);
+  backdrop-filter: blur(18px);
+  box-shadow: var(--glass-shadow), 0 40px 120px -20px rgba(255, 91, 20, 0.35);
+}
+.area-mock-bar { background: transparent; border-bottom-color: rgba(255, 255, 255, 0.06); }
+.area-mock-side { background: transparent; border-right-color: rgba(255, 255, 255, 0.06); }
+.area-mock-side i { border-radius: 12px; background: rgba(255, 255, 255, 0.06); }
+.area-mock-side i.active { box-shadow: var(--glow); }
+.area-mock-card, .area-mock-chart {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 18px;
+}
+.area-mock-card .val {
+  font-family: var(--dot);
+  font-weight: 900;
+  font-size: 26px;
+  font-variant-numeric: tabular-nums;
+}
+.area-mock-card .val span { font-family: var(--mono); font-weight: 500; font-size: 0.5em; margin-left: 2px; }
+.area-mock-chart { gap: 8px; padding: 16px 18px; }
+.area-mock-chart .bar { border-radius: 100px; background: rgba(255, 255, 255, 0.09); }
+.area-mock-chart .bar.hi { box-shadow: 0 0 14px 1px rgba(255, 91, 20, 0.45); }
+.area-features li .num { font-family: var(--dot); font-weight: 900; font-size: 15px; }
+
+/* ---------- FAQ: itens em vidro ---------- */
+.faq-list { border-top: none; display: flex; flex-direction: column; gap: 12px; }
+.faq-item {
+  border: var(--glass-border);
+  border-radius: 24px;
+  background: var(--glass-bg);
+  box-shadow: var(--glass-shadow);
+  padding: 24px 28px;
+}
+.faq-item.open { border-color: rgba(255, 91, 20, 0.35); }
+.faq-item.open .faq-toggle { box-shadow: var(--glow); }
+.faq-toggle { border-color: rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.04); }
+
+/* ---------- CTA final: o card laranja de "Próximo treino" ---------- */
+.cta-final {
+  margin: 0 var(--gutter) clamp(48px, 8vh, 96px);
+  border-radius: 40px;
+  box-shadow: var(--glow), 0 40px 120px -30px rgba(255, 91, 20, 0.6);
+}
+.cta-final-meta { border-top-color: rgba(0, 0, 0, 0.15); }
+.cta-final-meta-item .val {
+  font-family: var(--dot);
+  font-weight: 900;
+  letter-spacing: 0.01em;
+}
+
+/* ---------- Rodapé ---------- */
+.footer { background: transparent; border-top: 1px solid rgba(255, 255, 255, 0.06); }
