@@ -17,7 +17,7 @@ export async function getTodayDiet(user: Pick<User, "id">) {
     }),
     db.waterLog.aggregate({ where: { userId: user.id, date: today }, _sum: { amountMl: true }, _count: true }),
     db.dailyCheck.findMany({ where: { userId: user.id, date: today }, select: { kind: true, refId: true, slot: true } }),
-    db.checkIn.findFirst({ where: { userId: user.id }, orderBy: { weekOf: "desc" }, select: { weightKg: true } }),
+    db.checkIn.findFirst({ where: { userId: user.id }, orderBy: { date: "desc" }, select: { weightKg: true } }),
   ]);
 
   const mealDone = new Set(checks.filter((c) => c.kind === "MEAL").map((c) => c.refId));

@@ -179,8 +179,9 @@ body.nav-open .nav-drawer-panel { transform: none; opacity: 1; }
 /* ---------- Faixa ---------- */
 .ticker { border-block: 1px solid var(--line); overflow: hidden; padding: 22px 0; background: var(--bg-2); }
 .ticker-track { display: flex; align-items: center; gap: 48px; width: max-content; animation: ticker 45s linear infinite; }
-.ticker-track span { font-family: var(--display); font-size: clamp(20px, 2vw, 28px); font-weight: 400; letter-spacing: -0.03em; color: rgba(244, 244, 245, 0.82); }
-.ticker-track i { width: 7px; height: 7px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 12px 2px rgba(255, 91, 20, 0.6); }
+.ticker-track { gap: 56px; }
+.tk { display: inline-flex; align-items: center; gap: 14px; font-family: "Bebas Neue", var(--display); font-size: clamp(30px, 3vw, 42px); letter-spacing: 0.04em; line-height: 1; color: rgba(244, 244, 245, 0.88); }
+.tk svg { width: 0.85em; height: 0.85em; color: var(--orange); filter: drop-shadow(0 0 8px rgba(255, 91, 20, 0.55)); flex: none; }
 @keyframes ticker { to { transform: translateX(-50%); } }
 
 /* ---------- Seções ---------- */

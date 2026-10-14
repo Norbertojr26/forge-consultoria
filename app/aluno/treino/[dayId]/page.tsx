@@ -39,6 +39,7 @@ export default async function TreinoDiaPage({ params }: { params: Promise<{ dayI
       sourceId: it.exercise.sourceId,
       imageUrl: exercises[i].imageUrl,
       imageUrlEnd: exercises[i].imageUrlEnd,
+      videoUrl: exercises[i].videoUrl,
     },
     done: (session?.setLogs ?? [])
       .filter((l) => l.itemId === it.id)

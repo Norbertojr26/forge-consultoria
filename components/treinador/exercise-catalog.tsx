@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Crown, ImageUp, Pencil, Plus, Search, Sparkles, Trash2, X } from "lucide-react";
+import { Check, Crown, Film, ImageUp, Pencil, Plus, Search, Sparkles, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -20,6 +20,8 @@ export type CatalogRow = {
   imageUrl: string | null;
   imageUrlEnd: string | null;
   hasManualImage: boolean;
+  videoUrl: string | null;
+  hasManualVideo: boolean;
   /** Imagens FORGE por versão do personagem: aprovada (alunos veem) e proposta (só a equipe). */
   arts: Record<Sex, { approved: ArtView | null; candidate: ArtView | null }>;
 };
@@ -70,7 +72,7 @@ export function ExerciseCatalog({ rows, styleRefs, aiEnabled }: { rows: CatalogR
         {list.map((ex) => (
           <li key={ex.id} className="glass group flex flex-col gap-2 rounded-3xl p-2">
             <div className="relative">
-              <ExerciseImage name={ex.name} imageUrl={ex.imageUrl} imageUrlEnd={ex.imageUrlEnd} sourceId={ex.sourceId} className="aspect-square w-full" />
+              <ExerciseImage name={ex.name} imageUrl={ex.imageUrl} imageUrlEnd={ex.imageUrlEnd} videoUrl={ex.videoUrl} sourceId={ex.sourceId} className="aspect-square w-full" />
               {ex.arts.MALE.candidate || ex.arts.FEMALE.candidate ? (
                 <span className="absolute top-2 left-2 flex items-center gap-1 rounded-full bg-orange px-2 py-0.5 text-[0.6rem] text-black">
                   <Sparkles className="size-3" /> aguardando aprovação
@@ -180,6 +182,7 @@ function ExerciseForm({
           <textarea value={instructions} onChange={(e) => setInstructions(e.target.value)} rows={4} className={inputCls} />
         </label>
         {row && <ArtPanel row={row} styleRefs={styleRefs} aiEnabled={aiEnabled} />}
+        {row && <VideoPanel row={row} />}
         <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-dashed border-white/15 p-4 text-sm text-chumbo-100/70 hover:border-orange/50">
           <ImageUp className="size-5 text-orange" />
           <span className="flex-1">{file ? file.name : row?.imageUrl ? "Trocar imagem própria" : "Enviar imagem própria (JPG, PNG ou WEBP, até 4 MB)"}</span>
@@ -331,6 +334,95 @@ function ArtPanel({ row, styleRefs, aiEnabled }: { row: CatalogRow; styleRefs: S
           </button>
         </div>
       )}
+    </div>
+  );
+}
+
+/** Vídeo de execução do exercício: o treinador grava e envia (MP4/MOV/WebM até 60 MB). */
+function VideoPanel({ row }: { row: CatalogRow }) {
+  const router = useRouter();
+  const [progress, setProgress] = useState<number | null>(null);
+  const [pending, start] = useTransition();
+
+  function upload(file: File) {
+    if (file.size > 60 * 1024 * 1024) return void toast.error("Vídeo acima de 60 MB. Corte ou comprima antes de enviar.");
+    // XHR para mostrar o progresso do envio (fetch não expõe upload progress)
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", `/api/exercicios/${row.id}/video`);
+    xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
+    xhr.upload.onprogress = (e) => e.lengthComputable && setProgress(Math.round((e.loaded / e.total) * 100));
+    xhr.onload = () => {
+      setProgress(null);
+      if (xhr.status >= 200 && xhr.status < 300) {
+        toast.success("Vídeo enviado");
+        router.refresh();
+      } else {
+        let msg = "Falha ao enviar o vídeo";
+        try {
+          msg = JSON.parse(xhr.responseText).error ?? msg;
+        } catch {}
+        toast.error(msg);
+      }
+    };
+    xhr.onerror = () => {
+      setProgress(null);
+      toast.error("Falha de conexão ao enviar o vídeo");
+    };
+    setProgress(0);
+    xhr.send(file);
+  }
+
+  return (
+    <div className="flex flex-col gap-3 rounded-2xl border border-white/10 p-4">
+      <span className="label-mono flex items-center gap-2">
+        <Film className="size-4 text-orange" /> Vídeo de execução
+      </span>
+      {row.videoUrl ? (
+        <video src={row.videoUrl} controls muted loop playsInline className="aspect-video w-full rounded-xl bg-black object-contain" />
+      ) : (
+        <p className="text-xs text-chumbo-100/60">
+          Sem vídeo: o aluno vê as imagens (início e fim alternando). Um vídeo curto em loop (5–15 s, sem som) deixa a execução mais clara.
+        </p>
+      )}
+      {row.videoUrl && !row.hasManualVideo && <p className="text-xs text-chumbo-100/60">Este é o clipe gerado por IA. Enviar um vídeo próprio substitui para os alunos.</p>}
+      {progress != null && (
+        <div className="h-2 overflow-hidden rounded-full bg-white/[0.06]">
+          <div className="h-full rounded-full bg-orange transition-all" style={{ width: `${progress}%` }} />
+        </div>
+      )}
+      <div className="flex flex-wrap gap-2">
+        <label className={cn(pillBtn, "cursor-pointer border border-orange/50 px-4 text-orange hover:bg-orange/10", progress != null && "pointer-events-none opacity-60")}>
+          <ImageUp className="size-3.5" /> {progress != null ? `Enviando ${progress}%` : row.hasManualVideo ? "Trocar vídeo" : "Enviar vídeo"}
+          <input
+            type="file"
+            accept="video/mp4,video/quicktime,video/webm"
+            className="sr-only"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              e.target.value = "";
+              if (f) upload(f);
+            }}
+          />
+        </label>
+        {row.hasManualVideo && (
+          <button
+            type="button"
+            disabled={pending}
+            onClick={() =>
+              confirm("Remover o vídeo deste exercício?") &&
+              start(async () => {
+                const r = await fetch(`/api/exercicios/${row.id}/video`, { method: "DELETE" });
+                if (r.ok) toast.success("Vídeo removido");
+                else toast.error("Não foi possível remover");
+                router.refresh();
+              })
+            }
+            className={cn(pillBtn, "border border-white/15 px-4 text-chumbo-100/70")}
+          >
+            <Trash2 className="size-3.5" /> Remover
+          </button>
+        )}
+      </div>
     </div>
   );
 }

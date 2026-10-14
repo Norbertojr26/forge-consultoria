@@ -29,3 +29,10 @@ export function formatDay(date: Date, opts: { year?: boolean } = {}): string {
   return opts.year ? `${d}/${m}/${date.getUTCFullYear()}` : `${d}/${m}`;
 }
 
+
+/** Dia corrente em São Paulo como meia-noite UTC (formato das colunas @db.Date). */
+export function todaySP(now: Date = new Date()): Date {
+  const d = new TZDate(now, TIMEZONE);
+  return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+}
+

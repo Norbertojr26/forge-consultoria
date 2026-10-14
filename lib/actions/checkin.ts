@@ -5,8 +5,9 @@ import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { deleteObject, putObject } from "@/lib/storage";
-import { type ActionResult, checkInSchema, parseWeight } from "@/lib/validations";
-import { weekOf } from "@/lib/week";
+import { currentCycleCheckIn } from "@/lib/metrics";
+import { type ActionResult, checkInSchema, MEASURES, parseWeight } from "@/lib/validations";
+import { todaySP, weekOf } from "@/lib/week";
 
 const MAX_PHOTO_BYTES = 4 * 1024 * 1024;
 
@@ -41,10 +42,19 @@ export async function submitCheckIn(formData: FormData): Promise<ActionResult> {
     weightKg: formData.get("weightKg") ?? "",
     mood: formData.get("mood") ?? "",
     notes: formData.get("notes") ?? "",
+    ...Object.fromEntries(MEASURES.map((m) => [m.key, String(formData.get(m.key) ?? "")])),
   });
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Dados inválidos" };
 
-  const week = weekOf();
+  // Edita o check-in do ciclo atual (semana, ou janela de 10/14 dias); fora dele, cria um novo
+  const history = await db.checkIn.findMany({
+    where: { userId: user.id },
+    orderBy: { date: "desc" },
+    take: 3,
+    select: { id: true, weekOf: true, date: true, weightKg: true, photoFront: true, photoBack: true },
+  });
+  const current = currentCycleCheckIn(history, new Date(), user.checkInEveryDays);
+  const week = current?.weekOf ?? weekOf();
   const weekKey = week.toISOString().slice(0, 10);
 
   let photoFront: string | undefined;
@@ -64,19 +74,23 @@ export async function submitCheckIn(formData: FormData): Promise<ActionResult> {
     weightKg: parseWeight(parsed.data.weightKg),
     mood: Number(parsed.data.mood),
     notes: parsed.data.notes || null,
+    ...Object.fromEntries(MEASURES.map((m) => [m.key, parsed.data[m.key] ? parseWeight(parsed.data[m.key]) : null])),
     // undefined mantém a foto já salva quando o aluno não envia uma nova
     ...(photoFront && { photoFront }),
     ...(photoBack && { photoBack }),
   };
 
-  const where = { userId_weekOf: { userId: user.id, weekOf: week } };
-  const previous = await db.checkIn.findUnique({ where, select: { photoFront: true, photoBack: true } });
-
-  await db.checkIn.upsert({
-    where,
-    create: { userId: user.id, weekOf: week, ...data },
-    update: data,
-  });
+  const previous = current;
+  if (current) {
+    await db.checkIn.update({ where: { id: current.id }, data });
+  } else {
+    // Semana já usada por um check-in antigo (frequência trocada no meio do caminho) é reaproveitada
+    await db.checkIn.upsert({
+      where: { userId_weekOf: { userId: user.id, weekOf: week } },
+      create: { userId: user.id, weekOf: week, date: todaySP(), ...data },
+      update: { ...data, date: todaySP(), feedback: null, feedbackAt: null, feedbackById: null, feedbackSeenAt: null },
+    });
+  }
 
   // Fotos substituídas não ficam esquecidas no bucket (privacidade e custo). Falha aqui não desfaz o check-in.
   const replaced = [
@@ -87,6 +101,14 @@ export async function submitCheckIn(formData: FormData): Promise<ActionResult> {
     replaced.map((key) => deleteObject(key).catch((err) => console.error("Falha ao apagar foto antiga", key, err))),
   );
 
+  revalidatePath("/aluno", "layout");
+  return { ok: true };
+}
+
+/** Aluno marca o retorno do treinador como lido (some do "Hoje"; continua no histórico). */
+export async function markFeedbackSeen(checkInId: string): Promise<ActionResult> {
+  const user = await requireUser();
+  await db.checkIn.updateMany({ where: { id: checkInId, userId: user.id, feedback: { not: null } }, data: { feedbackSeenAt: new Date() } });
   revalidatePath("/aluno", "layout");
   return { ok: true };
 }

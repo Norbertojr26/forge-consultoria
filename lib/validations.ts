@@ -23,6 +23,21 @@ export const MOODS = [
 /** Aceita "80,5" ou "80.5". */
 const decimal = (s: string) => Number(s.trim().replace(",", "."));
 
+const measure = (min: number, max: number, unit = "cm") =>
+  z
+    .string()
+    .trim()
+    .refine((s) => s === "" || (/^\d{1,3}([.,]\d)?$/.test(s) && decimal(s) >= min && decimal(s) <= max), `Entre ${min} e ${max} ${unit}`);
+export const MEASURES = [
+  { key: "waistCm", label: "Cintura", unit: "cm" },
+  { key: "hipCm", label: "Quadril", unit: "cm" },
+  { key: "chestCm", label: "Peito", unit: "cm" },
+  { key: "armCm", label: "Braço", unit: "cm" },
+  { key: "thighCm", label: "Coxa", unit: "cm" },
+  { key: "bodyFatPct", label: "% gordura", unit: "%" },
+] as const;
+export type MeasureKey = (typeof MEASURES)[number]["key"];
+
 // Campos de formulário chegam como string; o mesmo schema roda no cliente e no servidor.
 export const checkInSchema = z.object({
   weightKg: z
@@ -33,6 +48,13 @@ export const checkInSchema = z.object({
     .refine((s) => decimal(s) >= 30 && decimal(s) <= 300, "Peso entre 30 e 300 kg"),
   mood: z.string().refine((s) => ["1", "2", "3", "4", "5"].includes(s), "Escolha de 1 a 5"),
   notes: z.string().trim().max(1000, "Máximo de 1000 caracteres"),
+  // Medidas opcionais: vazio ou número com vírgula/ponto
+  waistCm: measure(40, 200),
+  hipCm: measure(40, 200),
+  chestCm: measure(40, 200),
+  armCm: measure(15, 80),
+  thighCm: measure(25, 120),
+  bodyFatPct: measure(3, 60, "%"),
 });
 export type CheckInInput = z.infer<typeof checkInSchema>;
 export const parseWeight = decimal;

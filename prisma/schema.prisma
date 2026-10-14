@@ -14,16 +14,18 @@ enum Role {
 }
 
 model User {
-  id        String    @id // Clerk userId
-  email     String    @unique
-  name      String?
-  birthDate DateTime? @db.Date
-  heightCm  Int?
-  goal      String? // "hipertrofia" | "cutting" | "recomp" | ...
-  sex       Sex? // define o personagem (masculino/feminino) das imagens de exercício
-  role      Role      @default(STUDENT)
-  createdAt DateTime  @default(now())
-  checkIns  CheckIn[]
+  id               String    @id // Clerk userId
+  email            String    @unique
+  name             String?
+  birthDate        DateTime? @db.Date
+  heightCm         Int?
+  goal             String? // "hipertrofia" | "cutting" | "recomp" | ...
+  sex              Sex? // define o personagem (masculino/feminino) das imagens de exercício
+  // Frequência do check-in definida pelo treinador: 7 (semanal), 10 ou 14 (quinzenal) dias
+  checkInEveryDays Int       @default(7)
+  role             Role      @default(STUDENT)
+  createdAt        DateTime  @default(now())
+  checkIns         CheckIn[] @relation("CheckInOwner")
 
   // Aluno -> treinador responsável (equipe com vários treinadores)
   trainerId String?
@@ -31,6 +33,7 @@ model User {
   students  User[]  @relation("TrainerStudents")
 
   workoutPlans     WorkoutPlan[]    @relation("PlanStudent")
+  feedbackGiven    CheckIn[]        @relation("CheckInFeedback")
   dietPlans        DietPlan[]       @relation("DietStudent")
   authoredDiets    DietPlan[]       @relation("DietTrainer")
   waterLogs        WaterLog[]
@@ -43,16 +46,30 @@ model User {
 }
 
 model CheckIn {
-  id         String   @id @default(cuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  weekOf     DateTime @db.Date // domingo da semana no fuso America/Sao_Paulo
-  weightKg   Float
-  mood       Int // 1-5
-  notes      String?
-  photoFront String? // chave do objeto no bucket (não URL); URL assinada gerada na leitura
-  photoBack  String?
-  createdAt  DateTime @default(now())
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation("CheckInOwner", fields: [userId], references: [id], onDelete: Cascade)
+  weekOf         DateTime  @db.Date // domingo da semana no fuso America/Sao_Paulo
+  date           DateTime  @db.Date // dia do envio (São Paulo); base da frequência de 10/14 dias
+  weightKg       Float
+  mood           Int // 1-5
+  notes          String?
+  photoFront     String? // chave do objeto no bucket (não URL); URL assinada gerada na leitura
+  photoBack      String?
+  // Medidas opcionais (cm) e % de gordura
+  waistCm        Float?
+  hipCm          Float?
+  chestCm        Float?
+  armCm          Float?
+  thighCm        Float?
+  bodyFatPct     Float?
+  // Retorno do treinador
+  feedback       String?
+  feedbackAt     DateTime?
+  feedbackById   String?
+  feedbackBy     User?     @relation("CheckInFeedback", fields: [feedbackById], references: [id], onDelete: SetNull)
+  feedbackSeenAt DateTime? // aluno marcou como lido
+  createdAt      DateTime  @default(now())
 
   @@unique([userId, weekOf])
 }
@@ -66,6 +83,7 @@ model Exercise {
   equipment    String? // "barra" | "halter" | "máquina" | ...
   instructions String?
   imageKey     String? // imagem enviada manualmente pelo treinador (tem prioridade sobre tudo)
+  videoKey     String? // vídeo de execução enviado pelo treinador (tem prioridade sobre o da IA)
   // id na Free Exercise DB (domínio público): fotos reais em /public/exercises/<sourceId>/0.jpg e 1.jpg,
   // usadas enquanto não há imagem própria e como referência de pose para gerar a nova
   sourceId     String?       @unique
@@ -93,6 +111,7 @@ model ExerciseArt {
   approved   Boolean  @default(false)
   startKey   String
   endKey     String?
+  videoKey   String? // clipe em loop gerado por IA a partir de início → fim
   createdAt  DateTime @default(now())
 
   @@unique([exerciseId, sex, approved])
