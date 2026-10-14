@@ -5,7 +5,7 @@ import "server-only";
  * Variáveis: OPENROUTER_API_KEY (obrigatória), OPENROUTER_IMAGE_MODEL (opcional),
  * OPENROUTER_BASE_URL (opcional, usada em testes).
  */
-const DEFAULT_MODEL = "google/gemini-2.5-flash-image";
+const DEFAULT_MODEL = "google/gemini-3.1-flash-image"; // Nano Banana 2
 
 export class ImageGenError extends Error {}
 
