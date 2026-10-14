@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Dumbbell, House, LineChart, User } from "lucide-react";
+import { Camera, Dumbbell, House, LineChart, Salad } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -8,9 +8,9 @@ import { cn } from "@/lib/utils";
 const links = [
   { href: "/aluno", label: "Hoje", icon: House },
   { href: "/aluno/treino", label: "Treino", icon: Dumbbell },
+  { href: "/aluno/dieta", label: "Dieta", icon: Salad },
   { href: "/aluno/check-in", label: "Check-in", icon: Camera },
   { href: "/aluno/evolucao", label: "Evolução", icon: LineChart },
-  { href: "/aluno/perfil", label: "Perfil", icon: User },
 ];
 
 /** Barra de navegação inferior flutuante (estilo app). */
