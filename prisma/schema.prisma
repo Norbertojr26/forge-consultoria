@@ -83,6 +83,7 @@ model Exercise {
   equipment    String? // "barra" | "halter" | "máquina" | ...
   instructions String?
   imageKey     String? // imagem enviada manualmente pelo treinador (tem prioridade sobre tudo)
+  videoKey     String? // vídeo de execução enviado pelo treinador (tem prioridade sobre o da IA)
   // id na Free Exercise DB (domínio público): fotos reais em /public/exercises/<sourceId>/0.jpg e 1.jpg,
   // usadas enquanto não há imagem própria e como referência de pose para gerar a nova
   sourceId     String?       @unique
@@ -110,6 +111,7 @@ model ExerciseArt {
   approved   Boolean  @default(false)
   startKey   String
   endKey     String?
+  videoKey   String? // clipe em loop gerado por IA a partir de início → fim
   createdAt  DateTime @default(now())
 
   @@unique([exerciseId, sex, approved])

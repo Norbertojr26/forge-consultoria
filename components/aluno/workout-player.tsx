@@ -25,6 +25,7 @@ export type PlayerItem = {
     sourceId: string | null;
     imageUrl: string | null;
     imageUrlEnd: string | null;
+    videoUrl: string | null;
   };
   done: { setNumber: number; reps: number | null; loadKg: number | null }[];
 };
@@ -324,6 +325,7 @@ export function WorkoutPlayer({
           name={item.exercise.name}
           imageUrl={item.exercise.imageUrl}
           imageUrlEnd={item.exercise.imageUrlEnd}
+          videoUrl={item.exercise.videoUrl}
           sourceId={item.exercise.sourceId}
           frame={frame}
           className="aspect-[4/3] rounded-none"

@@ -35,6 +35,8 @@ export default async function ExerciciosPage() {
     imageUrl: e.imageUrl,
     imageUrlEnd: e.imageUrlEnd,
     hasManualImage: !!e.imageKey,
+    videoUrl: e.videoUrl,
+    hasManualVideo: !!e.videoKey,
     arts: {
       MALE: { approved: artOf(e.id, "MALE", true), candidate: artOf(e.id, "MALE", false) },
       FEMALE: { approved: artOf(e.id, "FEMALE", true), candidate: artOf(e.id, "FEMALE", false) },
