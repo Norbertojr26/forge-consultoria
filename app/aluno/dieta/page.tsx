@@ -105,8 +105,12 @@ export default async function DietaPage() {
                     </div>
                     <ul className="flex flex-col divide-y divide-white/5 rounded-2xl bg-white/[0.02]">
                       {meal.items.map((it) => (
-                        <li key={it.id} className="flex items-baseline justify-between gap-3 px-4 py-2.5 text-sm">
-                          <span className="min-w-0">
+                        <li key={it.id} className="flex items-center justify-between gap-3 px-4 py-2.5 text-sm">
+                          {it.imageUrl && (
+                            // eslint-disable-next-line @next/next/no-img-element -- URL assinada
+                            <img src={it.imageUrl} alt="" className="size-11 shrink-0 rounded-xl object-cover" loading="lazy" />
+                          )}
+                          <span className="min-w-0 flex-1">
                             {it.food}
                             {it.substitutions && <span className="block text-xs text-chumbo-100/50">↺ {it.substitutions}</span>}
                           </span>

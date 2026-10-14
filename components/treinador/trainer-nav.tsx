@@ -1,6 +1,6 @@
 "use client";
 
-import { Dumbbell, Smartphone, Users, UsersRound } from "lucide-react";
+import { Apple, Dumbbell, Library, Smartphone, Users, UsersRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -10,6 +10,8 @@ export function TrainerNav({ isAdmin }: { isAdmin: boolean }) {
   const links = [
     { href: "/treinador", label: "Alunos", icon: Users, match: (p: string) => p === "/treinador" || p.startsWith("/treinador/alunos") },
     { href: "/treinador/exercicios", label: "Exercícios", icon: Dumbbell, match: (p: string) => p.startsWith("/treinador/exercicios") },
+    { href: "/treinador/alimentos", label: "Alimentos", icon: Apple, match: (p: string) => p.startsWith("/treinador/alimentos") },
+    { href: "/treinador/kits", label: "Kits de dieta", icon: Library, match: (p: string) => p.startsWith("/treinador/kits") },
     ...(isAdmin ? [{ href: "/treinador/equipe", label: "Equipe", icon: UsersRound, match: (p: string) => p.startsWith("/treinador/equipe") }] : []),
     { href: "/aluno", label: "Ver como aluno", icon: Smartphone, match: () => false },
   ];

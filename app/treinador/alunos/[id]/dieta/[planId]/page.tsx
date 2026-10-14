@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { DietEditor, type EditorDiet } from "@/components/treinador/diet-editor";
 import { requireManagedStudent } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { getCatalogFoods, getKits } from "@/lib/food-data";
 
 export default async function DietaPage({ params }: { params: Promise<{ id: string; planId: string }> }) {
   const { id, planId } = await params;
@@ -40,11 +41,12 @@ export default async function DietaPage({ params }: { params: Promise<{ id: stri
         name: m.name,
         time: m.time,
         notes: m.notes,
-        items: m.items.map(({ food, quantity, kcal, proteinG, carbsG, fatG, substitutions }) => ({ food, quantity, kcal, proteinG, carbsG, fatG, substitutions })),
+        items: m.items.map(({ food, quantity, kcal, proteinG, carbsG, fatG, substitutions, foodId, grams }) => ({ food, quantity, kcal, proteinG, carbsG, fatG, substitutions, foodId, grams })),
       })),
       supplements: plan.supplements.map(({ kind, name, dose, times, notes }) => ({ kind, name, dose, times, notes })),
     };
   }
+  const [foods, kits] = await Promise.all([getCatalogFoods(), getKits()]);
   const lastWeight = await db.checkIn.findFirst({ where: { userId: id }, orderBy: { date: "desc" }, select: { weightKg: true } });
 
   return (
@@ -56,7 +58,7 @@ export default async function DietaPage({ params }: { params: Promise<{ id: stri
         <p className="label-mono">Dieta · {student.name ?? student.email}</p>
         <h1 className="mt-1 text-3xl font-semibold tracking-tight">{initial.planId ? initial.name : "Nova dieta"}</h1>
       </div>
-      <DietEditor studentId={id} initial={initial} weightKg={lastWeight?.weightKg ?? null} />
+      <DietEditor mode="diet" studentId={id} initial={initial} weightKg={lastWeight?.weightKg ?? null} foods={foods} kits={kits} />
     </>
   );
 }

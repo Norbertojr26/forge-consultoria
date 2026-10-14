@@ -2,6 +2,7 @@ import "server-only";
 import type { User } from "@prisma/client";
 import { db } from "@/lib/db";
 import { todaySP, waterGoalMl } from "@/lib/diet";
+import { trySignedReadUrl } from "@/lib/storage";
 
 /** Tudo que o aluno precisa para o dia: dieta ativa, água bebida e marcações de hoje. */
 export async function getTodayDiet(user: Pick<User, "id">) {
@@ -11,7 +12,7 @@ export async function getTodayDiet(user: Pick<User, "id">) {
       where: { studentId: user.id, active: true, sentAt: { not: null } },
       include: {
         trainer: { select: { name: true } },
-        meals: { orderBy: { order: "asc" }, include: { items: { orderBy: { order: "asc" } } } },
+        meals: { orderBy: { order: "asc" }, include: { items: { orderBy: { order: "asc" }, include: { catalogFood: { select: { imageKey: true } } } } } },
         supplements: { orderBy: { order: "asc" } },
       },
     }),
@@ -27,7 +28,14 @@ export async function getTodayDiet(user: Pick<User, "id">) {
   return {
     plan,
     water: { ml: water._sum.amountMl ?? 0, entries: water._count, goal: waterGoalMl(plan?.waterGoalMl, lastCheckIn?.weightKg) },
-    meals: (plan?.meals ?? []).map((m) => ({ ...m, done: mealDone.has(m.id) })),
+    // Foto do alimento (banco) em cada item, quando houver
+    meals: await Promise.all(
+      (plan?.meals ?? []).map(async (m) => ({
+        ...m,
+        done: mealDone.has(m.id),
+        items: await Promise.all(m.items.map(async ({ catalogFood, ...it }) => ({ ...it, imageUrl: await trySignedReadUrl(catalogFood?.imageKey) }))),
+      })),
+    ),
     doses: doses.sort((a, b) => a.time.localeCompare(b.time)),
   };
 }

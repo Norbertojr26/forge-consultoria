@@ -49,6 +49,9 @@ export const mealItemSchema = z.object({
   carbsG: optNum(1000),
   fatG: optNum(500),
   substitutions: z.string().trim().max(200).nullable(),
+  // Alimento do banco (opcional) e gramas usados no cálculo
+  foodId: z.string().nullable().optional(),
+  grams: z.union([z.coerce.number().min(0).max(5000), z.null()]).optional(),
 });
 
 export const supplementSchema = z.object({
