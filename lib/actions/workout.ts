@@ -49,15 +49,25 @@ export async function logSet(input: z.infer<typeof setSchema>): Promise<ActionRe
 
   const session = await ownedSession(sessionId, user.id);
   if (!session || session.finishedAt) return { ok: false, error: "Sessão encerrada" };
-  const item = await db.workoutItem.findFirst({ where: { id: itemId, dayId: session.dayId }, select: { sets: true } });
+  const item = await db.workoutItem.findFirst({ where: { id: itemId, dayId: session.dayId }, select: { sets: true, exerciseId: true } });
   if (!item || setNumber > item.sets) return { ok: false, error: "Série inválida" };
 
   await db.setLog.upsert({
     where: { sessionId_itemId_setNumber: { sessionId, itemId, setNumber } },
-    create: { sessionId, itemId, setNumber, reps, loadKg },
+    create: { sessionId, itemId, setNumber, reps, loadKg, exerciseId: item.exerciseId },
     update: { reps, loadKg, completedAt: new Date() },
   });
   return { ok: true };
+}
+
+/** Registra o RIR (repetições que ainda daria) de uma série já concluída. */
+export async function rateSet(sessionId: string, itemId: string, setNumber: number, rir: number | null): Promise<ActionResult> {
+  const user = await requireUser();
+  if (rir != null && (!Number.isInteger(rir) || rir < 0 || rir > 10)) return { ok: false, error: "RIR inválido" };
+  const session = await ownedSession(sessionId, user.id);
+  if (!session) return { ok: false, error: "Sessão não encontrada" };
+  const r = await db.setLog.updateMany({ where: { sessionId, itemId, setNumber }, data: { rir } });
+  return r.count ? { ok: true } : { ok: false, error: "Conclua a série antes de avaliar" };
 }
 
 /** Desmarca uma série (toque errado). */

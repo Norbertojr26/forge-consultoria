@@ -187,7 +187,12 @@ export default async function AlunoDetalhe({ params }: { params: Promise<{ id: s
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="label-mono">Treinos realizados</h2>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="label-mono">Treinos realizados</h2>
+          <Link href={`/treinador/alunos/${id}/progressao`} className="text-xs text-orange hover:underline">
+            Ver progressão de cargas →
+          </Link>
+        </div>
         {sessions.length === 0 ? (
           <GlassCard className="text-sm text-chumbo-100/70">O aluno ainda não registrou treinos.</GlassCard>
         ) : (
