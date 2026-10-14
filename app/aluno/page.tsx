@@ -7,6 +7,7 @@ import { PillBars } from "@/components/app/pill-bars";
 import { Ring } from "@/components/app/ring";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { withImageUrls } from "@/lib/exercise-data";
 import { computeMetrics } from "@/lib/metrics";
 import { goalLabel } from "@/lib/validations";
 import { formatDay, weekOf } from "@/lib/week";
@@ -30,7 +31,7 @@ export default async function HojePage() {
         days: {
           orderBy: { order: "asc" },
           include: {
-            items: { orderBy: { order: "asc" }, take: 1, include: { exercise: { select: { name: true, sourceId: true } } } },
+            items: { orderBy: { order: "asc" }, take: 1, include: { exercise: { select: { id: true, name: true, sourceId: true, imageKey: true } } } },
             _count: { select: { items: true } },
           },
         },
@@ -57,6 +58,7 @@ export default async function HojePage() {
     const idx = last ? plan.days.findIndex((d) => d.id === last.dayId) : -1;
     nextDay = plan.days[(idx + 1) % plan.days.length];
   }
+  const [cover] = nextDay?.items[0] ? await withImageUrls([nextDay.items[0].exercise], user.sex) : [];
   const weeklyTarget = plan?.days.length ?? 0;
   const weekly = weekSessions.length;
   const weights = [...checkIns].reverse().slice(-7).map((c) => ({ label: formatDay(c.weekOf), value: c.weightKg }));
@@ -70,9 +72,9 @@ export default async function HojePage() {
         </h1>
       </div>
 
-      {(!user.heightCm || !user.goal || !user.birthDate) && (
+      {(!user.heightCm || !user.goal || !user.birthDate || !user.sex) && (
         <Link href="/aluno/perfil" className="glass flex items-center justify-between gap-3 rounded-3xl border-orange/30 px-5 py-4 text-sm">
-          <span>Complete seu perfil (altura, nascimento e objetivo) para o treinador montar seu protocolo.</span>
+          <span>Complete seu perfil (sexo, altura, nascimento e objetivo) para o treinador montar seu protocolo.</span>
           <ArrowUpRight className="size-4 shrink-0 text-orange" />
         </Link>
       )}
@@ -122,10 +124,11 @@ export default async function HojePage() {
             <p className="mt-6 flex items-center gap-1 font-mono text-xs tracking-[0.14em] uppercase">
               Começar <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </p>
-            {nextDay.items[0] && (
+            {cover && (
               <ExerciseImage
-                name={nextDay.items[0].exercise.name}
-                sourceId={nextDay.items[0].exercise.sourceId}
+                name={cover.name}
+                imageUrl={cover.imageUrl}
+                sourceId={cover.sourceId}
                 className="absolute -right-6 -bottom-6 size-32 rotate-6 rounded-3xl opacity-40 mix-blend-multiply"
               />
             )}

@@ -1,11 +1,12 @@
 "use client";
 
-import { Check, ImageUp, Pencil, Plus, Search, Sparkles, Trash2, X } from "lucide-react";
+import { Check, Crown, ImageUp, Pencil, Plus, Search, Sparkles, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { ExerciseImage } from "@/components/app/exercise-image";
-import { approveExerciseImage, discardExerciseImage, generateExerciseImage, saveExercise, uploadExerciseImage } from "@/lib/actions/trainer";
+import { approveExerciseArt, discardExerciseArt, generateExerciseArt, setStyleReference } from "@/lib/actions/exercise-art";
+import { saveExercise, uploadExerciseImage } from "@/lib/actions/trainer";
 import { MUSCLE_GROUPS, muscleLabel } from "@/lib/exercises";
 import { cn } from "@/lib/utils";
 
@@ -17,13 +18,23 @@ export type CatalogRow = {
   instructions: string | null;
   sourceId: string | null;
   imageUrl: string | null;
-  /** Imagem gerada por IA aguardando aprovação (só a equipe vê). */
-  candidateUrl: string | null;
+  imageUrlEnd: string | null;
+  hasManualImage: boolean;
+  /** Imagens FORGE por versão do personagem: aprovada (alunos veem) e proposta (só a equipe). */
+  arts: Record<Sex, { approved: ArtView | null; candidate: ArtView | null }>;
 };
+
+export type ArtView = { startUrl: string | null; endUrl: string | null };
+type Sex = "MALE" | "FEMALE";
+type StyleRefs = Record<Sex, string | null>;
+const SEX_OPTIONS: { value: Sex; label: string }[] = [
+  { value: "MALE", label: "Masculino" },
+  { value: "FEMALE", label: "Feminino" },
+];
 
 const inputCls = "w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm outline-none focus:border-orange/60";
 
-export function ExerciseCatalog({ rows, aiEnabled }: { rows: CatalogRow[]; aiEnabled: boolean }) {
+export function ExerciseCatalog({ rows, styleRefs, aiEnabled }: { rows: CatalogRow[]; styleRefs: StyleRefs; aiEnabled: boolean }) {
   const [q, setQ] = useState("");
   const [group, setGroup] = useState<string | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
@@ -59,8 +70,8 @@ export function ExerciseCatalog({ rows, aiEnabled }: { rows: CatalogRow[]; aiEna
         {list.map((ex) => (
           <li key={ex.id} className="glass group flex flex-col gap-2 rounded-3xl p-2">
             <div className="relative">
-              <ExerciseImage name={ex.name} imageUrl={ex.imageUrl} sourceId={ex.sourceId} className="aspect-square w-full" />
-              {ex.candidateUrl ? (
+              <ExerciseImage name={ex.name} imageUrl={ex.imageUrl} imageUrlEnd={ex.imageUrlEnd} sourceId={ex.sourceId} className="aspect-square w-full" />
+              {ex.arts.MALE.candidate || ex.arts.FEMALE.candidate ? (
                 <span className="absolute top-2 left-2 flex items-center gap-1 rounded-full bg-orange px-2 py-0.5 text-[0.6rem] text-black">
                   <Sparkles className="size-3" /> aguardando aprovação
                 </span>
@@ -82,13 +93,23 @@ export function ExerciseCatalog({ rows, aiEnabled }: { rows: CatalogRow[]; aiEna
       </ul>
 
       {editing && (editing === "new" || editingRow) && (
-        <ExerciseForm key={editing} row={editingRow} aiEnabled={aiEnabled} onClose={() => setEditing(null)} />
+        <ExerciseForm key={editing} row={editingRow} styleRefs={styleRefs} aiEnabled={aiEnabled} onClose={() => setEditing(null)} />
       )}
     </>
   );
 }
 
-function ExerciseForm({ row, aiEnabled, onClose }: { row: CatalogRow | null; aiEnabled: boolean; onClose: () => void }) {
+function ExerciseForm({
+  row,
+  styleRefs,
+  aiEnabled,
+  onClose,
+}: {
+  row: CatalogRow | null;
+  styleRefs: StyleRefs;
+  aiEnabled: boolean;
+  onClose: () => void;
+}) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [name, setName] = useState(row?.name ?? "");
@@ -96,22 +117,6 @@ function ExerciseForm({ row, aiEnabled, onClose }: { row: CatalogRow | null; aiE
   const [equipment, setEquipment] = useState(row?.equipment ?? "");
   const [instructions, setInstructions] = useState(row?.instructions ?? "");
   const [file, setFile] = useState<File | null>(null);
-  const [aiPending, startAi] = useTransition();
-
-  function runAi(action: "generate" | "approve" | "discard") {
-    if (!row) return;
-    startAi(async () => {
-      const fn = { generate: generateExerciseImage, approve: approveExerciseImage, discard: discardExerciseImage }[action];
-      const r = await fn(row.id);
-      if (!r.ok) {
-        toast.error(r.error);
-        return;
-      }
-      toast.success({ generate: "Imagem gerada — confira e aprove", approve: "Imagem aprovada", discard: "Imagem descartada" }[action]);
-      router.refresh();
-    });
-  }
-
   function submit(e: React.FormEvent) {
     e.preventDefault();
     start(async () => {
@@ -174,47 +179,7 @@ function ExerciseForm({ row, aiEnabled, onClose }: { row: CatalogRow | null; aiE
           <span className="label-mono">Como executar</span>
           <textarea value={instructions} onChange={(e) => setInstructions(e.target.value)} rows={4} className={inputCls} />
         </label>
-        {row && (
-          <div className="flex flex-col gap-3 rounded-2xl border border-white/10 p-4">
-            <span className="label-mono">Imagem</span>
-            <div className="grid grid-cols-2 gap-3">
-              <figure className="flex flex-col gap-1.5">
-                <ExerciseImage name={row.name} imageUrl={row.imageUrl} sourceId={row.sourceId} className="aspect-square w-full" />
-                <figcaption className="text-[0.65rem] text-chumbo-100/50">{row.imageUrl ? "Atual (alunos veem esta)" : "Foto de referência"}</figcaption>
-              </figure>
-              <figure className="flex flex-col gap-1.5">
-                {row.candidateUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={row.candidateUrl} alt={`Proposta FORGE: ${row.name}`} className="aspect-square w-full rounded-2xl bg-black object-contain ring-1 ring-orange/50" />
-                ) : (
-                  <div className="grid aspect-square w-full place-items-center rounded-2xl border border-dashed border-white/10 p-3 text-center text-xs text-chumbo-100/50">
-                    {aiPending ? "Gerando… (até 1 min)" : "Nenhuma proposta"}
-                  </div>
-                )}
-                <figcaption className="text-[0.65rem] text-chumbo-100/50">Proposta padrão FORGE (IA)</figcaption>
-              </figure>
-            </div>
-            {row.candidateUrl ? (
-              <div className="grid grid-cols-3 gap-2">
-                <button type="button" disabled={aiPending} onClick={() => runAi("approve")} className="flex items-center justify-center gap-1.5 rounded-full bg-orange py-2 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-black disabled:opacity-60">
-                  <Check className="size-3.5" /> Aprovar
-                </button>
-                <button type="button" disabled={aiPending} onClick={() => runAi("generate")} className="flex items-center justify-center gap-1.5 rounded-full border border-white/15 py-2 font-mono text-[0.65rem] uppercase tracking-[0.12em] disabled:opacity-60">
-                  <Sparkles className="size-3.5" /> {aiPending ? "Gerando…" : "Outra"}
-                </button>
-                <button type="button" disabled={aiPending} onClick={() => runAi("discard")} className="flex items-center justify-center gap-1.5 rounded-full border border-white/15 py-2 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-chumbo-100/70 disabled:opacity-60">
-                  <Trash2 className="size-3.5" /> Descartar
-                </button>
-              </div>
-            ) : aiEnabled ? (
-              <button type="button" disabled={aiPending} onClick={() => runAi("generate")} className="flex items-center justify-center gap-2 rounded-full border border-orange/50 py-2.5 font-mono text-xs uppercase tracking-[0.14em] text-orange hover:bg-orange/10 disabled:opacity-60">
-                <Sparkles className="size-4" /> {aiPending ? "Gerando…" : "Gerar imagem FORGE"}
-              </button>
-            ) : (
-              <p className="text-xs text-chumbo-100/50">Geração por IA desativada: defina OPENROUTER_API_KEY no Railway.</p>
-            )}
-          </div>
-        )}
+        {row && <ArtPanel row={row} styleRefs={styleRefs} aiEnabled={aiEnabled} />}
         <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-dashed border-white/15 p-4 text-sm text-chumbo-100/70 hover:border-orange/50">
           <ImageUp className="size-5 text-orange" />
           <span className="flex-1">{file ? file.name : row?.imageUrl ? "Trocar imagem própria" : "Enviar imagem própria (JPG, PNG ou WEBP, até 4 MB)"}</span>
@@ -224,6 +189,148 @@ function ExerciseForm({ row, aiEnabled, onClose }: { row: CatalogRow | null; aiE
           {pending ? "Salvando…" : "Salvar"}
         </button>
       </form>
+    </div>
+  );
+}
+
+function Pair({ label, start, end, empty, highlight }: { label: string; start?: string | null; end?: string | null; empty?: string; highlight?: boolean }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span className="text-[0.65rem] text-chumbo-100/60 uppercase">{label}</span>
+      {start ? (
+        <div className="grid grid-cols-2 gap-2">
+          {[start, end].map((src, i) =>
+            src ? (
+              // eslint-disable-next-line @next/next/no-img-element -- URL assinada / foto estática
+              <img key={i} src={src} alt={`${label} — ${i === 0 ? "início" : "fim"}`} className={cn("aspect-[3/2] w-full rounded-xl bg-black object-cover", highlight && "ring-1 ring-orange/60")} />
+            ) : (
+              <div key={i} className="aspect-[3/2] w-full rounded-xl bg-white/[0.03]" />
+            ),
+          )}
+        </div>
+      ) : (
+        <div className="grid h-20 w-full place-items-center rounded-xl border border-dashed border-white/10 px-3 text-center text-xs text-chumbo-100/50">{empty}</div>
+      )}
+    </div>
+  );
+}
+
+const pillBtn = "flex items-center justify-center gap-1.5 rounded-full py-2 font-mono text-[0.62rem] uppercase tracking-[0.12em] disabled:opacity-60";
+
+/** Imagens FORGE do exercício: referência real, proposta da IA e aprovada, por versão do personagem. */
+function ArtPanel({ row, styleRefs, aiEnabled }: { row: CatalogRow; styleRefs: StyleRefs; aiEnabled: boolean }) {
+  const router = useRouter();
+  const [sex, setSex] = useState<Sex>("MALE");
+  const [pending, start] = useTransition();
+  const { approved, candidate } = row.arts[sex];
+  const styleRef = styleRefs[sex];
+
+  function run(fn: () => Promise<{ ok: boolean; error?: string }>, success: string) {
+    start(async () => {
+      const r = await fn();
+      if (!r.ok) {
+        toast.error(r.error ?? "Erro");
+        return;
+      }
+      toast.success(success);
+      router.refresh();
+    });
+  }
+
+  return (
+    <div className="flex flex-col gap-3 rounded-2xl border border-white/10 p-4">
+      <div className="flex items-center justify-between gap-3">
+        <span className="label-mono">Imagem FORGE</span>
+        <div className="flex rounded-full border border-white/10 p-0.5">
+          {SEX_OPTIONS.map((o) => (
+            <button
+              key={o.value}
+              type="button"
+              onClick={() => setSex(o.value)}
+              className={cn("relative rounded-full px-3 py-1 text-xs", sex === o.value ? "bg-white/10 text-white" : "text-chumbo-100/60")}
+            >
+              {o.label}
+              {row.arts[o.value].candidate && <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-orange" />}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex items-center gap-3 rounded-xl bg-white/[0.03] p-2 text-xs text-chumbo-100/70">
+        {styleRef ? (
+          // eslint-disable-next-line @next/next/no-img-element -- URL assinada
+          <img src={styleRef} alt="Personagem-mestre" className="h-10 w-14 rounded-lg object-cover" />
+        ) : (
+          <Crown className="mx-2 size-4 text-chumbo-100/40" />
+        )}
+        <span>
+          {styleRef
+            ? "Personagem-mestre definido: toda geração copia este estilo."
+            : "Sem personagem-mestre. Quando sair uma imagem perfeita, toque em “Mestre” para fixar o estilo nas próximas."}
+        </span>
+      </div>
+
+      {row.hasManualImage && (
+        <p className="text-xs text-orange">Este exercício tem imagem enviada manualmente — ela tem prioridade sobre a imagem FORGE.</p>
+      )}
+
+      {row.sourceId ? (
+        <Pair label="Foto de referência (pose e ângulo)" start={`/exercises/${row.sourceId}/0.jpg`} end={`/exercises/${row.sourceId}/1.jpg`} />
+      ) : (
+        <p className="text-xs text-chumbo-100/50">Sem foto de referência: a geração por IA precisa dela para copiar a pose.</p>
+      )}
+
+      <Pair
+        label="Proposta da IA"
+        start={candidate?.startUrl}
+        end={candidate?.endUrl}
+        highlight
+        empty={pending ? "Gerando início e fim… (até 1 min)" : "Nenhuma proposta"}
+      />
+      {candidate ? (
+        <div className="grid grid-cols-4 gap-2">
+          <button type="button" disabled={pending} onClick={() => run(() => approveExerciseArt(row.id, sex), "Imagem aprovada")} className={cn(pillBtn, "bg-orange text-black")}>
+            <Check className="size-3.5" /> Aprovar
+          </button>
+          <button type="button" disabled={pending || !aiEnabled} onClick={() => run(() => generateExerciseArt(row.id, sex), "Nova proposta gerada")} className={cn(pillBtn, "border border-white/15")}>
+            <Sparkles className="size-3.5" /> {pending ? "…" : "Outra"}
+          </button>
+          <button type="button" disabled={pending} onClick={() => run(() => setStyleReference(row.id, sex, false), "Personagem-mestre definido")} className={cn(pillBtn, "border border-white/15")}>
+            <Crown className="size-3.5" /> Mestre
+          </button>
+          <button type="button" disabled={pending} onClick={() => run(() => discardExerciseArt(row.id, sex), "Proposta descartada")} className={cn(pillBtn, "border border-white/15 text-chumbo-100/70")}>
+            <Trash2 className="size-3.5" /> Descartar
+          </button>
+        </div>
+      ) : aiEnabled ? (
+        <button
+          type="button"
+          disabled={pending || !row.sourceId}
+          onClick={() => run(() => generateExerciseArt(row.id, sex), "Proposta gerada — confira e aprove")}
+          className="flex items-center justify-center gap-2 rounded-full border border-orange/50 py-2.5 font-mono text-xs uppercase tracking-[0.14em] text-orange hover:bg-orange/10 disabled:opacity-60"
+        >
+          <Sparkles className="size-4" /> {pending ? "Gerando…" : `Gerar versão ${sex === "MALE" ? "masculina" : "feminina"}`}
+        </button>
+      ) : (
+        <p className="text-xs text-chumbo-100/50">Geração por IA desativada: defina OPENROUTER_API_KEY no Railway.</p>
+      )}
+
+      <Pair label="Aprovada (alunos veem)" start={approved?.startUrl} end={approved?.endUrl} empty="Nenhuma aprovada — alunos veem a foto de referência" />
+      {approved && (
+        <div className="grid grid-cols-2 gap-2">
+          <button type="button" disabled={pending} onClick={() => run(() => setStyleReference(row.id, sex, true), "Personagem-mestre definido")} className={cn(pillBtn, "border border-white/15")}>
+            <Crown className="size-3.5" /> Usar como mestre
+          </button>
+          <button
+            type="button"
+            disabled={pending}
+            onClick={() => confirm("Remover a imagem aprovada? Os alunos voltam a ver a foto de referência.") && run(() => discardExerciseArt(row.id, sex, true), "Imagem removida")}
+            className={cn(pillBtn, "border border-white/15 text-chumbo-100/70")}
+          >
+            <Trash2 className="size-3.5" /> Remover
+          </button>
+        </div>
+      )}
     </div>
   );
 }

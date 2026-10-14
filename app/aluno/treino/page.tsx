@@ -4,6 +4,7 @@ import { GlassCard } from "@/components/app/glass-card";
 import { ExerciseImage } from "@/components/app/exercise-image";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { withImageUrls } from "@/lib/exercise-data";
 import { muscleLabel } from "@/lib/exercises";
 
 export const metadata = { title: "Treino · FORGE" };
@@ -19,7 +20,7 @@ export default async function TreinoPage() {
       days: {
         orderBy: { order: "asc" },
         include: {
-          items: { orderBy: { order: "asc" }, include: { exercise: { select: { name: true, muscleGroup: true, sourceId: true } } } },
+          items: { orderBy: { order: "asc" }, include: { exercise: { select: { id: true, name: true, muscleGroup: true, sourceId: true, imageKey: true } } } },
           sessions: { where: { userId: user.id, finishedAt: { not: null } }, orderBy: { finishedAt: "desc" }, take: 1 },
         },
       },
@@ -36,6 +37,11 @@ export default async function TreinoPage() {
     );
   }
 
+  const covers = await withImageUrls(
+    plan.days.flatMap((d) => (d.items[0] ? [d.items[0].exercise] : [])),
+    user.sex,
+  );
+
   return (
     <>
       <div>
@@ -48,11 +54,11 @@ export default async function TreinoPage() {
         {plan.days.map((day, i) => {
           const muscles = [...new Set(day.items.map((it) => muscleLabel(it.exercise.muscleGroup)))].slice(0, 3);
           const last = day.sessions[0]?.finishedAt;
-          const cover = day.items[0]?.exercise;
+          const cover = covers.find((c) => c.id === day.items[0]?.exercise.id);
           return (
             <li key={day.id}>
               <Link href={`/aluno/treino/${day.id}`} className="glass group flex items-center gap-4 rounded-3xl p-3 pr-5 transition-colors hover:border-orange/40">
-                <ExerciseImage name={cover?.name ?? day.name} sourceId={cover?.sourceId} className="size-20 shrink-0" />
+                <ExerciseImage name={cover?.name ?? day.name} imageUrl={cover?.imageUrl} sourceId={cover?.sourceId} className="size-20 shrink-0" />
                 <div className="min-w-0 flex-1">
                   <p className="label-mono">Dia {String.fromCharCode(65 + i)}</p>
                   <h2 className="truncate text-lg font-medium">{day.name}</h2>

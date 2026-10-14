@@ -16,6 +16,7 @@ export default async function PerfilPage() {
           birthDate: user.birthDate ? user.birthDate.toISOString().slice(0, 10) : "",
           heightCm: user.heightCm ? String(user.heightCm) : "",
           goal: user.goal ?? "",
+          sex: user.sex ?? "",
         }}
       />
     </>

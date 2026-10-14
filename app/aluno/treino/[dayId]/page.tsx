@@ -24,7 +24,7 @@ export default async function TreinoDiaPage({ params }: { params: Promise<{ dayI
     include: { setLogs: true },
   });
 
-  const exercises = await withImageUrls(day.items.map((it) => it.exercise));
+  const exercises = await withImageUrls(day.items.map((it) => it.exercise), user.sex);
   const items = day.items.map((it, i) => ({
     id: it.id,
     sets: it.sets,
@@ -38,6 +38,7 @@ export default async function TreinoDiaPage({ params }: { params: Promise<{ dayI
       instructions: it.exercise.instructions,
       sourceId: it.exercise.sourceId,
       imageUrl: exercises[i].imageUrl,
+      imageUrlEnd: exercises[i].imageUrlEnd,
     },
     done: (session?.setLogs ?? [])
       .filter((l) => l.itemId === it.id)

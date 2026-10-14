@@ -10,7 +10,7 @@ export async function updateProfile(input: ProfileInput): Promise<ActionResult> 
   const parsed = profileSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Dados inválidos" };
 
-  const { name, birthDate, heightCm, goal } = parsed.data;
+  const { name, birthDate, heightCm, goal, sex } = parsed.data;
   await db.user.update({
     where: { id: user.id },
     data: {
@@ -18,6 +18,7 @@ export async function updateProfile(input: ProfileInput): Promise<ActionResult> 
       birthDate: birthDate ? new Date(`${birthDate}T00:00:00Z`) : null,
       heightCm: heightCm ? Number(heightCm) : null,
       goal: goal || null,
+      sex: sex || null,
     },
   });
 

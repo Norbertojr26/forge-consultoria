@@ -73,9 +73,30 @@ export function ProfileForm({ defaultValues }: { defaultValues: ProfileInput }) 
         />
         <FormField
           control={form.control}
+          name="sex"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className={labelClass}>Sexo</FormLabel>
+              <Select value={field.value} onValueChange={field.onChange}>
+                <FormControl>
+                  <SelectTrigger className="h-11 w-full">
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="MALE">Masculino</SelectItem>
+                  <SelectItem value="FEMALE">Feminino</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
           name="goal"
           render={({ field }) => (
-            <FormItem className="md:col-span-2">
+            <FormItem>
               <FormLabel className={labelClass}>Objetivo</FormLabel>
               <Select value={field.value} onValueChange={field.onChange}>
                 <FormControl>

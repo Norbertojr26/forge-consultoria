@@ -20,7 +20,10 @@ describe("generateImage (OpenRouter)", () => {
       Response.json({ choices: [{ message: { images: [{ image_url: { url: `data:image/png;base64,${PNG.toString("base64")}` } }] } }] }),
     );
     vi.stubGlobal("fetch", fetchMock);
-    const out = await generateImage({ prompt: "p", references: [{ bytes: new Uint8Array([1, 2]), mime: "image/jpeg" }] });
+    const out = await generateImage({
+      parts: [{ text: "p" }, { image: { bytes: new Uint8Array([1, 2]), mime: "image/jpeg" } }],
+      aspectRatio: "3:2",
+    });
     expect(out.mime).toBe("image/png");
     expect(Buffer.from(out.bytes).equals(PNG)).toBe(true);
 
@@ -29,20 +32,21 @@ describe("generateImage (OpenRouter)", () => {
     const body = JSON.parse(init.body as string);
     expect(body.modalities).toEqual(["image", "text"]);
     expect(body.messages[0].content[1].image_url.url).toBe("data:image/jpeg;base64,AQI=");
+    expect(body.image_config).toEqual({ aspect_ratio: "3:2" });
   });
 
   it("traduz erros de crédito e resposta sem imagem", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => new Response("no", { status: 402 })));
-    await expect(generateImage({ prompt: "p" })).rejects.toThrow("Sem créditos");
+    await expect(generateImage({ parts: [{ text: "p" }] })).rejects.toThrow("Sem créditos");
     vi.stubGlobal("fetch", vi.fn(async () => Response.json({ choices: [{ message: { content: "desculpe" } }] })));
-    await expect(generateImage({ prompt: "p" })).rejects.toBeInstanceOf(ImageGenError);
+    await expect(generateImage({ parts: [{ text: "p" }] })).rejects.toBeInstanceOf(ImageGenError);
   });
 
   it("sem chave não chama a API", async () => {
     vi.stubEnv("OPENROUTER_API_KEY", "");
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
-    await expect(generateImage({ prompt: "p" })).rejects.toThrow("OPENROUTER_API_KEY");
+    await expect(generateImage({ parts: [{ text: "p" }] })).rejects.toThrow("OPENROUTER_API_KEY");
     expect(fetchMock).not.toHaveBeenCalled();
   });
 });

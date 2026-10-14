@@ -20,6 +20,7 @@ model User {
   birthDate DateTime? @db.Date
   heightCm  Int?
   goal      String? // "hipertrofia" | "cutting" | "recomp" | ...
+  sex       Sex? // define o personagem (masculino/feminino) das imagens de exercício
   role      Role      @default(STUDENT)
   createdAt DateTime  @default(now())
   checkIns  CheckIn[]
@@ -55,22 +56,49 @@ model CheckIn {
 // ─── Treino ────────────────────────────────────────────────
 
 model Exercise {
-  id                String        @id @default(cuid())
-  name              String        @unique
-  muscleGroup       String // "peito" | "costas" | ... (ver lib/exercises.ts)
-  equipment         String? // "barra" | "halter" | "máquina" | ...
-  instructions      String?
-  imageKey          String? // chave no bucket da imagem no padrão FORGE (gerada por IA e aprovada)
-  imageCandidateKey String? // imagem gerada aguardando aprovação do treinador (não aparece para alunos)
+  id           String        @id @default(cuid())
+  name         String        @unique
+  muscleGroup  String // "peito" | "costas" | ... (ver lib/exercises.ts)
+  equipment    String? // "barra" | "halter" | "máquina" | ...
+  instructions String?
+  imageKey     String? // imagem enviada manualmente pelo treinador (tem prioridade sobre tudo)
   // id na Free Exercise DB (domínio público): fotos reais em /public/exercises/<sourceId>/0.jpg e 1.jpg,
   // usadas enquanto não há imagem própria e como referência de pose para gerar a nova
-  sourceId          String?       @unique
-  createdById       String?
-  createdBy         User?         @relation(fields: [createdById], references: [id], onDelete: SetNull)
-  createdAt         DateTime      @default(now())
-  items             WorkoutItem[]
+  sourceId     String?       @unique
+  createdById  String?
+  createdBy    User?         @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt    DateTime      @default(now())
+  items        WorkoutItem[]
+  arts         ExerciseArt[]
 
   @@index([muscleGroup])
+}
+
+enum Sex {
+  MALE
+  FEMALE
+}
+
+/// Imagens no padrão FORGE geradas por IA: posição inicial e final, por versão do personagem.
+/// Uma proposta (approved=false) e uma aprovada (approved=true) por exercício e sexo.
+model ExerciseArt {
+  id         String   @id @default(cuid())
+  exerciseId String
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  sex        Sex
+  approved   Boolean  @default(false)
+  startKey   String
+  endKey     String?
+  createdAt  DateTime @default(now())
+
+  @@unique([exerciseId, sex, approved])
+}
+
+/// Configurações simples chave/valor (ex.: imagem-mestre do personagem por sexo).
+model AppSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
 }
 
 model WorkoutPlan {
