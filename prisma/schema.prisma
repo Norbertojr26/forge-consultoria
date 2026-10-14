@@ -31,6 +31,10 @@ model User {
   students  User[]  @relation("TrainerStudents")
 
   workoutPlans     WorkoutPlan[]    @relation("PlanStudent")
+  dietPlans        DietPlan[]       @relation("DietStudent")
+  authoredDiets    DietPlan[]       @relation("DietTrainer")
+  waterLogs        WaterLog[]
+  dailyChecks      DailyCheck[]
   authoredPlans    WorkoutPlan[]    @relation("PlanTrainer")
   workoutSessions  WorkoutSession[]
   createdExercises Exercise[]
@@ -172,4 +176,101 @@ model SetLog {
   completedAt DateTime       @default(now())
 
   @@unique([sessionId, itemId, setNumber])
+}
+
+// ─── Dieta, suplementos e hidratação ─────────────────────
+
+/// Plano alimentar montado pelo treinador. Como no treino, o aluno tem um ativo por vez.
+model DietPlan {
+  id          String       @id @default(cuid())
+  name        String
+  notes       String?
+  active      Boolean      @default(false)
+  sentAt      DateTime?
+  studentId   String
+  student     User         @relation("DietStudent", fields: [studentId], references: [id], onDelete: Cascade)
+  trainerId   String?
+  trainer     User?        @relation("DietTrainer", fields: [trainerId], references: [id], onDelete: SetNull)
+  // Metas diárias (opcionais). Sem waterGoalMl, a meta de água é 35 ml × peso.
+  kcalTarget  Int?
+  proteinG    Int?
+  carbsG      Int?
+  fatG        Int?
+  waterGoalMl Int?
+  meals       Meal[]
+  supplements Supplement[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([studentId, active])
+}
+
+model Meal {
+  id       String     @id @default(cuid())
+  planId   String
+  plan     DietPlan   @relation(fields: [planId], references: [id], onDelete: Cascade)
+  name     String // "Café da manhã"
+  time     String? // "07:30"
+  order    Int
+  notes    String?
+  imageKey String? // prato no padrão FORGE (gerado por IA)
+  items    MealItem[]
+}
+
+model MealItem {
+  id            String  @id @default(cuid())
+  mealId        String
+  meal          Meal    @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  order         Int
+  food          String // "Arroz branco"
+  quantity      String // "150 g", "2 unidades"
+  kcal          Int?
+  proteinG      Float?
+  carbsG        Float?
+  fatG          Float?
+  substitutions String? // "ou batata-doce 200 g"
+}
+
+enum SupplementKind {
+  SUPPLEMENT
+  MEDICATION
+}
+
+/// Suplemento ou medicação com horários. Medicação só como lembrete do que o médico prescreveu.
+model Supplement {
+  id     String         @id @default(cuid())
+  planId String
+  plan   DietPlan       @relation(fields: [planId], references: [id], onDelete: Cascade)
+  kind   SupplementKind @default(SUPPLEMENT)
+  name   String // "Creatina"
+  dose   String // "5 g"
+  times  String[] // ["08:00", "22:00"]
+  notes  String?
+  order  Int
+}
+
+/// Copos de água registrados pelo aluno (soma por dia no fuso de São Paulo).
+model WaterLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime @db.Date
+  amountMl  Int
+  createdAt DateTime @default(now())
+
+  @@index([userId, date])
+}
+
+/// Marcação do dia: refeição feita (MEAL) ou dose tomada (SUPPLEMENT, por horário em slot).
+model DailyCheck {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime @db.Date
+  kind      String // "MEAL" | "SUPPLEMENT"
+  refId     String // id da refeição ou do suplemento
+  slot      String   @default("") // horário da dose ("08:00"); vazio para refeição
+  createdAt DateTime @default(now())
+
+  @@unique([userId, date, kind, refId, slot])
 }

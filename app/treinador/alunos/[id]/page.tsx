@@ -2,6 +2,7 @@ import { ArrowLeft, Pencil, Plus } from "lucide-react";
 import Link from "next/link";
 import { CardLabel, GlassCard } from "@/components/app/glass-card";
 import { PillBars } from "@/components/app/pill-bars";
+import { DietActions } from "@/components/treinador/diet-actions";
 import { PlanActions } from "@/components/treinador/plan-actions";
 import { requireManagedStudent } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -15,7 +16,7 @@ export default async function AlunoDetalhe({ params }: { params: Promise<{ id: s
   const { id } = await params;
   const { student } = await requireManagedStudent(id);
 
-  const [plans, checkIns, sessions] = await Promise.all([
+  const [plans, checkIns, sessions, diets] = await Promise.all([
     db.workoutPlan.findMany({
       where: { studentId: id },
       orderBy: [{ active: "desc" }, { updatedAt: "desc" }],
@@ -27,6 +28,11 @@ export default async function AlunoDetalhe({ params }: { params: Promise<{ id: s
       orderBy: { startedAt: "desc" },
       take: 10,
       include: { day: { select: { name: true } }, _count: { select: { setLogs: true } } },
+    }),
+    db.dietPlan.findMany({
+      where: { studentId: id },
+      orderBy: [{ active: "desc" }, { updatedAt: "desc" }],
+      include: { _count: { select: { meals: true, supplements: true } } },
     }),
   ]);
   const m = computeMetrics(checkIns);
@@ -49,12 +55,20 @@ export default async function AlunoDetalhe({ params }: { params: Promise<{ id: s
             {student.heightCm && ` · ${student.heightCm} cm`}
           </p>
         </div>
-        <Link
-          href={`/treinador/alunos/${id}/plano/novo`}
-          className="glow flex items-center gap-2 rounded-full bg-orange px-5 py-3 font-mono text-xs uppercase tracking-[0.14em] text-black"
-        >
-          <Plus className="size-4" /> Novo plano de treino
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href={`/treinador/alunos/${id}/dieta/nova`}
+            className="flex items-center gap-2 rounded-full border border-orange/50 px-5 py-3 font-mono text-xs uppercase tracking-[0.14em] text-orange hover:bg-orange/10"
+          >
+            <Plus className="size-4" /> Nova dieta
+          </Link>
+          <Link
+            href={`/treinador/alunos/${id}/plano/novo`}
+            className="glow flex items-center gap-2 rounded-full bg-orange px-5 py-3 font-mono text-xs uppercase tracking-[0.14em] text-black"
+          >
+            <Plus className="size-4" /> Novo plano de treino
+          </Link>
+        </div>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
@@ -125,6 +139,44 @@ export default async function AlunoDetalhe({ params }: { params: Promise<{ id: s
               </GlassCard>
             );
           })
+        )}
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="label-mono">Dietas</h2>
+        {diets.length === 0 ? (
+          <GlassCard className="text-sm text-chumbo-100/70">Nenhuma dieta ainda. Monte refeições, suplementos e meta de água em “Nova dieta”.</GlassCard>
+        ) : (
+          diets.map((d) => (
+            <GlassCard key={d.id} className="flex flex-wrap items-center justify-between gap-4" glow={d.active && !!d.sentAt}>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-lg font-medium">{d.name}</h3>
+                  {d.active && d.sentAt ? (
+                    <span className="rounded-full bg-orange/15 px-2 py-0.5 text-[0.65rem] text-orange">ATIVA</span>
+                  ) : !d.sentAt ? (
+                    <span className="rounded-full bg-white/10 px-2 py-0.5 text-[0.65rem] text-chumbo-100">RASCUNHO</span>
+                  ) : (
+                    <span className="rounded-full bg-white/5 px-2 py-0.5 text-[0.65rem] text-chumbo-100/60">ANTERIOR</span>
+                  )}
+                </div>
+                <p className="text-sm text-chumbo-100/60">
+                  {d._count.meals} {d._count.meals === 1 ? "refeição" : "refeições"} · {d._count.supplements} suplementos/medicações
+                  {d.kcalTarget && ` · ${d.kcalTarget} kcal`}
+                  {d.sentAt && ` · enviada ${dateTime.format(d.sentAt)}`}
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Link
+                  href={`/treinador/alunos/${id}/dieta/${d.id}`}
+                  className="flex items-center gap-1.5 rounded-full border border-white/10 px-3 py-1.5 text-xs hover:border-white/30"
+                >
+                  <Pencil className="size-3.5" /> Abrir
+                </Link>
+                <DietActions planId={d.id} studentId={id} sent={!!d.sentAt} active={d.active} />
+              </div>
+            </GlassCard>
+          ))
         )}
       </section>
 

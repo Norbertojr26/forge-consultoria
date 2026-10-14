@@ -44,6 +44,13 @@ Push na `main` gera deploy automático. O serviço roda `npx prisma migrate depl
 - **Catálogo:** exercícios com `sourceId` mostram as fotos reais da [Free Exercise DB](https://github.com/yuhonas/free-exercise-db) (Unlicense / domínio público) em `public/exercises/`. Imagem própria (`imageKey`, no bucket) tem prioridade.
 - **Imagens padrão FORGE (IA):** no catálogo, cada exercício tem versão masculina e feminina, com posição inicial e final. Cada posição é gerada separadamente a partir da foto real daquela posição (um personagem só, mesma câmera), via OpenRouter (`OPENROUTER_API_KEY`; modelo em `OPENROUTER_IMAGE_MODEL`, padrão `google/gemini-3.1-flash-image`, o Nano Banana 2) com o prompt de `lib/exercise-style.ts`. A proposta só aparece para os alunos depois de aprovada (`ExerciseArt`). O **personagem-mestre** (uma imagem escolhida por sexo, em `AppSetting`) vai junto em toda geração como referência de estilo. O aluno vê a versão do sexo cadastrado no perfil; imagem enviada manualmente tem prioridade.
 
+## Dieta, suplementos e água
+
+- **Dieta:** o treinador monta em `/treinador/alunos/[id]/dieta/[plano]` as metas diárias (kcal, proteína, carboidrato, gordura, água), as refeições com horário e os alimentos (quantidade, macros e substituição), além dos suplementos e medicações com horários. Ao enviar, vira a dieta ativa do aluno, uma por vez. Diferente do treino, pode ser editada depois de enviada.
+- **Aluno (`/aluno/dieta`):** anel da meta de água com botões de +250/+500/+750 ml e desfazer; consumo do dia contra a meta, somando as refeições marcadas como feitas; refeições com a próxima em destaque; doses de suplementos e medicações por horário com check. A tela "Hoje" mostra a água e os contadores de refeições e suplementos.
+- **Meta de água:** a do plano; sem ela, 35 ml × último peso; sem peso, 2,5 L (`lib/diet.ts`). O "dia" segue o fuso de São Paulo.
+- **Medicação** aparece só como lembrete do que o médico prescreveu.
+
 ## Estrutura
 
 ```

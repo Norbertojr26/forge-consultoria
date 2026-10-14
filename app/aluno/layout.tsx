@@ -1,5 +1,5 @@
 import { UserButton } from "@clerk/nextjs";
-import { LayoutDashboard } from "lucide-react";
+import { LayoutDashboard, UserRound } from "lucide-react";
 import Link from "next/link";
 import { AlunoNav } from "@/components/aluno/aluno-nav";
 import { Logo } from "@/components/brand/logo";
@@ -21,6 +21,9 @@ export default async function AlunoLayout({ children }: { children: React.ReactN
               <LayoutDashboard className="size-3.5" /> Painel do treinador
             </Link>
           )}
+          <Link href="/aluno/perfil" className="glass grid size-8 place-items-center rounded-full text-chumbo-100 hover:text-white" aria-label="Meu perfil">
+            <UserRound className="size-4" />
+          </Link>
           <UserButton />
         </div>
       </header>

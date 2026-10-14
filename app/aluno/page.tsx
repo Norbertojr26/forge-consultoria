@@ -1,12 +1,14 @@
-import { ArrowUpRight, Camera, Dumbbell, Flame, Scale } from "lucide-react";
+import { ArrowUpRight, Camera, Dumbbell, Flame, Pill, Salad, Scale } from "lucide-react";
 import Link from "next/link";
 import { DotNumber } from "@/components/app/dot-number";
 import { ExerciseImage } from "@/components/app/exercise-image";
 import { CardLabel, GlassCard } from "@/components/app/glass-card";
 import { PillBars } from "@/components/app/pill-bars";
+import { WaterCard } from "@/components/aluno/water-card";
 import { Ring } from "@/components/app/ring";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { getTodayDiet } from "@/lib/diet-data";
 import { withImageUrls } from "@/lib/exercise-data";
 import { computeMetrics } from "@/lib/metrics";
 import { goalLabel } from "@/lib/validations";
@@ -23,7 +25,7 @@ export default async function HojePage() {
   // Semana corrente: weekOf() devolve o domingo à meia-noite UTC; o início real em SP é 03:00 UTC.
   const weekStart = new Date(weekOf().getTime() + 3 * 3_600_000);
 
-  const [checkIns, plan, weekSessions] = await Promise.all([
+  const [checkIns, plan, weekSessions, diet] = await Promise.all([
     db.checkIn.findMany({ where: { userId: user.id }, orderBy: { weekOf: "desc" }, select: { weekOf: true, weightKg: true } }),
     db.workoutPlan.findFirst({
       where: { studentId: user.id, active: true, sentAt: { not: null } },
@@ -42,6 +44,7 @@ export default async function HojePage() {
       select: { dayId: true, finishedAt: true },
       orderBy: { finishedAt: "desc" },
     }),
+    getTodayDiet(user),
   ]);
 
   const m = computeMetrics(checkIns);
@@ -155,6 +158,39 @@ export default async function HojePage() {
           </p>
         </Link>
       </div>
+
+      {/* Água + alimentação do dia */}
+      <WaterCard ml={diet.water.ml} goal={diet.water.goal} entries={diet.water.entries} compact />
+      {diet.plan && (
+        <div className="grid grid-cols-2 gap-4">
+          <Link href="/aluno/dieta" className="glass group flex flex-col gap-4 rounded-3xl p-5 transition-colors hover:border-orange/40">
+            <CardLabel icon={<Salad />}>Refeições</CardLabel>
+            <p className="num-dot text-4xl">
+              {diet.meals.filter((m) => m.done).length}
+              <span className="text-chumbo-100/40">/{diet.meals.length}</span>
+            </p>
+            <p className="truncate text-xs text-chumbo-100/60">
+              {(() => {
+                const next = diet.meals.find((m) => !m.done);
+                return next ? `Próxima: ${next.time ? `${next.time} · ` : ""}${next.name}` : "Todas feitas hoje";
+              })()}
+            </p>
+          </Link>
+          <Link href="/aluno/dieta" className="glass group flex flex-col gap-4 rounded-3xl p-5 transition-colors hover:border-orange/40">
+            <CardLabel icon={<Pill />}>Suplementos</CardLabel>
+            <p className="num-dot text-4xl">
+              {diet.doses.filter((d) => d.done).length}
+              <span className="text-chumbo-100/40">/{diet.doses.length}</span>
+            </p>
+            <p className="truncate text-xs text-chumbo-100/60">
+              {(() => {
+                const next = diet.doses.find((d) => !d.done);
+                return next ? `Próxima: ${next.time} · ${next.supplement.name}` : diet.doses.length ? "Todas tomadas hoje" : "Nenhum na dieta";
+              })()}
+            </p>
+          </Link>
+        </div>
+      )}
 
       {/* Peso por semana em pílulas */}
       <GlassCard className="flex flex-col gap-5">
