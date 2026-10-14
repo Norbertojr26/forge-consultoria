@@ -51,3 +51,10 @@ export async function trySignedReadUrl(key: string | null | undefined) {
     return null;
   }
 }
+
+/** Lê um objeto inteiro (usado para mandar a imagem-mestre como referência à IA). */
+export async function getObjectBytes(key: string) {
+  const res = await s3().send(new GetObjectCommand({ Bucket: bucket(), Key: key }));
+  if (!res.Body) throw new Error(`Objeto vazio: ${key}`);
+  return { bytes: await res.Body.transformToByteArray(), mime: res.ContentType ?? "image/png" };
+}

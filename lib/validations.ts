@@ -55,6 +55,7 @@ export const profileSchema = z.object({
     .trim()
     .refine((s) => s === "" || (/^\d{3}$/.test(s) && +s >= 100 && +s <= 250), "Altura em cm, entre 100 e 250"),
   goal: z.string().refine((s) => s === "" || GOALS.some((g) => g.value === s), "Objetivo inválido"),
+  sex: z.enum(["", "MALE", "FEMALE"], { message: "Sexo inválido" }),
 });
 export type ProfileInput = z.infer<typeof profileSchema>;
 

@@ -13,20 +13,19 @@ export function imageGenConfigured() {
   return Boolean(process.env.OPENROUTER_API_KEY);
 }
 
-type Reference = { bytes: Uint8Array; mime: string };
+export type ImagePart = { text: string } | { image: { bytes: Uint8Array; mime: string } };
 
-export async function generateImage({ prompt, references = [] }: { prompt: string; references?: Reference[] }) {
+/** Gera uma imagem a partir de partes intercaladas (texto e imagens de referência, na ordem). */
+export async function generateImage({ parts, aspectRatio }: { parts: ImagePart[]; aspectRatio?: string }) {
   const key = process.env.OPENROUTER_API_KEY;
   if (!key) throw new ImageGenError("Geração de imagem não configurada (defina OPENROUTER_API_KEY no Railway)");
   const base = process.env.OPENROUTER_BASE_URL ?? "https://openrouter.ai/api/v1";
 
-  const content = [
-    { type: "text", text: prompt },
-    ...references.map((r) => ({
-      type: "image_url",
-      image_url: { url: `data:${r.mime};base64,${Buffer.from(r.bytes).toString("base64")}` },
-    })),
-  ];
+  const content = parts.map((p) =>
+    "text" in p
+      ? { type: "text", text: p.text }
+      : { type: "image_url", image_url: { url: `data:${p.image.mime};base64,${Buffer.from(p.image.bytes).toString("base64")}` } },
+  );
 
   const res = await fetch(`${base}/chat/completions`, {
     method: "POST",
@@ -39,6 +38,7 @@ export async function generateImage({ prompt, references = [] }: { prompt: strin
       model: process.env.OPENROUTER_IMAGE_MODEL || DEFAULT_MODEL,
       modalities: ["image", "text"],
       messages: [{ role: "user", content }],
+      ...(aspectRatio && { image_config: { aspect_ratio: aspectRatio } }),
     }),
     signal: AbortSignal.timeout(120_000),
   });
