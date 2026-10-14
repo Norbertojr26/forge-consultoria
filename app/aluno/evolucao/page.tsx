@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { PageTitle } from "@/components/aluno/page-title";
 import { WeightChart } from "@/components/aluno/weight-chart";
+import { ProgressionList } from "@/components/app/progression-list";
 import { Button } from "@/components/ui/button";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { trySignedReadUrl } from "@/lib/storage";
 import { MEASURES, MOODS } from "@/lib/validations";
 import { formatDay } from "@/lib/week";
+import { progressionByExercise } from "@/lib/workout-history";
 
 export const metadata = { title: "Evolução · FORGE" };
 
@@ -80,6 +82,17 @@ export default async function EvolucaoPage() {
                 </li>
               ))}
             </ul>
+          </section>
+        );
+      })()}
+
+      {await (async () => {
+        const prog = (await progressionByExercise(user.id, 8)).slice(0, 6);
+        if (!prog.length) return null;
+        return (
+          <section aria-label="Cargas" className="flex flex-col gap-3">
+            <h2 className="font-mono text-xs tracking-[0.12em] text-chumbo-100 uppercase">Cargas · exercícios recentes</h2>
+            <ProgressionList items={prog} compact />
           </section>
         );
       })()}

@@ -50,6 +50,7 @@ export async function savePlan(input: PlanInput): Promise<ActionResult & { planI
               reps: it.reps,
               loadKg: it.loadKg,
               restSeconds: it.restSeconds,
+              targetRir: it.targetRir,
               notes: it.notes || null,
             })),
           },
@@ -88,8 +89,8 @@ export async function duplicatePlan(planId: string): Promise<ActionResult & { pl
           name: d.name,
           order: d.order,
           items: {
-            create: d.items.map(({ exerciseId, order, sets, reps, loadKg, restSeconds, notes }) => ({
-              exerciseId, order, sets, reps, loadKg, restSeconds, notes,
+            create: d.items.map(({ exerciseId, order, sets, reps, loadKg, restSeconds, targetRir, notes }) => ({
+              exerciseId, order, sets, reps, loadKg, restSeconds, targetRir, notes,
             })),
           },
         })),

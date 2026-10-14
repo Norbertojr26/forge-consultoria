@@ -6,6 +6,7 @@ export const planItemSchema = z.object({
   reps: z.string().trim().min(1, "Informe as repetições").max(30),
   loadKg: z.union([z.coerce.number().min(0).max(1000), z.null()]),
   restSeconds: z.coerce.number().int().min(0).max(900),
+  targetRir: z.union([z.number().int().min(0).max(4), z.null()]).default(null),
   notes: z.string().trim().max(300).nullable(),
 });
 

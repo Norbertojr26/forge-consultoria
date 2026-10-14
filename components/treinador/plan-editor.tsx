@@ -19,14 +19,14 @@ export type CatalogExercise = {
   imageUrl: string | null;
 };
 
-type Item = { key: string; exerciseId: string; sets: string; reps: string; loadKg: string; restSeconds: number; notes: string };
+type Item = { key: string; exerciseId: string; sets: string; reps: string; loadKg: string; restSeconds: number; targetRir: number | null; notes: string };
 type Day = { key: string; name: string; items: Item[] };
 
 export type EditorPlan = {
   planId: string | null;
   name: string;
   notes: string;
-  days: { name: string; items: { exerciseId: string; sets: number; reps: string; loadKg: number | null; restSeconds: number; notes: string | null }[] }[];
+  days: { name: string; items: { exerciseId: string; sets: number; reps: string; loadKg: number | null; restSeconds: number; targetRir: number | null; notes: string | null }[] }[];
 };
 
 const REST_PRESETS = [30, 45, 60, 90, 120, 180];
@@ -65,6 +65,7 @@ export function PlanEditor({
             reps: it.reps,
             loadKg: it.loadKg != null ? String(it.loadKg) : "",
             restSeconds: it.restSeconds,
+            targetRir: it.targetRir,
             notes: it.notes ?? "",
           })),
         }))
@@ -101,7 +102,7 @@ export function PlanEditor({
               ...d,
               items: [
                 ...d.items,
-                { key: uid(), exerciseId: ex.id, sets: "3", reps: ex.muscleGroup === "cardio" ? "20 min" : "10-12", loadKg: "", restSeconds: ex.muscleGroup === "cardio" ? 0 : 60, notes: "" },
+                { key: uid(), exerciseId: ex.id, sets: "3", reps: ex.muscleGroup === "cardio" ? "20 min" : "10-12", loadKg: "", restSeconds: ex.muscleGroup === "cardio" ? 0 : 60, targetRir: ex.muscleGroup === "cardio" ? null : 2, notes: "" },
               ],
             }
           : d,
@@ -125,6 +126,7 @@ export function PlanEditor({
             reps: it.reps,
             loadKg: it.loadKg.trim() === "" ? null : Number(it.loadKg.replace(",", ".")),
             restSeconds: it.restSeconds,
+            targetRir: it.targetRir,
             notes: it.notes.trim() || null,
           })),
         })),
@@ -263,6 +265,25 @@ export function PlanEditor({
                         placeholder="seg"
                         className="w-16 rounded-full border border-white/10 bg-transparent px-2.5 py-1 text-xs outline-none focus:border-orange/60"
                       />
+                    </div>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="mr-1 text-[0.65rem] text-chumbo-100/50 uppercase" title="Repetições na reserva: quantas o aluno deve deixar sobrando (0 = falha). RPE = 10 − RIR.">
+                        Alvo RIR
+                      </span>
+                      {[null, 0, 1, 2, 3, 4].map((r) => (
+                        <button
+                          key={r ?? "none"}
+                          type="button"
+                          disabled={locked}
+                          onClick={() => updateItem(day.key, it.key, { targetRir: r })}
+                          className={cn(
+                            "rounded-full border px-2.5 py-1 text-xs transition-colors",
+                            it.targetRir === r ? "border-orange bg-orange/15 text-orange" : "border-white/10 text-chumbo-100/70 hover:border-white/30",
+                          )}
+                        >
+                          {r == null ? "—" : r === 0 ? "0 · falha" : r === 4 ? "4+" : r}
+                        </button>
+                      ))}
                     </div>
                     <input
                       value={it.notes}

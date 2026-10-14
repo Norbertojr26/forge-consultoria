@@ -3,6 +3,8 @@ import { WorkoutPlayer } from "@/components/aluno/workout-player";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { withImageUrls } from "@/lib/exercise-data";
+import { suggestNext } from "@/lib/progression";
+import { lastSessionByExercise } from "@/lib/workout-history";
 
 export const metadata = { title: "Treinando · FORGE" };
 
@@ -24,7 +26,10 @@ export default async function TreinoDiaPage({ params }: { params: Promise<{ dayI
     include: { setLogs: true },
   });
 
-  const exercises = await withImageUrls(day.items.map((it) => it.exercise), user.sex);
+  const [exercises, history] = await Promise.all([
+    withImageUrls(day.items.map((it) => it.exercise), user.sex),
+    lastSessionByExercise(user.id, [...new Set(day.items.map((it) => it.exerciseId))]),
+  ]);
   const items = day.items.map((it, i) => ({
     id: it.id,
     sets: it.sets,
@@ -32,6 +37,16 @@ export default async function TreinoDiaPage({ params }: { params: Promise<{ dayI
     loadKg: it.loadKg,
     restSeconds: it.restSeconds,
     notes: it.notes,
+    targetRir: it.targetRir,
+    // Histórico do exercício (qualquer plano) e sugestão de carga para hoje
+    last: (() => {
+      const h = history.get(it.exerciseId);
+      return h ? { date: h.date.toISOString(), sets: h.sets } : null;
+    })(),
+    suggestion: (() => {
+      const h = history.get(it.exerciseId);
+      return h ? suggestNext(h.sets, it.reps, it.targetRir) : null;
+    })(),
     exercise: {
       name: it.exercise.name,
       muscleGroup: it.exercise.muscleGroup,
@@ -43,7 +58,7 @@ export default async function TreinoDiaPage({ params }: { params: Promise<{ dayI
     },
     done: (session?.setLogs ?? [])
       .filter((l) => l.itemId === it.id)
-      .map((l) => ({ setNumber: l.setNumber, reps: l.reps, loadKg: l.loadKg })),
+      .map((l) => ({ setNumber: l.setNumber, reps: l.reps, loadKg: l.loadKg, rir: l.rir })),
   }));
 
   return (

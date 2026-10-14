@@ -24,7 +24,7 @@ export default async function PlanoPage({ params }: { params: Promise<{ id: stri
       notes: plan.notes ?? "",
       days: plan.days.map((d) => ({
         name: d.name,
-        items: d.items.map(({ exerciseId, sets, reps, loadKg, restSeconds, notes }) => ({ exerciseId, sets, reps, loadKg, restSeconds, notes })),
+        items: d.items.map(({ exerciseId, sets, reps, loadKg, restSeconds, targetRir, notes }) => ({ exerciseId, sets, reps, loadKg, restSeconds, targetRir, notes })),
       })),
     };
     locked = (await db.workoutSession.count({ where: { day: { planId: plan.id } } })) > 0;

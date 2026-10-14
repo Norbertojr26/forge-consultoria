@@ -166,6 +166,7 @@ model WorkoutItem {
   reps        String // "10" | "8-12" | "até a falha"
   loadKg      Float?
   restSeconds Int        @default(60)
+  targetRir   Int? // alvo de repetições na reserva (0 = falha … 4)
   notes       String?
   setLogs     SetLog[]
 
@@ -194,9 +195,12 @@ model SetLog {
   setNumber   Int
   reps        Int?
   loadKg      Float?
+  rir         Int? // repetições que ainda daria (RPE = 10 − RIR)
+  exerciseId  String? // cópia do exercício do item: o histórico sobrevive à troca de plano
   completedAt DateTime       @default(now())
 
   @@unique([sessionId, itemId, setNumber])
+  @@index([exerciseId])
 }
 
 // ─── Dieta, suplementos e hidratação ─────────────────────

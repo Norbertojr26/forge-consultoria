@@ -1,13 +1,14 @@
 "use client";
 
-import { Check, ChevronLeft, ChevronRight, Minus, Pause, Play, Plus, SkipForward, Timer, X } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, History, Minus, Pause, Play, Plus, SkipForward, Timer, TrendingUp, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Ring } from "@/components/app/ring";
 import { ExerciseImage } from "@/components/app/exercise-image";
-import { finishSession, logSet, startSession, unlogSet } from "@/lib/actions/workout";
+import { finishSession, logSet, rateSet, startSession, unlogSet } from "@/lib/actions/workout";
 import { muscleLabel } from "@/lib/exercises";
+import type { LoggedSet, Suggestion } from "@/lib/progression";
 import { cn } from "@/lib/utils";
 import { formatRest } from "@/lib/validations-workout";
 
@@ -18,6 +19,11 @@ export type PlayerItem = {
   loadKg: number | null;
   restSeconds: number;
   notes: string | null;
+  /** Alvo de repetições na reserva definido pelo treinador (null = sem alvo). */
+  targetRir: number | null;
+  /** Última sessão concluída deste exercício (qualquer plano). */
+  last: { date: string; sets: LoggedSet[] } | null;
+  suggestion: Suggestion | null;
   exercise: {
     name: string;
     muscleGroup: string;
@@ -27,10 +33,38 @@ export type PlayerItem = {
     imageUrlEnd: string | null;
     videoUrl: string | null;
   };
-  done: { setNumber: number; reps: number | null; loadKg: number | null }[];
+  done: { setNumber: number; reps: number | null; loadKg: number | null; rir: number | null }[];
 };
 
-type SetState = { reps: string; load: string; done: boolean };
+type SetState = { reps: string; load: string; done: boolean; rir: number | null };
+
+const RIR_OPTIONS = [0, 1, 2, 3, 4];
+const kgFmt = (n: number) => n.toLocaleString("pt-BR", { maximumFractionDigits: 2 });
+const dayFmt = (iso: string) => new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit", timeZone: "America/Sao_Paulo" }).format(new Date(iso));
+
+/** Seletor de RIR: quantas repetições ainda daria (0 = falha). */
+function RirPicker({ value, target, onPick, size = "sm" }: { value: number | null; target: number | null; onPick: (r: number) => void; size?: "sm" | "lg" }) {
+  return (
+    <div className="flex items-center gap-1.5" role="radiogroup" aria-label="Repetições na reserva (RIR)">
+      {RIR_OPTIONS.map((r) => (
+        <button
+          key={r}
+          type="button"
+          role="radio"
+          aria-checked={value === r}
+          onClick={() => onPick(r)}
+          className={cn(
+            "rounded-full border tabular-nums transition-all",
+            size === "lg" ? "h-12 min-w-12 px-3 text-lg" : "h-7 min-w-8 px-2 text-xs",
+            value === r ? "glow border-transparent bg-orange text-black" : target === r ? "border-orange/50 text-orange" : "border-white/10 text-chumbo-100/70 hover:border-white/30",
+          )}
+        >
+          {r === 4 ? "4+" : r}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 const clock = (totalSeconds: number) => {
   const s = Math.max(0, Math.floor(totalSeconds));
@@ -137,10 +171,13 @@ export function WorkoutPlayer({
         it.id,
         Array.from({ length: it.sets }, (_, i) => {
           const d = it.done.find((x) => x.setNumber === i + 1);
+          // Carga: a registrada > a sugerida pelo histórico > a prescrita no plano
+          const load = d?.loadKg ?? it.suggestion?.loadKg ?? it.loadKg;
           return {
-            reps: d?.reps != null ? String(d.reps) : targetReps(it.reps),
-            load: d?.loadKg != null ? String(d.loadKg) : it.loadKg != null ? String(it.loadKg) : "",
+            reps: d?.reps != null ? String(d.reps) : it.suggestion?.reps != null ? String(it.suggestion.reps) : targetReps(it.reps),
+            load: load != null ? String(load).replace(".", ",") : "",
             done: !!d,
+            rir: d?.rir ?? null,
           };
         }),
       ]),
@@ -156,6 +193,13 @@ export function WorkoutPlayer({
   const [frame, setFrame] = useState<0 | 1>(0);
   const [pending, startTransition] = useTransition();
   const [session, setSession] = useState(initialSession);
+  // Espelho do estado para callbacks assíncronos (RIR escolhido enquanto a série ainda está sendo salva)
+  const setsRef = useRef(sets);
+  useEffect(() => {
+    setsRef.current = sets;
+  }, [sets]);
+  // Última série concluída: o aluno avalia o RIR dela durante o descanso
+  const [lastDone, setLastDone] = useState<{ itemId: string; i: number } | null>(null);
   const sessionRef = useRef(initialSession?.id ?? null);
 
   /** Cria a sessão no primeiro registro de série (ou retoma a aberta). */
@@ -205,8 +249,22 @@ export function WorkoutPlayer({
     return () => clearInterval(id);
   }, [restEnd, beep, alarm]);
 
-  const update = (i: number, patch: Partial<SetState>) =>
-    setSets((prev) => ({ ...prev, [item.id]: prev[item.id].map((s, k) => (k === i ? { ...s, ...patch } : s)) }));
+  const updateFor = (itemId: string, i: number, patch: Partial<SetState>) =>
+    setSets((prev) => ({ ...prev, [itemId]: prev[itemId].map((s, k) => (k === i ? { ...s, ...patch } : s)) }));
+  const update = (i: number, patch: Partial<SetState>) => updateFor(item.id, i, patch);
+
+  function rate(itemId: string, i: number, rir: number) {
+    const before = sets[itemId][i].rir;
+    updateFor(itemId, i, { rir });
+    startTransition(async () => {
+      if (!sessionRef.current) return;
+      const r = await rateSet(sessionRef.current, itemId, i + 1, rir);
+      if (!r.ok) {
+        updateFor(itemId, i, { rir: before });
+        toast.error(r.error);
+      }
+    });
+  }
 
   const num = (v: string) => {
     const n = Number(v.replace(",", "."));
@@ -231,6 +289,7 @@ export function WorkoutPlayer({
     const reps = num(s.reps);
     const load = num(s.load);
     update(i, { done: true });
+    setLastDone({ itemId: item.id, i });
     startTransition(async () => {
       let sessionId: string;
       try {
@@ -244,7 +303,11 @@ export function WorkoutPlayer({
       if (!r.ok) {
         update(i, { done: false });
         toast.error(r.error);
+        return;
       }
+      // RIR escolhido antes do registro chegar ao servidor
+      const rir = setsRef.current[item.id][i].rir;
+      if (rir != null) await rateSet(sessionId, item.id, i + 1, rir);
     });
     const isLastSetOfLastItem = index === items.length - 1 && itemSets.filter((x) => x.done).length + 1 === item.sets;
     if (item.restSeconds > 0 && !isLastSetOfLastItem) {
@@ -340,7 +403,29 @@ export function WorkoutPlayer({
               {item.sets} × {item.reps}
               {item.loadKg != null && ` · ${item.loadKg} kg`} · descanso {formatRest(item.restSeconds)}
             </p>
+            {item.targetRir != null && (
+              <p className="mt-2 inline-flex rounded-full border border-orange/40 px-2.5 py-0.5 text-xs text-orange">
+                Alvo: {item.targetRir === 4 ? "RIR 4+" : `RIR ${item.targetRir}`} · RPE {10 - item.targetRir} — pare com {item.targetRir} rep{item.targetRir === 1 ? "" : "s"} sobrando
+              </p>
+            )}
             {item.notes && <p className="mt-2 rounded-2xl bg-orange/10 px-3 py-2 text-sm text-orange-bright">{item.notes}</p>}
+            {item.last && (
+              <div className="mt-3 flex flex-col gap-1.5 rounded-2xl border border-white/5 bg-white/[0.03] p-3 text-sm">
+                <p className="flex items-center gap-2 text-chumbo-100/70">
+                  <History className="size-4" /> Última vez · {dayFmt(item.last.date)}
+                </p>
+                <p className="tabular-nums">
+                  {item.last.sets
+                    .map((x) => `${x.loadKg != null ? `${kgFmt(x.loadKg)} kg` : "—"} × ${x.reps ?? "—"}${x.rir != null ? ` (RIR ${x.rir})` : ""}`)
+                    .join(" · ")}
+                </p>
+                {item.suggestion && (
+                  <p className="flex items-start gap-2 text-orange">
+                    <TrendingUp className="mt-0.5 size-4 shrink-0" /> {item.suggestion.text}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
 
           <ul className="flex flex-col gap-2">
@@ -348,7 +433,7 @@ export function WorkoutPlayer({
               <li
                 key={i}
                 className={cn(
-                  "flex items-center gap-3 rounded-2xl border border-white/5 bg-white/[0.03] p-2 pl-4 transition-colors",
+                  "flex flex-wrap items-center gap-x-3 gap-y-2 rounded-2xl border border-white/5 bg-white/[0.03] p-2 pl-4 transition-colors",
                   s.done && "border-orange/30 bg-orange/10",
                 )}
               >
@@ -388,6 +473,12 @@ export function WorkoutPlayer({
                 >
                   <Check className="size-5" />
                 </button>
+                {s.done && (
+                  <div className="flex w-full items-center justify-between gap-2 pr-2 pb-1">
+                    <span className="text-[0.65rem] tracking-[0.12em] text-chumbo-100/60 uppercase">Sobrou (RIR)</span>
+                    <RirPicker value={s.rir} target={item.targetRir} onPick={(r) => rate(item.id, i, r)} />
+                  </div>
+                )}
               </li>
             ))}
           </ul>
@@ -455,6 +546,24 @@ export function WorkoutPlayer({
           <Ring value={restTotal ? restLeft / restTotal : 0} size={260} stroke={14}>
             <span className="num-dot text-7xl">{clock(Math.ceil(restLeft))}</span>
           </Ring>
+          {lastDone && sets[lastDone.itemId] && (
+            <div className="flex flex-col items-center gap-3">
+              <p className="text-center text-sm">
+                Quantas repetições ainda daria na série que acabou?
+                {(() => {
+                  const t = items.find((x) => x.id === lastDone.itemId)?.targetRir;
+                  return t != null ? <span className="block text-xs text-orange">Alvo: {t === 4 ? "4+" : t}</span> : null;
+                })()}
+              </p>
+              <RirPicker
+                size="lg"
+                value={sets[lastDone.itemId][lastDone.i].rir}
+                target={items.find((x) => x.id === lastDone.itemId)?.targetRir ?? null}
+                onPick={(r) => rate(lastDone.itemId, lastDone.i, r)}
+              />
+              <p className="text-[0.65rem] tracking-[0.12em] text-chumbo-100/50 uppercase">0 = falha · RPE = 10 − RIR</p>
+            </div>
+          )}
           <p className="text-center text-sm text-chumbo-100/70">
             Próximo: {itemSets.every((s) => s.done) ? (nextUp ?? "fim do treino") : `${item.exercise.name} · série ${itemSets.filter((s) => s.done).length + 1}`}
           </p>
