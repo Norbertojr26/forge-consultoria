@@ -13,14 +13,16 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { submitCheckIn } from "@/lib/actions/checkin";
-import { type CheckInInput, checkInSchema, MOODS } from "@/lib/validations";
+import { type CheckInInput, checkInSchema, MEASURES, MOODS } from "@/lib/validations";
 
 export function CheckInForm({
   defaultValues,
   currentPhotos,
+  measuresOpen = false,
 }: {
   defaultValues: CheckInInput;
   currentPhotos: { front: string | null; back: string | null };
+  measuresOpen?: boolean;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -38,6 +40,7 @@ export function CheckInForm({
       data.set("weightKg", values.weightKg);
       data.set("mood", values.mood);
       data.set("notes", values.notes);
+      for (const m of MEASURES) data.set(m.key, values[m.key]);
 
       try {
         if (front) data.set("photoFront", await compressImage(front));
@@ -121,6 +124,34 @@ export function CheckInForm({
           <PhotoInput label="Frente" file={front} currentUrl={currentPhotos.front} onChange={setFront} disabled={pending} />
           <PhotoInput label="Costas" file={back} currentUrl={currentPhotos.back} onChange={setBack} disabled={pending} />
         </div>
+
+        <details open={measuresOpen} className="glass group rounded-3xl p-5">
+          <summary className="flex cursor-pointer list-none items-center justify-between font-mono text-xs tracking-[0.12em] uppercase">
+            Medidas corporais (opcional)
+            <span className="text-orange transition-transform group-open:rotate-45">+</span>
+          </summary>
+          <p className="mt-2 text-xs text-chumbo-100/60">Meça sempre no mesmo horário, de preferência em jejum. Já vêm preenchidas com as últimas — ajuste o que mudou.</p>
+          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
+            {MEASURES.map((m) => (
+              <FormField
+                key={m.key}
+                control={form.control}
+                name={m.key}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="font-mono text-[0.65rem] tracking-[0.12em] uppercase">
+                      {m.label} ({m.unit})
+                    </FormLabel>
+                    <FormControl>
+                      <Input inputMode="decimal" autoComplete="off" className="h-11 rounded-xl" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ))}
+          </div>
+        </details>
 
         <FormField
           control={form.control}

@@ -1,12 +1,8 @@
 import { TZDate } from "@date-fns/tz";
 import { z } from "zod";
-import { TIMEZONE } from "@/lib/week";
+import { TIMEZONE, todaySP } from "@/lib/week";
 
-/** Dia corrente em São Paulo como meia-noite UTC (formato das colunas @db.Date). */
-export function todaySP(now: Date = new Date()): Date {
-  const d = new TZDate(now, TIMEZONE);
-  return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-}
+export { todaySP };
 
 /** Hora atual em São Paulo como "HH:MM" (para destacar a próxima refeição/dose). */
 export function nowHHMM(now: Date = new Date()): string {

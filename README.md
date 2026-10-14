@@ -44,6 +44,15 @@ Push na `main` gera deploy automático. O serviço roda `npx prisma migrate depl
 - **Catálogo:** exercícios com `sourceId` mostram as fotos reais da [Free Exercise DB](https://github.com/yuhonas/free-exercise-db) (Unlicense / domínio público) em `public/exercises/`. Imagem própria (`imageKey`, no bucket) tem prioridade.
 - **Imagens padrão FORGE (IA):** no catálogo, cada exercício tem versão masculina e feminina, com posição inicial e final. Cada posição é gerada separadamente a partir da foto real daquela posição (um personagem só, mesma câmera), via OpenRouter (`OPENROUTER_API_KEY`; modelo em `OPENROUTER_IMAGE_MODEL`, padrão `google/gemini-3.1-flash-image`, o Nano Banana 2) com o prompt de `lib/exercise-style.ts`. A proposta só aparece para os alunos depois de aprovada (`ExerciseArt`). O **personagem-mestre** (uma imagem escolhida por sexo, em `AppSetting`) vai junto em toda geração como referência de estilo. O aluno vê a versão do sexo cadastrado no perfil; imagem enviada manualmente tem prioridade.
 
+## Check-in
+
+- **Frequência por aluno:** semanal, a cada 10 dias ou quinzenal (`User.checkInEveryDays`), definida pelo treinador em `/treinador/alunos/[id]/check-ins`.
+  - **Semanal:** vale a semana de domingo a sábado.
+  - **10 ou 14 dias:** o próximo abre N dias depois do último e fica atrasado após 2 dias de tolerância (`lib/metrics.ts`).
+  - O formulário edita o check-in do ciclo atual; fora dele, cria um novo.
+- **Medidas opcionais:** cintura, quadril, peito, braço, coxa e % de gordura. Vêm preenchidas com as últimas informadas, e a Evolução compara a primeira com a última.
+- **Retorno do treinador:** fila em `/treinador` com os check-ins sem retorno, mais antigos primeiro (destaque após 12h). Na revisão, as fotos aparecem lado a lado com as do check-in anterior, e as medidas trazem a diferença. O aluno vê o retorno no "Hoje" (some ao marcar "Entendi") e no histórico.
+
 ## Dieta, suplementos e água
 
 - **Dieta:** o treinador monta em `/treinador/alunos/[id]/dieta/[plano]` as metas diárias (kcal, proteína, carboidrato, gordura, água), as refeições com horário e os alimentos (quantidade, macros e substituição), além dos suplementos e medicações com horários. Ao enviar, vira a dieta ativa do aluno, uma por vez. Diferente do treino, pode ser editada depois de enviada.

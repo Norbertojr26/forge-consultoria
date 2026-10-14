@@ -6,7 +6,7 @@ import { DietActions } from "@/components/treinador/diet-actions";
 import { PlanActions } from "@/components/treinador/plan-actions";
 import { requireManagedStudent } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { computeMetrics } from "@/lib/metrics";
+import { computeMetrics, frequencyLabel } from "@/lib/metrics";
 import { goalLabel } from "@/lib/validations";
 import { formatDay } from "@/lib/week";
 
@@ -22,7 +22,7 @@ export default async function AlunoDetalhe({ params }: { params: Promise<{ id: s
       orderBy: [{ active: "desc" }, { updatedAt: "desc" }],
       include: { days: { select: { _count: { select: { items: true } } } }, _count: { select: { days: true } } },
     }),
-    db.checkIn.findMany({ where: { userId: id }, orderBy: { weekOf: "asc" }, select: { weekOf: true, weightKg: true } }),
+    db.checkIn.findMany({ where: { userId: id }, orderBy: { date: "asc" }, select: { weekOf: true, date: true, weightKg: true, feedback: true } }),
     db.workoutSession.findMany({
       where: { userId: id },
       orderBy: { startedAt: "desc" },
@@ -35,9 +35,10 @@ export default async function AlunoDetalhe({ params }: { params: Promise<{ id: s
       include: { _count: { select: { meals: true, supplements: true } } },
     }),
   ]);
-  const m = computeMetrics(checkIns);
+  const m = computeMetrics(checkIns, new Date(), student.checkInEveryDays);
+  const awaiting = checkIns.filter((c) => !c.feedback).length;
   const age = student.birthDate ? Math.floor((Date.now() - student.birthDate.getTime()) / (365.25 * 86_400_000)) : null;
-  const recentWeights = checkIns.slice(-8).map((c) => ({ label: formatDay(c.weekOf), value: c.weightKg }));
+  const recentWeights = checkIns.slice(-8).map((c) => ({ label: formatDay(c.date), value: c.weightKg }));
 
   return (
     <>
@@ -83,12 +84,17 @@ export default async function AlunoDetalhe({ params }: { params: Promise<{ id: s
           </p>
         </GlassCard>
         <GlassCard>
-          <CardLabel>Aderência ao check-in</CardLabel>
+          <CardLabel>Aderência · {frequencyLabel(student.checkInEveryDays).toLowerCase()}</CardLabel>
           <p className="num-thin mt-4 text-5xl">
             {m.adherence != null ? Math.round(m.adherence * 100) : "—"}
             <span className="ml-1 text-base text-chumbo-100/60">%</span>
           </p>
-          <p className="mt-2 text-sm text-chumbo-100/60">{m.doneThisWeek ? "Check-in da semana feito" : "Check-in da semana pendente"}</p>
+          <p className="mt-2 text-sm text-chumbo-100/60">
+            {m.nextCheckIn.overdue ? "Check-in atrasado" : m.doneThisCycle ? "Check-in do ciclo feito" : "Check-in do ciclo pendente"}
+          </p>
+          <Link href={`/treinador/alunos/${id}/check-ins`} className="mt-3 flex w-fit items-center gap-1.5 text-xs text-orange hover:underline">
+            {awaiting > 0 ? `${awaiting} aguardando retorno` : "Ver check-ins e frequência"} →
+          </Link>
         </GlassCard>
         <GlassCard>
           <CardLabel>Peso · últimas semanas</CardLabel>

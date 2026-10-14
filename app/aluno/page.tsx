@@ -4,14 +4,16 @@ import { DotNumber } from "@/components/app/dot-number";
 import { ExerciseImage } from "@/components/app/exercise-image";
 import { CardLabel, GlassCard } from "@/components/app/glass-card";
 import { PillBars } from "@/components/app/pill-bars";
+import { FeedbackCard } from "@/components/aluno/feedback-card";
 import { WaterCard } from "@/components/aluno/water-card";
 import { Ring } from "@/components/app/ring";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getTodayDiet } from "@/lib/diet-data";
 import { withImageUrls } from "@/lib/exercise-data";
-import { computeMetrics } from "@/lib/metrics";
+import { computeMetrics, frequencyLabel } from "@/lib/metrics";
 import { goalLabel } from "@/lib/validations";
+import { cn } from "@/lib/utils";
 import { formatDay, weekOf } from "@/lib/week";
 
 const kg = (n: number) => n.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -26,7 +28,11 @@ export default async function HojePage() {
   const weekStart = new Date(weekOf().getTime() + 3 * 3_600_000);
 
   const [checkIns, plan, weekSessions, diet] = await Promise.all([
-    db.checkIn.findMany({ where: { userId: user.id }, orderBy: { weekOf: "desc" }, select: { weekOf: true, weightKg: true } }),
+    db.checkIn.findMany({
+      where: { userId: user.id },
+      orderBy: { date: "desc" },
+      select: { id: true, weekOf: true, date: true, weightKg: true, feedback: true, feedbackAt: true, feedbackSeenAt: true, feedbackBy: { select: { name: true } } },
+    }),
     db.workoutPlan.findFirst({
       where: { studentId: user.id, active: true, sentAt: { not: null } },
       include: {
@@ -47,7 +53,8 @@ export default async function HojePage() {
     getTodayDiet(user),
   ]);
 
-  const m = computeMetrics(checkIns);
+  const m = computeMetrics(checkIns, new Date(), user.checkInEveryDays);
+  const unread = checkIns.find((c) => c.feedback && !c.feedbackSeenAt);
   const firstName = user.name?.split(" ")[0] ?? "atleta";
 
   // Próximo treino: o dia seguinte ao último feito (em ciclo); sem histórico, o primeiro.
@@ -64,7 +71,7 @@ export default async function HojePage() {
   const [cover] = nextDay?.items[0] ? await withImageUrls([nextDay.items[0].exercise], user.sex) : [];
   const weeklyTarget = plan?.days.length ?? 0;
   const weekly = weekSessions.length;
-  const weights = [...checkIns].reverse().slice(-7).map((c) => ({ label: formatDay(c.weekOf), value: c.weightKg }));
+  const weights = [...checkIns].reverse().slice(-7).map((c) => ({ label: formatDay(c.date), value: c.weightKg }));
 
   return (
     <>
@@ -80,6 +87,15 @@ export default async function HojePage() {
           <span>Complete seu perfil (sexo, altura, nascimento e objetivo) para o treinador montar seu protocolo.</span>
           <ArrowUpRight className="size-4 shrink-0 text-orange" />
         </Link>
+      )}
+
+      {unread && (
+        <FeedbackCard
+          checkInId={unread.id}
+          trainer={unread.feedbackBy?.name ?? "Seu treinador"}
+          when={`check-in de ${formatDay(unread.date)}`}
+          text={unread.feedback!}
+        />
       )}
 
       {/* Destaque: peso atual em pontos + semana */}
@@ -146,11 +162,13 @@ export default async function HojePage() {
 
         {/* Check-in */}
         <Link href="/aluno/check-in" className="glass group flex flex-col justify-between rounded-3xl p-5 transition-colors hover:border-orange/40">
-          <CardLabel icon={<Camera />}>Check-in semanal</CardLabel>
+          <CardLabel icon={<Camera />}>Check-in · {frequencyLabel(user.checkInEveryDays).toLowerCase()}</CardLabel>
           <div className="mt-6">
-            <p className="text-2xl leading-tight font-semibold">{m.nextCheckIn.pending ? "Pendente" : "Feito"}</p>
+            <p className={cn("text-2xl leading-tight font-semibold", m.nextCheckIn.overdue && "text-orange")}>
+              {m.nextCheckIn.overdue ? "Atrasado" : m.nextCheckIn.pending ? "Pendente" : "Feito"}
+            </p>
             <p className="mt-1 text-sm text-chumbo-100/60">
-              {m.nextCheckIn.pending ? `Até sábado, ${formatDay(m.nextCheckIn.dueBy)}` : `Próximo: domingo, ${formatDay(m.nextCheckIn.weekOf)}`}
+              {m.nextCheckIn.pending ? `Até ${formatDay(m.nextCheckIn.dueBy)}` : `Próximo a partir de ${formatDay(m.nextCheckIn.opensOn)}`}
             </p>
           </div>
           <p className="mt-6 flex items-center gap-1 font-mono text-xs tracking-[0.14em] text-orange uppercase">

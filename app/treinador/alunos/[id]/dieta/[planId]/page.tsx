@@ -45,7 +45,7 @@ export default async function DietaPage({ params }: { params: Promise<{ id: stri
       supplements: plan.supplements.map(({ kind, name, dose, times, notes }) => ({ kind, name, dose, times, notes })),
     };
   }
-  const lastWeight = await db.checkIn.findFirst({ where: { userId: id }, orderBy: { weekOf: "desc" }, select: { weightKg: true } });
+  const lastWeight = await db.checkIn.findFirst({ where: { userId: id }, orderBy: { date: "desc" }, select: { weightKg: true } });
 
   return (
     <>

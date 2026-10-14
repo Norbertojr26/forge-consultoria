@@ -1,9 +1,10 @@
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Clock } from "lucide-react";
 import Link from "next/link";
 import { GlassCard } from "@/components/app/glass-card";
 import { requireStaff } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { goalLabel } from "@/lib/validations";
+import { formatDay } from "@/lib/week";
 
 export const metadata = { title: "Alunos · FORGE" };
 
@@ -18,9 +19,17 @@ export default async function TreinadorHome() {
       trainer: { select: { name: true, email: true } },
       workoutPlans: { where: { active: true }, select: { name: true, sentAt: true }, take: 1 },
       workoutSessions: { where: { finishedAt: { not: null } }, orderBy: { finishedAt: "desc" }, take: 1, select: { finishedAt: true } },
-      checkIns: { orderBy: { weekOf: "desc" }, take: 1, select: { weightKg: true } },
+      checkIns: { orderBy: { date: "desc" }, take: 1, select: { weightKg: true } },
     },
   });
+  // Fila de retorno: check-ins sem feedback dos alunos deste treinador, mais antigos primeiro
+  const queue = await db.checkIn.findMany({
+    where: { feedback: null, user: { role: "STUDENT", ...(staff.role === "ADMIN" ? {} : { trainerId: staff.id }) } },
+    orderBy: { createdAt: "asc" },
+    take: 20,
+    select: { id: true, date: true, createdAt: true, weightKg: true, user: { select: { id: true, name: true, email: true } } },
+  });
+  const hoursSince = (d: Date) => Math.floor((Date.now() - d.getTime()) / 3_600_000);
   const unassigned = staff.role === "ADMIN" ? students.filter((s) => !s.trainerId).length : 0;
 
   return (
@@ -43,6 +52,35 @@ export default async function TreinadorHome() {
           )}
         </div>
       </div>
+
+      {queue.length > 0 && (
+        <section className="flex flex-col gap-3">
+          <h2 className="label-mono flex items-center gap-2">
+            <Clock className="size-4 text-orange" /> Check-ins aguardando retorno · {queue.length}
+          </h2>
+          <GlassCard className="p-0">
+            <ul className="divide-y divide-white/5">
+              {queue.map((q) => {
+                const h = hoursSince(q.createdAt);
+                return (
+                  <li key={q.id}>
+                    <Link href={`/treinador/alunos/${q.user.id}/check-ins#c-${q.id}`} className="flex items-center gap-4 px-5 py-3.5 text-sm transition-colors hover:bg-white/[0.03]">
+                      <span className="min-w-0 flex-1 truncate font-medium">{q.user.name ?? q.user.email}</span>
+                      <span className="hidden text-chumbo-100/60 sm:inline">
+                        {formatDay(q.date)} · {q.weightKg.toLocaleString("pt-BR")} kg
+                      </span>
+                      <span className={h >= 12 ? "rounded-full bg-orange/15 px-2.5 py-0.5 text-xs text-orange" : "rounded-full bg-white/5 px-2.5 py-0.5 text-xs text-chumbo-100/70"}>
+                        {h < 1 ? "agora" : h < 48 ? `${h}h` : `${Math.floor(h / 24)}d`}
+                      </span>
+                      <ChevronRight className="size-4 text-chumbo-100/40" />
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </GlassCard>
+        </section>
+      )}
 
       {students.length === 0 ? (
         <GlassCard className="py-12 text-center text-sm text-chumbo-100/70">
