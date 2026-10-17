@@ -4,9 +4,11 @@ import { CardLabel, GlassCard } from "@/components/app/glass-card";
 import { PillBars } from "@/components/app/pill-bars";
 import { DietActions } from "@/components/treinador/diet-actions";
 import { PlanActions } from "@/components/treinador/plan-actions";
+import { RoutineSummary } from "@/components/treinador/routine-summary";
 import { requireManagedStudent } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { computeMetrics, frequencyLabel } from "@/lib/metrics";
+import { getRoutineOverview } from "@/lib/routine-data";
 import { goalLabel } from "@/lib/validations";
 import { formatDay } from "@/lib/week";
 
@@ -16,7 +18,7 @@ export default async function AlunoDetalhe({ params }: { params: Promise<{ id: s
   const { id } = await params;
   const { student } = await requireManagedStudent(id);
 
-  const [plans, checkIns, sessions, diets] = await Promise.all([
+  const [plans, checkIns, sessions, diets, routine] = await Promise.all([
     db.workoutPlan.findMany({
       where: { studentId: id },
       orderBy: [{ active: "desc" }, { updatedAt: "desc" }],
@@ -34,6 +36,7 @@ export default async function AlunoDetalhe({ params }: { params: Promise<{ id: s
       orderBy: [{ active: "desc" }, { updatedAt: "desc" }],
       include: { _count: { select: { meals: true, supplements: true } } },
     }),
+    getRoutineOverview(id),
   ]);
   const m = computeMetrics(checkIns, new Date(), student.checkInEveryDays);
   const awaiting = checkIns.filter((c) => !c.feedback).length;
@@ -184,6 +187,16 @@ export default async function AlunoDetalhe({ params }: { params: Promise<{ id: s
             </GlassCard>
           ))
         )}
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="label-mono">Cardio, sono e mobilidade</h2>
+          <Link href={`/treinador/alunos/${id}/rotina`} className="text-xs text-orange hover:underline">
+            {routine.routine ? "Editar rotina →" : "Prescrever rotina →"}
+          </Link>
+        </div>
+        <RoutineSummary o={routine} />
       </section>
 
       <section className="flex flex-col gap-3">
