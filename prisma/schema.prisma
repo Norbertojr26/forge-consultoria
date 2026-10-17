@@ -43,6 +43,9 @@ model User {
   authoredPlans    WorkoutPlan[]    @relation("PlanTrainer")
   workoutSessions  WorkoutSession[]
   createdExercises Exercise[]
+  routine          Routine?         @relation("RoutineStudent")
+  cardioLogs       CardioLog[]
+  sleepLogs        SleepLog[]
 
   @@index([trainerId])
 }
@@ -296,8 +299,8 @@ model DailyCheck {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   date      DateTime @db.Date
-  kind      String // "MEAL" | "SUPPLEMENT"
-  refId     String // id da refeição ou do suplemento
+  kind      String // "MEAL" | "SUPPLEMENT" | "MOBILITY"
+  refId     String // id da refeição, do suplemento ou da rotina (mobilidade)
   slot      String   @default("") // horário da dose ("08:00"); vazio para refeição
   createdAt DateTime @default(now())
 
@@ -343,4 +346,82 @@ model DietTemplate {
   createdBy   User?    @relation(fields: [createdById], references: [id], onDelete: SetNull)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+// ─── Cardio, sono e mobilidade ───────────────────────────
+
+/// Rotina complementar prescrita pelo treinador: meta de sono, cardio e mobilidade.
+/// Uma por aluno, editável a qualquer momento (vale na hora para o aluno).
+model Routine {
+  id              String               @id @default(cuid())
+  studentId       String               @unique
+  student         User                 @relation("RoutineStudent", fields: [studentId], references: [id], onDelete: Cascade)
+  sleepGoalHours  Float?
+  bedtime         String? // horário-alvo para deitar ("23:00")
+  sleepNotes      String?
+  mobilityPerWeek Int? // dias por semana da rotina de mobilidade
+  mobilityNotes   String?
+  cardio          CardioPrescription[]
+  mobility        MobilityDrill[]
+  updatedAt       DateTime             @updatedAt
+}
+
+/// Cardio prescrito: tipo (LISS, Z2, HIIT, OUTRO), modalidade, duração e vezes por semana.
+model CardioPrescription {
+  id          String  @id @default(cuid())
+  routineId   String
+  routine     Routine @relation(fields: [routineId], references: [id], onDelete: Cascade)
+  order       Int
+  kind        String // "LISS" | "Z2" | "HIIT" | "OUTRO"
+  modality    String // "Esteira inclinada", "Bike"
+  durationMin Int
+  perWeek     Int
+  intensity   String? // "FC 120–135 bpm" | "10× 30s forte / 90s leve"
+  notes       String?
+}
+
+/// Exercício da rotina de mobilidade ("Rotação torácica — 2×10 cada lado").
+model MobilityDrill {
+  id           String  @id @default(cuid())
+  routineId    String
+  routine      Routine @relation(fields: [routineId], references: [id], onDelete: Cascade)
+  order        Int
+  name         String
+  prescription String
+  notes        String?
+}
+
+/// Cardio feito pelo aluno. prescriptionId liga ao prescrito (texto copiado sobrevive à edição).
+model CardioLog {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date           DateTime @db.Date
+  prescriptionId String?
+  kind           String
+  modality       String
+  durationMin    Int
+  distanceKm     Float?
+  avgHr          Int?
+  rpe            Int? // esforço percebido 1–10
+  notes          String?
+  createdAt      DateTime @default(now())
+
+  @@index([userId, date])
+}
+
+/// Noite de sono, registrada no dia em que o aluno acordou (fuso de São Paulo).
+model SleepLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime @db.Date
+  bedtime   String // "23:15"
+  wakeTime  String // "06:40"
+  hours     Float
+  quality   Int // 1–5
+  notes     String?
+  createdAt DateTime @default(now())
+
+  @@unique([userId, date])
 }

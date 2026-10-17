@@ -1,4 +1,4 @@
-import { ChevronRight, Dumbbell } from "lucide-react";
+import { ChevronRight, Dumbbell, HeartPulse } from "lucide-react";
 import Link from "next/link";
 import { GlassCard } from "@/components/app/glass-card";
 import { ExerciseImage } from "@/components/app/exercise-image";
@@ -73,6 +73,17 @@ export default async function TreinoPage() {
           );
         })}
       </ul>
+
+      <Link href="/aluno/rotina" className="glass group flex items-center gap-4 rounded-3xl p-4 pr-5 transition-colors hover:border-orange/40">
+        <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-white/[0.05] text-orange">
+          <HeartPulse className="size-5" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="font-medium">Cardio, sono e mobilidade</p>
+          <p className="truncate text-sm text-chumbo-100/60">Registre o cardio da semana, suas noites e a rotina de mobilidade</p>
+        </div>
+        <ChevronRight className="size-5 text-chumbo-100/40 transition-transform group-hover:translate-x-1 group-hover:text-orange" />
+      </Link>
     </>
   );
 }

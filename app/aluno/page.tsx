@@ -1,4 +1,4 @@
-import { ArrowUpRight, Camera, Dumbbell, Flame, Pill, Salad, Scale } from "lucide-react";
+import { ArrowUpRight, Camera, Dumbbell, Flame, HeartPulse, Moon, Pill, Salad, Scale, StretchHorizontal } from "lucide-react";
 import Link from "next/link";
 import { DotNumber } from "@/components/app/dot-number";
 import { ExerciseImage } from "@/components/app/exercise-image";
@@ -12,6 +12,8 @@ import { db } from "@/lib/db";
 import { getTodayDiet } from "@/lib/diet-data";
 import { withImageUrls } from "@/lib/exercise-data";
 import { computeMetrics, frequencyLabel } from "@/lib/metrics";
+import { formatHours } from "@/lib/routine";
+import { getRoutineOverview } from "@/lib/routine-data";
 import { goalLabel } from "@/lib/validations";
 import { cn } from "@/lib/utils";
 import { formatDay, weekOf } from "@/lib/week";
@@ -27,7 +29,7 @@ export default async function HojePage() {
   // Semana corrente: weekOf() devolve o domingo à meia-noite UTC; o início real em SP é 03:00 UTC.
   const weekStart = new Date(weekOf().getTime() + 3 * 3_600_000);
 
-  const [checkIns, plan, weekSessions, diet] = await Promise.all([
+  const [checkIns, plan, weekSessions, diet, routine] = await Promise.all([
     db.checkIn.findMany({
       where: { userId: user.id },
       orderBy: { date: "desc" },
@@ -51,6 +53,7 @@ export default async function HojePage() {
       orderBy: { finishedAt: "desc" },
     }),
     getTodayDiet(user),
+    getRoutineOverview(user.id, { nights: 7 }),
   ]);
 
   const m = computeMetrics(checkIns, new Date(), user.checkInEveryDays);
@@ -209,6 +212,42 @@ export default async function HojePage() {
           </Link>
         </div>
       )}
+
+
+      {/* Rotina: sono, cardio e mobilidade */}
+      <Link href="/aluno/rotina" className="glass grid grid-cols-3 divide-x divide-white/5 rounded-3xl py-4 transition-colors hover:border-orange/40" aria-label="Abrir rotina de sono, cardio e mobilidade">
+        <div className="flex flex-col gap-2 px-4">
+          <span className="flex items-center gap-1.5 label-mono !text-[0.6rem]">
+            <Moon className="size-3.5" /> Sono
+          </span>
+          <span className={cn("num-dot text-2xl", routine.sleep.today && routine.routine?.sleepGoalHours && routine.sleep.today.hours >= routine.routine.sleepGoalHours - 0.25 && "text-orange")}>
+            {routine.sleep.today ? formatHours(routine.sleep.today.hours) : "—"}
+          </span>
+          <span className="truncate text-[0.7rem] text-chumbo-100/60">{routine.sleep.today ? "esta noite" : "registrar noite"}</span>
+        </div>
+        <div className="flex flex-col gap-2 px-4">
+          <span className="flex items-center gap-1.5 label-mono !text-[0.6rem]">
+            <HeartPulse className="size-3.5" /> Cardio
+          </span>
+          <span className="num-dot text-2xl">
+            {routine.cardio.week.sessions}
+            {routine.cardio.week.targetSessions > 0 && <span className="text-chumbo-100/40">/{routine.cardio.week.targetSessions}</span>}
+          </span>
+          <span className="truncate text-[0.7rem] text-chumbo-100/60">{routine.cardio.week.minutes} min na semana</span>
+        </div>
+        <div className="flex flex-col gap-2 px-4">
+          <span className="flex items-center gap-1.5 label-mono !text-[0.6rem]">
+            <StretchHorizontal className="size-3.5" /> Mobil.
+          </span>
+          <span className={cn("num-dot text-2xl", routine.mobility.doneToday && "text-orange")}>
+            {routine.mobility.daysThisWeek}
+            {routine.mobility.target != null && <span className="text-chumbo-100/40">/{routine.mobility.target}</span>}
+          </span>
+          <span className="truncate text-[0.7rem] text-chumbo-100/60">
+            {routine.routine?.mobility.length ? (routine.mobility.doneToday ? "feita hoje" : "dias na semana") : "sem rotina"}
+          </span>
+        </div>
+      </Link>
 
       {/* Peso por semana em pílulas */}
       <GlassCard className="flex flex-col gap-5">

@@ -9,6 +9,9 @@ import { trySignedReadUrl } from "@/lib/storage";
 import { MEASURES, MOODS } from "@/lib/validations";
 import { formatDay } from "@/lib/week";
 import { progressionByExercise } from "@/lib/workout-history";
+import { PillBars } from "@/components/app/pill-bars";
+import { formatHours } from "@/lib/routine";
+import { cardioMinutesByWeek, getRoutineOverview } from "@/lib/routine-data";
 
 export const metadata = { title: "Evolução · FORGE" };
 
@@ -94,6 +97,29 @@ export default async function EvolucaoPage() {
             <h2 className="font-mono text-xs tracking-[0.12em] text-chumbo-100 uppercase">Cargas · exercícios recentes</h2>
             <ProgressionList items={prog} compact />
           </section>
+        );
+      })()}
+
+      {await (async () => {
+        const [o, weeks] = await Promise.all([getRoutineOverview(user.id), cardioMinutesByWeek(user.id)]);
+        const hasSleep = o.sleep.series.some((n) => n.log);
+        const hasCardio = weeks.some((w) => w.minutes > 0);
+        if (!hasSleep && !hasCardio) return null;
+        return (
+          <div className="grid gap-4 md:grid-cols-2">
+            {hasSleep && (
+              <section aria-label="Sono" className="glass flex flex-col gap-4 rounded-3xl p-5">
+                <p className="label-mono">Sono · 14 noites{o.sleep.stats7 ? ` · média ${formatHours(o.sleep.stats7.avgHours)}` : ""}</p>
+                <PillBars height={100} data={o.sleep.series.map((n) => ({ label: formatDay(n.date).slice(0, 2), value: n.log?.hours ?? null }))} format={formatHours} />
+              </section>
+            )}
+            {hasCardio && (
+              <section aria-label="Cardio" className="glass flex flex-col gap-4 rounded-3xl p-5">
+                <p className="label-mono">Cardio · minutos por semana</p>
+                <PillBars height={100} data={weeks.map((w) => ({ label: formatDay(w.weekOf), value: w.minutes || null }))} format={(v) => `${v} min`} />
+              </section>
+            )}
+          </div>
         );
       })()}
 

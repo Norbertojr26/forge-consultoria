@@ -24,7 +24,8 @@ export function AlunoNav() {
       className="glass fixed inset-x-3 bottom-3 z-40 mx-auto flex max-w-md items-center justify-between rounded-[1.75rem] px-2 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]"
     >
       {links.map(({ href, label, icon: Icon }) => {
-        const active = href === "/aluno" ? pathname === href : pathname.startsWith(href);
+        // Rotina (cardio, sono e mobilidade) fica sob a aba Treino
+        const active = href === "/aluno" ? pathname === href : pathname.startsWith(href) || (href === "/aluno/treino" && pathname.startsWith("/aluno/rotina"));
         return (
           <Link
             key={href}
