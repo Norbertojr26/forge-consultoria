@@ -32,20 +32,21 @@ model User {
   trainer   User?   @relation("TrainerStudents", fields: [trainerId], references: [id], onDelete: SetNull)
   students  User[]  @relation("TrainerStudents")
 
-  workoutPlans     WorkoutPlan[]    @relation("PlanStudent")
-  feedbackGiven    CheckIn[]        @relation("CheckInFeedback")
-  dietPlans        DietPlan[]       @relation("DietStudent")
+  workoutPlans     WorkoutPlan[]     @relation("PlanStudent")
+  feedbackGiven    CheckIn[]         @relation("CheckInFeedback")
+  dietPlans        DietPlan[]        @relation("DietStudent")
   createdFoods     Food[]
   dietTemplates    DietTemplate[]
-  authoredDiets    DietPlan[]       @relation("DietTrainer")
+  authoredDiets    DietPlan[]        @relation("DietTrainer")
   waterLogs        WaterLog[]
   dailyChecks      DailyCheck[]
-  authoredPlans    WorkoutPlan[]    @relation("PlanTrainer")
+  authoredPlans    WorkoutPlan[]     @relation("PlanTrainer")
   workoutSessions  WorkoutSession[]
   createdExercises Exercise[]
-  routine          Routine?         @relation("RoutineStudent")
+  routine          Routine?          @relation("RoutineStudent")
   cardioLogs       CardioLog[]
   sleepLogs        SleepLog[]
+  stravaConnection StravaConnection?
 
   @@index([trainerId])
 }
@@ -393,19 +394,22 @@ model MobilityDrill {
 
 /// Cardio feito pelo aluno. prescriptionId liga ao prescrito (texto copiado sobrevive à edição).
 model CardioLog {
-  id             String   @id @default(cuid())
-  userId         String
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  date           DateTime @db.Date
-  prescriptionId String?
-  kind           String
-  modality       String
-  durationMin    Int
-  distanceKm     Float?
-  avgHr          Int?
-  rpe            Int? // esforço percebido 1–10
-  notes          String?
-  createdAt      DateTime @default(now())
+  id               String   @id @default(cuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date             DateTime @db.Date
+  prescriptionId   String?
+  kind             String
+  modality         String
+  durationMin      Int
+  distanceKm       Float?
+  avgHr            Int?
+  rpe              Int? // esforço percebido 1–10
+  notes            String?
+  // Atividade importada do Strava (null = lançada à mão)
+  stravaActivityId BigInt?  @unique
+  source           String   @default("MANUAL") // "MANUAL" | "STRAVA"
+  createdAt        DateTime @default(now())
 
   @@index([userId, date])
 }
@@ -424,4 +428,38 @@ model SleepLog {
   createdAt DateTime @default(now())
 
   @@unique([userId, date])
+}
+
+// ─── Integração Strava ────────────────────────────────────
+
+model StravaConnection {
+  id             String    @id @default(cuid())
+  userId         String    @unique
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  athleteId      BigInt    @unique
+  accessToken    String
+  refreshToken   String
+  expiresAt      DateTime
+  scope          String
+  firstName      String?
+  lastName       String?
+  profilePicture String?
+  lastSyncAt     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model StravaWebhookEvent {
+  id           String    @id @default(cuid())
+  aspectType   String // "create" | "update" | "delete"
+  objectType   String // "activity" | "athlete"
+  objectId     BigInt
+  ownerId      BigInt // athleteId
+  updates      Json?
+  processedAt  DateTime?
+  errorMessage String?
+  receivedAt   DateTime  @default(now())
+
+  @@index([ownerId, processedAt])
+  @@index([objectId])
 }

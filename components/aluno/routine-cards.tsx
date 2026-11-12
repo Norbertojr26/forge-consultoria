@@ -124,7 +124,7 @@ export function SleepLogger({
 // ─── Cardio ───────────────────────────────────────────────
 
 type Prescription = { id: string; kind: string; modality: string; durationMin: number; perWeek: number; intensity: string | null; notes: string | null; done: number };
-type CardioEntry = { id: string; kind: string; modality: string; durationMin: number; distanceKm: number | null; avgHr: number | null; rpe: number | null; dayLabel: string };
+type CardioEntry = { id: string; kind: string; modality: string; durationMin: number; distanceKm: number | null; avgHr: number | null; rpe: number | null; source?: string; dayLabel: string };
 
 type Draft = { prescriptionId: string | null; kind: CardioKind; modality: string; durationMin: string; distanceKm: string; avgHr: string; rpe: number | null; daysAgo: number };
 
@@ -276,6 +276,7 @@ export function CardioTracker({ prescriptions, logs }: { prescriptions: Prescrip
                 <p className="truncate">
                   <span className="text-chumbo-100/60">{l.dayLabel} · </span>
                   {cardioKindLabel(l.kind)} · {l.modality}
+                  {l.source === "STRAVA" && <span className="ml-1.5 rounded bg-[#FC4C02]/15 px-1.5 py-0.5 text-[10px] font-semibold text-[#FC4C02]">Strava</span>}
                 </p>
                 <p className="truncate text-xs text-chumbo-100/60">
                   {l.durationMin} min

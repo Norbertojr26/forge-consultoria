@@ -73,7 +73,17 @@ export default async function RotinaPage() {
         </div>
         <CardioTracker
           prescriptions={(r?.cardio ?? []).map((p, i) => ({ ...p, done: o.cardio.week.perPrescription[i]?.done ?? 0 }))}
-          logs={o.cardio.logs.map((l) => ({ ...l, dayLabel: l.date.getTime() === o.today.getTime() ? "Hoje" : formatDay(l.date) }))}
+          logs={o.cardio.logs.map((l) => ({
+            id: l.id,
+            kind: l.kind,
+            modality: l.modality,
+            durationMin: l.durationMin,
+            distanceKm: l.distanceKm,
+            avgHr: l.avgHr,
+            rpe: l.rpe,
+            source: l.source,
+            dayLabel: l.date.getTime() === o.today.getTime() ? "Hoje" : formatDay(l.date),
+          }))}
         />
       </section>
 
