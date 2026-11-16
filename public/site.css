@@ -281,7 +281,7 @@ blockquote cite { display: block; margin-top: 12px; font-style: normal; font-fam
 .phones-glow { position: absolute; left: 50%; top: 50%; width: 70%; height: 60%; transform: translate(-50%, -40%); background: radial-gradient(closest-side, rgba(255, 91, 20, 0.35), transparent); filter: blur(30px); z-index: 0; }
 
 /* Planos */
-.plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; align-items: stretch; }
+.plans { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; align-items: stretch; }
 .plan { position: relative; border-radius: 28px; padding: 32px; display: flex; flex-direction: column; gap: 14px; }
 .plan h3 { font-family: var(--display); font-weight: 500; font-size: 40px; letter-spacing: -0.05em; line-height: 1; }
 .plan-desc { color: var(--muted); font-size: 15px; }
@@ -404,3 +404,5 @@ blockquote cite { display: block; margin-top: 12px; font-style: normal; font-fam
   .cta-meta > div + div { padding-left: 0; border-left: 0; }
   .footer-top { grid-template-columns: 1fr; }
 }
+
+.case-seal { position: static; display: inline-block; margin-top: 4px; }

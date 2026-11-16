@@ -29,8 +29,6 @@
         <path d="${SKULL_PATH}" fill="#F58454"/>
         <path d="${TOOTH_L}" fill="#F58454"/>
         <path d="${TOOTH_R}" fill="#F58454"/>
-        <circle class="forge-pupil forge-pupil-l" cx="${EYE_L.cx}" cy="${EYE_L.cy}" r="${EYE_L.r}" fill="#ffffff"/>
-        <circle class="forge-pupil forge-pupil-r" cx="${EYE_R.cx}" cy="${EYE_R.cy}" r="${EYE_R.r}" fill="#ffffff"/>
       </g>
     `;
     wrap.appendChild(svg);
@@ -69,8 +67,6 @@
     svg.innerHTML = `
       <g class="forge-logo-flicker">
         ${paths}
-        <circle class="forge-pupil forge-pupil-l" cx="${WM_EYE_L.cx}" cy="${WM_EYE_L.cy}" r="${WM_EYE_L.r}" fill="#ffffff"/>
-        <circle class="forge-pupil forge-pupil-r" cx="${WM_EYE_R.cx}" cy="${WM_EYE_R.cy}" r="${WM_EYE_R.r}" fill="#ffffff"/>
       </g>
     `;
     // Marca dataset com offsets pra animação saber onde voltar
